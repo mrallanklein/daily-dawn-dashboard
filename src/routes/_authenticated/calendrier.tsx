@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/calendrier")({
 function CalendarPage() {
   return (
     <AppShell>
-      <PageHeader title="Calendrier" subtitle="Agenda Google, tâches planifiées et deadlines" />
+      <PageHeader title="Calendrier" icon={Calendar} iconColor="#3B82F6" subtitle="Agenda Google, tâches planifiées et deadlines" />
       <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
         <MonthCalendar />
         <AgendaPanel />

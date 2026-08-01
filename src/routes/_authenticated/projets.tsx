@@ -59,6 +59,8 @@ function ProjectsPage() {
     <AppShell>
       <PageHeader
         title="Projets"
+        icon={BookOpen}
+        iconColor="#F97316"
         subtitle={`${list.length} projet(s) sur ce profil`}
         actions={
           <>
