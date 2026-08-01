@@ -2,21 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Calendar } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
-import { MonthCalendar } from "@/components/dashboard/month-calendar";
-import { AgendaPanel } from "@/components/dashboard/agenda-panel";
-import { WeekTimeline } from "@/components/dashboard/week-timeline";
+import { CalendarWorkspace } from "@/components/calendar/calendar-workspace";
 
 export const Route = createFileRoute("/_authenticated/calendrier")({
   head: () => ({
     meta: [
-      { title: "Calendrier — Agenda Google & échéances" },
+      { title: "Calendrier — Jour, semaine, mois et année" },
       {
         name: "description",
         content:
-          "Calendrier mensuel, semaine en un coup d'œil et évènements Google Agenda avec les échéances projets.",
+          "Vues Jour, Semaine, Mois et Année de l'agenda Google, avec panneau latéral de navigation, agendas filtrables et création d'évènements.",
       },
-      { property: "og:title", content: "Calendrier — Agenda Google & échéances" },
-      { property: "og:description", content: "Mois, semaine et agenda Google réunis." },
+      { property: "og:title", content: "Calendrier — Jour, semaine, mois et année" },
+      {
+        property: "og:description",
+        content: "Agenda Google multi-vues avec panneau latéral et gestion des évènements.",
+      },
     ],
   }),
   component: CalendarPage,
@@ -25,14 +26,13 @@ export const Route = createFileRoute("/_authenticated/calendrier")({
 function CalendarPage() {
   return (
     <AppShell>
-      <PageHeader title="Calendrier" icon={Calendar} iconColor="#3B82F6" subtitle="Agenda Google, tâches planifiées et deadlines" />
-      <div className="grid gap-4 lg:grid-cols-[2fr_1fr]">
-        <MonthCalendar />
-        <AgendaPanel />
-      </div>
-      <div className="mt-4">
-        <WeekTimeline />
-      </div>
+      <PageHeader
+        title="Calendrier"
+        icon={Calendar}
+        iconColor="#3B82F6"
+        subtitle="Agenda Google, tâches planifiées et deadlines"
+      />
+      <CalendarWorkspace />
     </AppShell>
   );
 }
