@@ -56,7 +56,7 @@ function StrategyPage() {
 
       <ModuleCard eyebrow="Répartition" title="Piliers stratégiques">
         {pillars.size === 0 ? (
-          <EmptyState>Renseignez une catégorie sur vos projets pour构 structurer vos piliers.</EmptyState>
+          <EmptyState>Renseignez une catégorie sur vos projets pour structurer vos piliers.</EmptyState>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {[...pillars.entries()].map(([pillar, items]) => {
