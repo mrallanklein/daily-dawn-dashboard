@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { GanttChartSquare, KanbanSquare, List, Search } from "lucide-react";
+import { CalendarRange, GanttChartSquare, KanbanSquare, List, Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
 import { projectsQuery, type Project } from "@/lib/data";
@@ -10,6 +10,7 @@ import { ProjectDialog } from "@/components/projects/project-dialog";
 import { KanbanView } from "@/components/projects/kanban-view";
 import { ListView } from "@/components/projects/list-view";
 import { GanttView } from "@/components/projects/gantt-view";
+import { ToPlanView } from "@/components/projects/to-plan-view";
 import { ProjectDetail } from "@/components/projects/project-detail";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -34,9 +35,10 @@ export const Route = createFileRoute("/_authenticated/projets")({
 });
 
 const VIEWS = [
-  { id: "kanban", label: "Kanban", Icon: KanbanSquare },
+  { id: "kanban", label: "Projets par état", Icon: KanbanSquare },
+  { id: "toplan", label: "À planifier", Icon: CalendarRange },
+  { id: "gantt", label: "Chronologie", Icon: GanttChartSquare },
   { id: "list", label: "Liste", Icon: List },
-  { id: "gantt", label: "Gantt", Icon: GanttChartSquare },
 ] as const;
 
 type ViewId = (typeof VIEWS)[number]["id"];
@@ -91,13 +93,18 @@ function ProjectsPage() {
       />
 
       {view === "kanban" ? <KanbanView projects={list} onSelect={setSelected} /> : null}
+      {view === "toplan" ? (
+        <div className="glass p-3">
+          <ToPlanView projects={list} onSelect={setSelected} />
+        </div>
+      ) : null}
       {view === "list" ? (
-        <div className="surface p-3">
+        <div className="glass p-3">
           <ListView projects={list} onSelect={setSelected} />
         </div>
       ) : null}
       {view === "gantt" ? (
-        <div className="surface p-4">
+        <div className="glass p-4">
           <GanttView projects={list} onSelect={setSelected} />
         </div>
       ) : null}

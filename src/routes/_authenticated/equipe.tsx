@@ -144,7 +144,7 @@ function TeamPage() {
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {(team ?? []).map((m) => (
-          <div key={m.id} className="surface group p-4">
+          <div key={m.id} className="glass group p-4">
             <div className="flex items-center gap-3">
               <Avatar className="size-10 shrink-0">
                 <AvatarImage src={m.avatar_url ?? undefined} alt={m.full_name} />

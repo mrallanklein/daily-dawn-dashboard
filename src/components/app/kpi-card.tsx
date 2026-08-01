@@ -22,7 +22,7 @@ export function KpiCard({
   }[tone];
 
   return (
-    <div className="surface p-4">
+    <div className="glass p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="truncate text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
           {label}

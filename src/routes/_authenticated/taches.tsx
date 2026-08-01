@@ -84,7 +84,7 @@ function TasksPage() {
           });
           setTitle("");
         }}
-        className="surface mb-4 flex flex-wrap gap-2 p-3"
+        className="glass mb-4 flex flex-wrap gap-2 p-3"
       >
         <Input
           value={title}

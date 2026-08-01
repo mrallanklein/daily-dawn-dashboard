@@ -150,7 +150,7 @@ function MailPage() {
         <EmptyState>Gmail a renvoyé une erreur : {(error as Error).message}</EmptyState>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[22rem_1fr]">
-          <div className="surface max-h-[70vh] overflow-y-auto">
+          <div className="glass max-h-[70vh] overflow-y-auto">
             {isFetching && list.length === 0 ? (
               <p className="p-4 text-sm text-muted-foreground">Chargement des messages…</p>
             ) : list.length === 0 ? (
@@ -188,7 +188,7 @@ function MailPage() {
             )}
           </div>
 
-          <div className="surface p-5">
+          <div className="glass p-5">
             {current ? (
               <MailReader message={current} onReply={(v) => compose.mutate(v)} />
             ) : (
