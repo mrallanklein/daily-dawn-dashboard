@@ -48,8 +48,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useWorkspace } from "@/lib/workspace";
 import { cn } from "@/lib/utils";
+import { MailBody } from "@/components/mail/mail-body";
+import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
 
 export const Route = createFileRoute("/_authenticated/mail")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    msg: typeof search.msg === "string" ? search.msg : undefined,
+    account: search.account === "secondary" ? ("secondary" as const) : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Boîte mail — Gmail intégré" },
@@ -84,15 +90,18 @@ function groupLabel(iso: string) {
 }
 
 function MailPage() {
+  const params = Route.useSearch();
   const status = useServerFn(getMailStatus);
   const fetchAccounts = useServerFn(listMailAccounts);
   const fetchMessages = useServerFn(listMessages);
   const send = useServerFn(sendMessage);
   const { space } = useWorkspace();
+  const { colorFor, setColor } = useMailColors();
   const [view, setView] = useState<(typeof VIEWS)[number]["id"]>("inbox");
   const [search, setSearch] = useState("");
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [account, setAccount] = useState<MailAccountId>("primary");
+  const [openId, setOpenId] = useState<string | null>(params.msg ?? null);
+  const [account, setAccount] = useState<MailAccountId>(params.account ?? "primary");
+  const [limit, setLimit] = useState(20);
 
   const { data: connection } = useQuery({
     queryKey: ["mail-status"],
@@ -128,10 +137,10 @@ function MailPage() {
     error,
     isFetching,
   } = useQuery({
-    queryKey: ["mail", account, query],
+    queryKey: ["mail", account, query, limit],
     enabled: connection?.connected === true,
     retry: false,
-    queryFn: () => fetchMessages({ data: { query, account } }),
+    queryFn: () => fetchMessages({ data: { query, account, maxResults: limit } }),
   });
 
   const compose = useMutation({
@@ -201,7 +210,10 @@ function MailPage() {
                       setOpenId(null);
                     }}
                   >
-                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-secondary text-[0.6rem] font-semibold uppercase">
+                    <span
+                      className="grid size-6 shrink-0 place-items-center rounded-full text-[0.6rem] font-semibold uppercase text-white"
+                      style={{ backgroundColor: colorFor(a.id) }}
+                    >
                       {a.email.slice(0, 2)}
                     </span>
                     <span className="min-w-0 flex-1 leading-tight">
@@ -227,6 +239,34 @@ function MailPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
+            {accounts.length > 0 ? (
+              <div className="mt-2 space-y-1.5 rounded-lg bg-muted/40 p-2">
+                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                  Couleurs des comptes
+                </p>
+                {accounts.map((a) => (
+                  <div key={a.id} className="flex items-center gap-1.5">
+                    <span className="min-w-0 flex-1 truncate text-[0.7rem] text-muted-foreground">
+                      {a.email.split("@")[0]}
+                    </span>
+                    {NOTION_DOT_COLORS.map((c) => (
+                      <button
+                        key={c.value}
+                        title={c.name}
+                        aria-label={`${c.name} pour ${a.email}`}
+                        onClick={() => setColor(a.id, c.value)}
+                        className={cn(
+                          "size-3 shrink-0 rounded-full ring-offset-1 ring-offset-background transition-shadow",
+                          colorFor(a.id) === c.value && "ring-2 ring-foreground/60",
+                        )}
+                        style={{ backgroundColor: c.value }}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
             <nav className="mt-2 space-y-0.5">
               {VIEWS.map((v) => (
                 <button
@@ -248,18 +288,20 @@ function MailPage() {
               ))}
             </nav>
 
-            <div className="relative mt-2">
+          </aside>
+
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="relative">
               <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher…"
+                placeholder="Rechercher dans la boîte…"
                 className="h-9 pl-8"
               />
             </div>
-          </aside>
 
-          <div className="glass max-h-[72vh] overflow-y-auto">
+            <div className="glass max-h-[68vh] overflow-y-auto">
             {isFetching && list.length === 0 ? (
               <p className="p-4 text-sm text-muted-foreground">Chargement des messages…</p>
             ) : list.length === 0 ? (
@@ -281,10 +323,11 @@ function MailPage() {
                           )}
                         >
                           <span
-                            className={cn(
-                              "mt-1.5 size-2 shrink-0 rounded-full",
-                              m.unread ? "bg-brand" : "bg-transparent",
-                            )}
+                            className="mt-1.5 size-2 shrink-0 rounded-full"
+                            style={{
+                              backgroundColor: colorFor(account),
+                              opacity: m.unread ? 1 : 0.35,
+                            }}
                           />
                           <span className="min-w-0 flex-1">
                             <span className="flex items-baseline justify-between gap-2">
@@ -312,6 +355,17 @@ function MailPage() {
                 </div>
               ))
             )}
+            </div>
+            {list.length >= limit ? (
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setLimit((v) => Math.min(v + 10, 50))}
+                disabled={isFetching || limit >= 50}
+              >
+                {limit >= 50 ? "Limite atteinte" : "Charger plus"}
+              </Button>
+            ) : null}
           </div>
 
           <div className="glass p-5">
@@ -345,9 +399,7 @@ function MailReader({
       <p className="mt-1 text-xs text-muted-foreground">
         {message.from} · {format(parseISO(message.date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
       </p>
-      <p className="mt-4 max-h-[42vh] overflow-y-auto whitespace-pre-wrap break-words text-sm">
-        {message.body || message.snippet}
-      </p>
+      <MailBody html={message.bodyHtml} text={message.body || message.snippet} />
       <form
         onSubmit={(e) => {
           e.preventDefault();
