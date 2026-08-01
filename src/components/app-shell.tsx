@@ -9,6 +9,7 @@ import {
   ChevronsUpDown,
   BookOpen,
   Home,
+  Inbox,
   LogOut,
   Mail,
   PanelLeftClose,
@@ -40,8 +41,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
 
+const HOME = { to: "/", label: "Accueil", icon: Home, color: "#3F3F46" } as const;
+
 const NAV = [
-  { to: "/", label: "Accueil", icon: Home, color: "#6B7280", exact: true },
   { to: "/projets", label: "Projets", icon: BookOpen, color: "#F97316" },
   { to: "/taches", label: "Tâches", icon: CheckCircle, color: "#22C55E" },
   { to: "/calendrier", label: "Calendrier", icon: Calendar, color: "#3B82F6" },
