@@ -10,12 +10,12 @@ function apply(theme: Theme) {
 }
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ak-theme") as Theme | null;
     const next: Theme =
-      stored ?? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      stored ?? "light";
     setTheme(next);
     apply(next);
   }, []);

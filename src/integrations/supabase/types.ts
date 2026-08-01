@@ -14,9 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_interactions: {
+        Row: {
+          body: string
+          contact_id: string
+          created_at: string
+          id: string
+          kind: string
+          occurred_on: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          contact_id: string
+          created_at?: string
+          id?: string
+          kind?: string
+          occurred_on?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          contact_id?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          occurred_on?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_interactions_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contacts: {
         Row: {
           company: string | null
+          country: string | null
           created_at: string
           email: string | null
           full_name: string
@@ -25,12 +64,16 @@ export type Database = {
           notes: string | null
           phone: string | null
           role: string | null
+          source: string | null
           status: string
+          tags: string[]
           updated_at: string
           user_id: string
+          workspace: string
         }
         Insert: {
           company?: string | null
+          country?: string | null
           created_at?: string
           email?: string | null
           full_name: string
@@ -39,12 +82,16 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           role?: string | null
+          source?: string | null
           status?: string
+          tags?: string[]
           updated_at?: string
           user_id: string
+          workspace?: string
         }
         Update: {
           company?: string | null
+          country?: string | null
           created_at?: string
           email?: string | null
           full_name?: string
@@ -53,9 +100,12 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           role?: string | null
+          source?: string | null
           status?: string
+          tags?: string[]
           updated_at?: string
           user_id?: string
+          workspace?: string
         }
         Relationships: []
       }
@@ -122,6 +172,80 @@ export type Database = {
         }
         Relationships: []
       }
+      project_comments: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          project_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          project_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_comments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_members: {
+        Row: {
+          created_at: string
+          id: string
+          member_id: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          member_id: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          member_id?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_members_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           budget: number | null
@@ -129,6 +253,7 @@ export type Database = {
           category: string | null
           client: string | null
           color: string
+          contact_id: string | null
           cover_url: string | null
           created_at: string
           deadline: string | null
@@ -141,8 +266,10 @@ export type Database = {
           progress: number
           start_date: string | null
           status: string
+          tags: string[]
           updated_at: string
           user_id: string
+          workspace: string
         }
         Insert: {
           budget?: number | null
@@ -150,6 +277,7 @@ export type Database = {
           category?: string | null
           client?: string | null
           color?: string
+          contact_id?: string | null
           cover_url?: string | null
           created_at?: string
           deadline?: string | null
@@ -162,8 +290,10 @@ export type Database = {
           progress?: number
           start_date?: string | null
           status?: string
+          tags?: string[]
           updated_at?: string
           user_id: string
+          workspace?: string
         }
         Update: {
           budget?: number | null
@@ -171,6 +301,7 @@ export type Database = {
           category?: string | null
           client?: string | null
           color?: string
+          contact_id?: string | null
           cover_url?: string | null
           created_at?: string
           deadline?: string | null
@@ -183,19 +314,31 @@ export type Database = {
           progress?: number
           start_date?: string | null
           status?: string
+          tags?: string[]
           updated_at?: string
           user_id?: string
+          workspace?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
+          assignee_id: string | null
           completed_at: string | null
           created_at: string
           due_date: string | null
           duration_minutes: number | null
           id: string
           notes: string | null
+          parent_task_id: string | null
           priority: string
           project_id: string | null
           scheduled_date: string | null
@@ -204,14 +347,17 @@ export type Database = {
           title: string
           updated_at: string
           user_id: string
+          workspace: string
         }
         Insert: {
+          assignee_id?: string | null
           completed_at?: string | null
           created_at?: string
           due_date?: string | null
           duration_minutes?: number | null
           id?: string
           notes?: string | null
+          parent_task_id?: string | null
           priority?: string
           project_id?: string | null
           scheduled_date?: string | null
@@ -220,14 +366,17 @@ export type Database = {
           title: string
           updated_at?: string
           user_id: string
+          workspace?: string
         }
         Update: {
+          assignee_id?: string | null
           completed_at?: string | null
           created_at?: string
           due_date?: string | null
           duration_minutes?: number | null
           id?: string
           notes?: string | null
+          parent_task_id?: string | null
           priority?: string
           project_id?: string | null
           scheduled_date?: string | null
@@ -236,10 +385,119 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
+          workspace?: string
         }
         Relationships: [
           {
+            foreignKeyName: "tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          permission: string
+          role: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          workspace: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          permission?: string
+          role?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          workspace?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          permission?: string
+          role?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          workspace?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          description: string
+          id: string
+          invoice_number: string | null
+          invoice_url: string | null
+          kind: string
+          occurred_on: string
+          project_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          workspace: string
+        }
+        Insert: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description: string
+          id?: string
+          invoice_number?: string | null
+          invoice_url?: string | null
+          kind?: string
+          occurred_on?: string
+          project_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          workspace?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          invoice_number?: string | null
+          invoice_url?: string | null
+          kind?: string
+          occurred_on?: string
+          project_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          workspace?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_project_id_fkey"
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"

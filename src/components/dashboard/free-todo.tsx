@@ -1,41 +1,43 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { notesQuery, type NoteItem } from "@/lib/data";
-import { ModuleCard } from "@/components/module-card";
+import { Panel } from "@/components/app/panel";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 export function FreeTodo() {
   const queryClient = useQueryClient();
   const { data: items } = useQuery(notesQuery());
+  const [draft, setDraft] = useState("");
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["notes_items"] });
-  const fail = (e: Error) => toast.error(e.message);
+  const onError = (e: Error) => toast.error(e.message);
 
-  const addLine = useMutation({
-    mutationFn: async () => {
+  const add = useMutation({
+    mutationFn: async (content: string) => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) throw new Error("Session expirée");
-      const position = (items?.at(-1)?.position ?? 0) + 1;
-      const { error } = await supabase
-        .from("notes_items")
-        .insert({ content: "", position, user_id: auth.user.id });
+      const { error } = await supabase.from("notes_items").insert({
+        content,
+        user_id: auth.user.id,
+        position: (items?.length ?? 0) + 1,
+      });
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,
-    onError: fail,
+    onError,
   });
 
-  const update = useMutation({
-    mutationFn: async (patch: { id: string; content?: string; checked?: boolean }) => {
-      const { id, ...rest } = patch;
+  const patch = useMutation({
+    mutationFn: async ({ id, ...rest }: { id: string; content?: string; checked?: boolean }) => {
       const { error } = await supabase.from("notes_items").update(rest).eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,
-    onError: fail,
+    onError,
   });
 
   const remove = useMutation({
@@ -44,65 +46,59 @@ export function FreeTodo() {
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,
-    onError: fail,
+    onError,
   });
 
-  const lines: NoteItem[] = items ?? [];
-
   return (
-    <ModuleCard
-      eyebrow="Bloc libre"
-      title="Todo list"
-      action={
-        <Button variant="outline" size="sm" onClick={() => addLine.mutate()}>
-          <Plus className="mr-1 size-3.5" /> Ligne
+    <Panel eyebrow="Bloc-notes" title="Todo libre">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!draft.trim()) return;
+          add.mutate(draft.trim());
+          setDraft("");
+        }}
+        className="mb-3 flex gap-2"
+      >
+        <input
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder="Écrire librement…"
+          className="flex-1 rounded-lg border border-input bg-transparent px-3 py-1.5 text-sm outline-none focus:border-brand"
+        />
+        <Button type="submit" size="icon" variant="secondary" aria-label="Ajouter une ligne">
+          <Plus className="size-4" />
         </Button>
-      }
-    >
-      {lines.length === 0 ? (
-        <button
-          onClick={() => addLine.mutate()}
-          className="w-full rounded-lg border border-dashed border-border/70 px-4 py-6 text-sm text-muted-foreground hover:text-gold"
-        >
-          Cliquez pour écrire votre première ligne
-        </button>
-      ) : (
-        <ul className="space-y-1.5">
-          {lines.map((line) => (
-            <li key={line.id} className="group flex items-center gap-3">
-              <Checkbox
-                checked={line.checked}
-                onCheckedChange={(v) => update.mutate({ id: line.id, checked: Boolean(v) })}
-              />
-              <input
-                defaultValue={line.content}
-                placeholder="Écrire…"
-                onBlur={(e) => {
-                  if (e.target.value !== line.content)
-                    update.mutate({ id: line.id, content: e.target.value });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.currentTarget.blur();
-                    addLine.mutate();
-                  }
-                }}
-                className={cn(
-                  "flex-1 border-0 border-b border-transparent bg-transparent py-1 text-sm outline-none focus:border-gold/60",
-                  line.checked && "text-muted-foreground line-through",
-                )}
-              />
-              <button
-                onClick={() => remove.mutate(line.id)}
-                aria-label="Supprimer la ligne"
-                className="text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </ModuleCard>
+      </form>
+
+      <ul className="space-y-1">
+        {(items ?? []).map((item: NoteItem) => (
+          <li key={item.id} className="soft-row group flex items-center gap-2.5 px-2 py-1">
+            <Checkbox
+              checked={item.checked}
+              onCheckedChange={(v) => patch.mutate({ id: item.id, checked: Boolean(v) })}
+            />
+            <input
+              defaultValue={item.content}
+              onBlur={(e) => {
+                if (e.target.value !== item.content)
+                  patch.mutate({ id: item.id, content: e.target.value });
+              }}
+              className={cn(
+                "min-w-0 flex-1 bg-transparent text-sm outline-none",
+                item.checked && "text-muted-foreground line-through",
+              )}
+            />
+            <button
+              onClick={() => remove.mutate(item.id)}
+              aria-label="Supprimer la ligne"
+              className="opacity-0 transition-opacity group-hover:opacity-100"
+            >
+              <Trash2 className="size-3.5 text-muted-foreground hover:text-destructive" />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </Panel>
   );
 }
