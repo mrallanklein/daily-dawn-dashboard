@@ -1,5 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Workspace } from "@/lib/workspace";
 
 export type Profile = {
   id: string;
@@ -27,11 +28,13 @@ export type Project = {
   cover_url: string | null;
   next_step: string | null;
   position: number;
+  workspace: string;
 };
 
 export type Task = {
   id: string;
   project_id: string | null;
+  parent_task_id: string | null;
   title: string;
   notes: string | null;
   status: string;
@@ -40,6 +43,7 @@ export type Task = {
   due_date: string | null;
   start_time: string | null;
   duration_minutes: number | null;
+  workspace: string;
 };
 
 export type NoteItem = {
@@ -59,6 +63,50 @@ export type Contact = {
   status: string;
   notes: string | null;
   last_contact_date: string | null;
+  country: string | null;
+  source: string | null;
+  tags: string[] | null;
+  workspace: string;
+};
+
+export type Interaction = {
+  id: string;
+  contact_id: string;
+  kind: string;
+  body: string;
+  occurred_on: string;
+};
+
+export type Transaction = {
+  id: string;
+  project_id: string | null;
+  kind: string;
+  amount: number;
+  description: string;
+  category: string;
+  status: string;
+  invoice_number: string | null;
+  invoice_url: string | null;
+  occurred_on: string;
+  workspace: string;
+};
+
+export type TeamMember = {
+  id: string;
+  full_name: string;
+  email: string | null;
+  role: string | null;
+  permission: string;
+  status: string;
+  avatar_url: string | null;
+  workspace: string;
+};
+
+export type ProjectComment = {
+  id: string;
+  project_id: string;
+  body: string;
+  created_at: string;
 };
 
 function unwrap<T>(res: { data: T | null; error: { message: string } | null }): T {
@@ -82,26 +130,29 @@ export const profileQuery = () =>
     },
   });
 
-export const projectsQuery = () =>
+export const projectsQuery = (ws: Workspace) =>
   queryOptions({
-    queryKey: ["projects"],
+    queryKey: ["projects", ws],
     queryFn: async () =>
       unwrap<Project[]>(
         await supabase
           .from("projects")
           .select("*")
+          .eq("workspace", ws)
+          .order("position", { ascending: true })
           .order("deadline", { ascending: true, nullsFirst: false }),
       ),
   });
 
-export const tasksQuery = () =>
+export const tasksQuery = (ws: Workspace) =>
   queryOptions({
-    queryKey: ["tasks"],
+    queryKey: ["tasks", ws],
     queryFn: async () =>
       unwrap<Task[]>(
         await supabase
           .from("tasks")
           .select("*")
+          .eq("workspace", ws)
           .order("scheduled_date", { ascending: true, nullsFirst: false })
           .order("start_time", { ascending: true, nullsFirst: false }),
       ),
@@ -116,12 +167,70 @@ export const notesQuery = () =>
       ),
   });
 
-export const contactsQuery = () =>
+export const contactsQuery = (ws: Workspace) =>
   queryOptions({
-    queryKey: ["contacts"],
+    queryKey: ["contacts", ws],
     queryFn: async () =>
       unwrap<Contact[]>(
-        await supabase.from("contacts").select("*").order("full_name", { ascending: true }),
+        await supabase
+          .from("contacts")
+          .select("*")
+          .eq("workspace", ws)
+          .order("full_name", { ascending: true }),
+      ),
+  });
+
+export const interactionsQuery = (contactId: string | null) =>
+  queryOptions({
+    queryKey: ["contact_interactions", contactId],
+    enabled: Boolean(contactId),
+    queryFn: async () =>
+      unwrap<Interaction[]>(
+        await supabase
+          .from("contact_interactions")
+          .select("id, contact_id, kind, body, occurred_on")
+          .eq("contact_id", contactId!)
+          .order("occurred_on", { ascending: false }),
+      ),
+  });
+
+export const transactionsQuery = (ws: Workspace) =>
+  queryOptions({
+    queryKey: ["transactions", ws],
+    queryFn: async () =>
+      unwrap<Transaction[]>(
+        await supabase
+          .from("transactions")
+          .select("*")
+          .eq("workspace", ws)
+          .order("occurred_on", { ascending: false }),
+      ),
+  });
+
+export const teamQuery = (ws: Workspace) =>
+  queryOptions({
+    queryKey: ["team_members", ws],
+    queryFn: async () =>
+      unwrap<TeamMember[]>(
+        await supabase
+          .from("team_members")
+          .select("*")
+          .eq("workspace", ws)
+          .order("full_name", { ascending: true }),
+      ),
+  });
+
+export const projectCommentsQuery = (projectId: string | null) =>
+  queryOptions({
+    queryKey: ["project_comments", projectId],
+    enabled: Boolean(projectId),
+    queryFn: async () =>
+      unwrap<ProjectComment[]>(
+        await supabase
+          .from("project_comments")
+          .select("id, project_id, body, created_at")
+          .eq("project_id", projectId!)
+          .order("created_at", { ascending: false }),
       ),
   });
 
@@ -152,3 +261,11 @@ export const weatherQuery = (lat: number, lon: number) =>
       };
     },
   });
+
+export function fmtEUR(value: number) {
+  return new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
