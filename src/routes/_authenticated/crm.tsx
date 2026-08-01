@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Mail, Phone, Plus, Search, Trash2 } from "lucide-react";
+import { Mail, Phone, Plus, Search, Trash2, Users } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
@@ -113,7 +113,9 @@ function CrmPage() {
   return (
     <AppShell>
       <PageHeader
-        title="CRM"
+        title="CRM — Contacts"
+        icon={Users}
+        iconColor="#A855F7"
         subtitle={`${list.length} contact(s) sur ce profil`}
         actions={
           <div className="relative">
