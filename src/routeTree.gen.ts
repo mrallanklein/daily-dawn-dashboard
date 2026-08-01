@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
+import { Route as AuthenticatedTachesRouteImport } from './routes/_authenticated/taches'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -33,15 +34,22 @@ const AuthenticatedPlanningRoute = AuthenticatedPlanningRouteImport.update({
   path: '/planning',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTachesRoute = AuthenticatedTachesRouteImport.update({
+  id: '/taches',
+  path: '/taches',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/planning': typeof AuthenticatedPlanningRoute
+  '/taches': typeof AuthenticatedTachesRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/planning': typeof AuthenticatedPlanningRoute
+  '/taches': typeof AuthenticatedTachesRoute
   '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
@@ -49,18 +57,20 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRoute
+  '/_authenticated/taches': typeof AuthenticatedTachesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/planning'
+  fullPaths: '/' | '/auth' | '/planning' | '/taches'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/planning' | '/'
+  to: '/auth' | '/planning' | '/taches' | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/planning'
+    | '/_authenticated/taches'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
@@ -99,16 +109,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanningRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/taches': {
+      id: '/_authenticated/taches'
+      path: '/taches'
+      fullPath: '/taches'
+      preLoaderRoute: typeof AuthenticatedTachesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRoute
+  AuthenticatedTachesRoute: typeof AuthenticatedTachesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPlanningRoute: AuthenticatedPlanningRoute,
+  AuthenticatedTachesRoute: AuthenticatedTachesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
