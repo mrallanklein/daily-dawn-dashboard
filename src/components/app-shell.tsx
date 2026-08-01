@@ -1,30 +1,58 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { LogOut } from "lucide-react";
+import {
+  Banknote,
+  CalendarDays,
+  Compass,
+  LayoutDashboard,
+  ListChecks,
+  LogOut,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import logoAsset from "@/assets/logo-ak.png.asset.json";
+import portraitAsset from "@/assets/allan-klein.png.asset.json";
 
 const NAV = [
-  { to: "/", label: "Tableau de bord" },
-  { to: "/planning", label: "Planning" },
-  { to: "/taches", label: "Tâches" },
-  { to: "/projets", label: "Projets" },
-  { to: "/strategie", label: "Stratégie" },
-  { to: "/crm", label: "CRM" },
-  { to: "/budget", label: "Budget" },
+  { to: "/", label: "Tableau de bord", icon: LayoutDashboard },
+  { to: "/planning", label: "Planning", icon: CalendarDays },
+  { to: "/taches", label: "Tâches", icon: ListChecks },
+  { to: "/projets", label: "Projets", icon: Sparkles },
+  { to: "/strategie", label: "Stratégie", icon: Compass },
+  { to: "/crm", label: "CRM", icon: Users },
+  { to: "/budget", label: "Budget", icon: Banknote },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: profile } = useQuery(profileQuery());
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(true);
 
-  const initials = (profile?.display_name ?? "A")
+  useEffect(() => {
+    const stored = window.localStorage.getItem("ak-sidebar");
+    if (stored) setOpen(stored === "open");
+    else if (window.innerWidth < 1024) setOpen(false);
+  }, []);
+
+  const toggle = () => {
+    setOpen((prev) => {
+      window.localStorage.setItem("ak-sidebar", prev ? "closed" : "open");
+      return !prev;
+    });
+  };
+
+  const initials = (profile?.display_name ?? "Allan Klein")
     .split(" ")
     .map((p) => p[0])
     .join("")
@@ -39,49 +67,101 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen">
-      <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-5 py-4">
-          <Link to="/" className="flex items-center gap-3">
-            <span className="flex size-9 items-center justify-center rounded-full border border-gold/40 text-sm font-display text-gold">
-              A
-            </span>
-            <span className="leading-tight">
-              <span className="block text-base font-display tracking-wide">Atelier</span>
-              <span className="block text-[0.6rem] uppercase tracking-[0.3em] text-muted-foreground">
-                {format(new Date(), "EEEE d MMMM", { locale: fr })}
+      <aside
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-sidebar-border bg-sidebar/95 backdrop-blur-xl transition-[width] duration-300 ease-out",
+          open ? "w-64" : "w-[4.5rem]",
+        )}
+      >
+        <div className="flex items-center gap-3 px-4 py-5">
+          <Link to="/" className="flex shrink-0 items-center" aria-label="Accueil">
+            <img src={logoAsset.url} alt="Logo Allan Klein" className="size-9 rounded-md" />
+          </Link>
+          {open ? (
+            <span className="min-w-0 leading-tight">
+              <span className="block truncate text-xl font-accent">Allan Klein</span>
+              <span className="block text-[0.55rem] uppercase tracking-[0.32em] text-muted-foreground">
+                Atelier
               </span>
             </span>
-          </Link>
+          ) : null}
+        </div>
 
-          <nav className="order-3 flex w-full flex-wrap gap-1 md:order-none md:w-auto md:flex-1 md:justify-center">
-            {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                activeOptions={{ exact: item.to === "/" }}
-                activeProps={{ className: "bg-secondary text-gold" }}
-                inactiveProps={{ className: "text-muted-foreground hover:text-foreground" }}
-                className="rounded-full px-3 py-1.5 text-sm transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+        <nav className="flex-1 space-y-1 px-2">
+          {NAV.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              title={item.label}
+              activeOptions={{ exact: item.to === "/" }}
+              activeProps={{ className: "bg-sidebar-accent text-gold" }}
+              inactiveProps={{
+                className: "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+              }}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                !open && "justify-center px-0",
+              )}
+            >
+              <item.icon className="size-[1.05rem] shrink-0" />
+              {open ? <span className="truncate">{item.label}</span> : null}
+            </Link>
+          ))}
+        </nav>
 
-          <div className="ml-auto flex items-center gap-3">
-            <Avatar className="size-10 border border-gold/40">
-              {profile?.avatar_url ? (
-                <AvatarImage src={profile.avatar_url} alt={profile.display_name} />
-              ) : null}
+        <div className="space-y-2 border-t border-sidebar-border p-3">
+          <div className={cn("flex items-center gap-3", !open && "justify-center")}>
+            <Avatar className="size-9 shrink-0 border border-gold/30">
+              <AvatarImage
+                src={profile?.avatar_url ?? portraitAsset.url}
+                alt={profile?.display_name ?? "Allan Klein"}
+                className="object-cover"
+              />
               <AvatarFallback className="bg-secondary text-gold">{initials}</AvatarFallback>
             </Avatar>
-            <Button variant="ghost" size="icon" onClick={signOut} aria-label="Se déconnecter">
+            {open ? (
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm">{profile?.display_name ?? "Allan Klein"}</p>
+                <p className="text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                  {format(new Date(), "d MMM", { locale: fr })}
+                </p>
+              </div>
+            ) : null}
+          </div>
+          <div className={cn("flex gap-1", !open && "flex-col items-center")}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggle}
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+            >
+              {open ? (
+                <PanelLeftClose className="size-4" />
+              ) : (
+                <PanelLeftOpen className="size-4" />
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={signOut}
+              aria-label="Se déconnecter"
+              className="text-muted-foreground hover:text-foreground"
+            >
               <LogOut className="size-4" />
             </Button>
           </div>
         </div>
-      </header>
-      <main className="mx-auto max-w-7xl px-5 py-8">{children}</main>
+      </aside>
+
+      <main
+        className={cn(
+          "min-h-screen px-4 py-8 transition-[padding] duration-300 ease-out sm:px-8",
+          open ? "pl-[17.5rem]" : "pl-[6rem]",
+        )}
+      >
+        <div className="mx-auto max-w-7xl">{children}</div>
+      </main>
     </div>
   );
 }
