@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
+import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedPlanningRouteImport } from './routes/_authenticated/planning'
 import { Route as AuthenticatedProjetsRouteImport } from './routes/_authenticated/projets'
 import { Route as AuthenticatedStrategieRouteImport } from './routes/_authenticated/strategie'
@@ -29,6 +31,16 @@ const AuthRoute = AuthRouteImport.update({
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBudgetRoute = AuthenticatedBudgetRouteImport.update({
+  id: '/budget',
+  path: '/budget',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
+  id: '/crm',
+  path: '/crm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPlanningRoute = AuthenticatedPlanningRouteImport.update({
@@ -55,6 +67,8 @@ const AuthenticatedTachesRoute = AuthenticatedTachesRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/budget': typeof AuthenticatedBudgetRoute
+  '/crm': typeof AuthenticatedCrmRoute
   '/planning': typeof AuthenticatedPlanningRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/strategie': typeof AuthenticatedStrategieRoute
@@ -62,6 +76,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/budget': typeof AuthenticatedBudgetRoute
+  '/crm': typeof AuthenticatedCrmRoute
   '/planning': typeof AuthenticatedPlanningRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/strategie': typeof AuthenticatedStrategieRoute
@@ -72,6 +88,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/budget': typeof AuthenticatedBudgetRoute
+  '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/planning': typeof AuthenticatedPlanningRoute
   '/_authenticated/projets': typeof AuthenticatedProjetsRoute
   '/_authenticated/strategie': typeof AuthenticatedStrategieRoute
@@ -80,13 +98,31 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/planning' | '/projets' | '/strategie' | '/taches'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/budget'
+    | '/crm'
+    | '/planning'
+    | '/projets'
+    | '/strategie'
+    | '/taches'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/planning' | '/projets' | '/strategie' | '/taches' | '/'
+  to:
+    | '/auth'
+    | '/budget'
+    | '/crm'
+    | '/planning'
+    | '/projets'
+    | '/strategie'
+    | '/taches'
+    | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/budget'
+    | '/_authenticated/crm'
     | '/_authenticated/planning'
     | '/_authenticated/projets'
     | '/_authenticated/strategie'
@@ -122,6 +158,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/budget': {
+      id: '/_authenticated/budget'
+      path: '/budget'
+      fullPath: '/budget'
+      preLoaderRoute: typeof AuthenticatedBudgetRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/crm': {
+      id: '/_authenticated/crm'
+      path: '/crm'
+      fullPath: '/crm'
+      preLoaderRoute: typeof AuthenticatedCrmRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/planning': {
       id: '/_authenticated/planning'
       path: '/planning'
@@ -154,6 +204,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
+  AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedPlanningRoute: typeof AuthenticatedPlanningRoute
   AuthenticatedProjetsRoute: typeof AuthenticatedProjetsRoute
   AuthenticatedStrategieRoute: typeof AuthenticatedStrategieRoute
@@ -162,6 +214,8 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
+  AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedPlanningRoute: AuthenticatedPlanningRoute,
   AuthenticatedProjetsRoute: AuthenticatedProjetsRoute,
   AuthenticatedStrategieRoute: AuthenticatedStrategieRoute,
