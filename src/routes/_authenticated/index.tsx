@@ -1,39 +1,35 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, CheckCircle2, KanbanSquare, Wallet } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { WeatherBadge } from "@/components/weather-badge";
-import { KpiCard } from "@/components/app/kpi-card";
 import { AgendaPanel } from "@/components/dashboard/agenda-panel";
 import { TasksPanel } from "@/components/dashboard/tasks-panel";
+import { TodayFocus } from "@/components/dashboard/today-focus";
 import { DeadlinesPanel } from "@/components/dashboard/deadlines-panel";
-import { WeekTimeline } from "@/components/dashboard/week-timeline";
+import { MailPreview } from "@/components/dashboard/mail-preview";
 import { FreeTodo } from "@/components/dashboard/free-todo";
-import {
-  fmtEUR,
-  profileQuery,
-  projectsQuery,
-  tasksQuery,
-  transactionsQuery,
-  weatherQuery,
-} from "@/lib/data";
+import { MonthCalendar } from "@/components/dashboard/month-calendar";
+import { profileQuery, projectsQuery, tasksQuery, weatherQuery } from "@/lib/data";
 import { useWorkspace, workspaceMeta } from "@/lib/workspace";
-import { daysUntil, todayISO } from "@/lib/dates";
+import { todayISO } from "@/lib/dates";
+import portraitAsset from "@/assets/allan-klein.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — Studio ALIAS & Allan Klein" },
+      { title: "Tableau de bord — ALIAS & Allan Klein" },
       {
         name: "description",
         content:
-          "Vue d'ensemble du jour : indicateurs clés, agenda Google, tâches, deadlines projets et budget par profil.",
+          "Accueil : météo du jour, planning Google Agenda, projets et tâches du jour, chronologie des deadlines, to-do libre et calendrier.",
       },
-      { property: "og:title", content: "Dashboard — Studio ALIAS & Allan Klein" },
+      { property: "og:title", content: "Tableau de bord — ALIAS & Allan Klein" },
       {
         property: "og:description",
-        content: "Indicateurs, agenda, tâches, deadlines et budget réunis sur un écran.",
+        content: "Planning, projets, tâches, deadlines et calendrier réunis sur un écran.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Dashboard,
@@ -53,7 +49,6 @@ function Dashboard() {
   const { data: profile } = useQuery(profileQuery());
   const { data: projects } = useQuery(projectsQuery(workspace));
   const { data: tasks } = useQuery(tasksQuery(workspace));
-  const { data: transactions } = useQuery(transactionsQuery(workspace));
   const { data: weather } = useQuery({
     ...weatherQuery(
       Number(profile?.weather_lat ?? 43.6045),
@@ -62,116 +57,73 @@ function Dashboard() {
     enabled: Boolean(profile),
   });
 
-  const list = projects ?? [];
-  const active = list.filter((p) => !["termine", "archiver"].includes(p.status));
-  const late = active.filter((p) => p.deadline && daysUntil(p.deadline) < 0);
+  const avatar =
+    (workspace === "alias" ? profile?.alias_avatar_url : profile?.avatar_url) ?? portraitAsset.url;
+  const name =
+    (workspace === "alias" ? profile?.alias_name : profile?.display_name) ?? ws.name;
+  const firstName = name.split(" ")[0] ?? "Allan";
+
+  const active = (projects ?? []).filter((p) => !["termine", "archiver"].includes(p.status));
   const todayTasks = (tasks ?? []).filter(
     (t) => !t.parent_task_id && (t.scheduled_date === todayISO() || t.due_date === todayISO()),
   );
-  const done = todayTasks.filter((t) => t.status === "termine").length;
-  const revenue = (transactions ?? [])
-    .filter((t) => t.kind === "revenu")
-    .reduce((s, t) => s + Number(t.amount), 0);
-  const expense = (transactions ?? [])
-    .filter((t) => t.kind === "depense")
-    .reduce((s, t) => s + Number(t.amount), 0);
+  const remaining = todayTasks.filter((t) => t.status !== "termine").length;
 
   return (
     <AppShell>
-      <section className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
-        <div className="min-w-0">
-          <p className="text-[0.7rem] uppercase tracking-[0.16em] text-brand">{ws.name}</p>
-          <h1 className="mt-1 truncate text-2xl font-display tracking-tight sm:text-3xl">
-            {greeting()} {(profile?.display_name ?? "Allan").split(" ")[0]}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {active.length} projet(s) actifs · {todayTasks.length - done} tâche(s) restantes
-            aujourd'hui
-          </p>
+      <section className="glass mb-4">
+        <div
+          className="h-32 w-full bg-cover bg-center sm:h-44"
+          style={
+            profile?.banner_url
+              ? { backgroundImage: `url(${profile.banner_url})` }
+              : {
+                  backgroundImage:
+                    "linear-gradient(120deg, color-mix(in oklab, var(--foreground) 12%, transparent), color-mix(in oklab, var(--muted) 90%, transparent))",
+                }
+          }
+        />
+        <div className="flex flex-wrap items-end justify-between gap-4 px-4 pb-4">
+          <div className="-mt-8 flex min-w-0 items-end gap-3">
+            <img
+              src={avatar}
+              alt={name}
+              className="size-20 shrink-0 rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)]"
+            />
+            <div className="min-w-0 pb-1">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                {ws.tag}
+              </p>
+              <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
+                {greeting()} {firstName}
+              </h1>
+              <p className="text-sm font-medium text-muted-foreground">
+                {active.length} projet(s) actifs · {remaining} tâche(s) restantes aujourd'hui
+              </p>
+            </div>
+          </div>
+          <div className="pb-1">
+            <WeatherBadge weather={weather} city={profile?.weather_city ?? "Toulouse"} />
+          </div>
         </div>
-        <WeatherBadge weather={weather} city={profile?.weather_city ?? "Toulouse"} />
       </section>
 
-      <section className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          label="Projets actifs"
-          value={String(active.length)}
-          hint={`${list.length} au total`}
-          icon={KanbanSquare}
-          tone="brand"
-        />
-        <KpiCard
-          label="Tâches du jour"
-          value={`${done}/${todayTasks.length}`}
-          hint="terminées"
-          icon={CheckCircle2}
-        />
-        <KpiCard
-          label="En retard"
-          value={String(late.length)}
-          hint={late[0]?.name ?? "Tout est à jour"}
-          icon={AlertTriangle}
-          tone={late.length > 0 ? "danger" : "default"}
-        />
-        <KpiCard
-          label="Résultat"
-          value={fmtEUR(revenue - expense)}
-          hint={`${fmtEUR(revenue)} entrées · ${fmtEUR(expense)} sorties`}
-          icon={Wallet}
-          tone={revenue - expense < 0 ? "danger" : "brand"}
-        />
-      </section>
-
-      <section className="mb-6">
-        <WeekTimeline />
-      </section>
-
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="mb-4 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <AgendaPanel />
+        <MailPreview />
+      </div>
+
+      <div className="mb-4 grid gap-4 lg:grid-cols-2">
+        <TodayFocus />
         <TasksPanel />
+      </div>
+
+      <div className="mb-4 grid gap-4 lg:grid-cols-2">
         <DeadlinesPanel />
-      </div>
-
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <FreeTodo />
-        <ActivityPanel />
       </div>
+
+      <MonthCalendar />
     </AppShell>
-  );
-}
-
-function ActivityPanel() {
-  const { workspace } = useWorkspace();
-  const { data: projects } = useQuery(projectsQuery(workspace));
-  const items = (projects ?? [])
-    .filter((p) => p.next_step)
-    .slice(0, 8)
-    .map((p) => ({ id: p.id, name: p.name, step: p.next_step! }));
-
-  return (
-    <section className="surface overflow-hidden">
-      <div className="border-b border-border px-4 py-3">
-        <p className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
-          Prochaines actions
-        </p>
-        <h2 className="text-sm font-display">Ce qui avance</h2>
-      </div>
-      <div className="p-4">
-        {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Renseignez la « prochaine étape » d'un projet pour la voir apparaître ici.
-          </p>
-        ) : (
-          <ul className="space-y-1">
-            {items.map((i) => (
-              <li key={i.id} className="soft-row px-2 py-1.5">
-                <p className="truncate text-sm">{i.step}</p>
-                <p className="truncate text-xs text-muted-foreground">{i.name}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </section>
   );
 }
