@@ -68,7 +68,7 @@ function TeamPage() {
 
   const patch = useMutation({
     mutationFn: async ({ id, ...rest }: { id: string } & Record<string, unknown>) => {
-      const { error } = await supabase.from("team_members").update(rest).eq("id", id);
+      const { error } = await supabase.from("team_members").update(rest as never).eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,

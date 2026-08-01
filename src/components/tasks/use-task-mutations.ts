@@ -55,7 +55,7 @@ export function useTaskMutations(workspace: Workspace) {
 
   const patch = useMutation({
     mutationFn: async ({ id, ...rest }: { id: string } & Record<string, unknown>) => {
-      const { error } = await supabase.from("tasks").update(rest).eq("id", id);
+      const { error } = await supabase.from("tasks").update(rest as never).eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,
