@@ -9,6 +9,7 @@ import {
   ChevronsUpDown,
   FileEdit,
   Inbox,
+  Mail,
   MailOpen,
   Search,
   Send,
