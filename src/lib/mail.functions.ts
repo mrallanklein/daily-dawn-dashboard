@@ -15,14 +15,35 @@ export type MailMessage = {
 
 const GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 
-function gatewayHeaders() {
+export const MAIL_ACCOUNT_KEYS = ["primary", "secondary"] as const;
+export type MailAccountId = (typeof MAIL_ACCOUNT_KEYS)[number];
+
+function connectionKeyFor(account: MailAccountId) {
+  return account === "secondary"
+    ? process.env["GOOGLE_MAIL_API_KEY_2"]
+    : process.env["GOOGLE_MAIL_API_KEY"];
+}
+
+function gatewayHeaders(account: MailAccountId = "primary") {
   const lovableKey = process.env["LOVABLE_API_KEY"];
-  const connectionKey = process.env["GOOGLE_MAIL_API_KEY"];
+  const connectionKey = connectionKeyFor(account);
   if (!lovableKey || !connectionKey) return null;
   return {
     Authorization: `Bearer ${lovableKey}`,
     "X-Connection-Api-Key": connectionKey,
   };
+}
+
+async function accountEmail(account: MailAccountId): Promise<string | null> {
+  const headers = gatewayHeaders(account);
+  if (!headers) return null;
+  const res = await fetch(`${GATEWAY}/users/me/profile`, { headers });
+  if (!res.ok) {
+    console.error(`Gmail profile failed [${res.status}]: ${await res.text()}`);
+    return null;
+  }
+  const json = (await res.json()) as { emailAddress?: string };
+  return json.emailAddress ?? null;
 }
 
 function decodeBase64Url(data: string) {
@@ -51,11 +72,28 @@ export const getMailStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async () => ({ connected: gatewayHeaders() !== null }));
 
+export type MailAccount = { id: MailAccountId; email: string };
+
+export const listMailAccounts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async (): Promise<MailAccount[]> => {
+    const results = await Promise.all(
+      MAIL_ACCOUNT_KEYS.map(async (id) => {
+        if (!connectionKeyFor(id)) return null;
+        const email = await accountEmail(id);
+        return email ? ({ id, email } satisfies MailAccount) : null;
+      }),
+    );
+    return results.filter((a): a is MailAccount => a !== null);
+  });
+
 export const listMessages = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { query?: string; maxResults?: number }) => input ?? {})
+  .inputValidator(
+    (input: { query?: string; maxResults?: number; account?: MailAccountId }) => input ?? {},
+  )
   .handler(async ({ data }): Promise<MailMessage[]> => {
-    const headers = gatewayHeaders();
+    const headers = gatewayHeaders(data.account ?? "primary");
     if (!headers) throw new Error("Gmail n'est pas connecté");
 
     const params = new URLSearchParams({
@@ -105,12 +143,12 @@ export const listMessages = createServerFn({ method: "POST" })
 
 export const sendMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { to: string; subject: string; body: string }) => {
+  .inputValidator((input: { to: string; subject: string; body: string; account?: MailAccountId }) => {
     if (!input?.to || !input.subject) throw new Error("Destinataire et objet requis");
     return input;
   })
   .handler(async ({ data }) => {
-    const headers = gatewayHeaders();
+    const headers = gatewayHeaders(data.account ?? "primary");
     if (!headers) throw new Error("Gmail n'est pas connecté");
     const raw = Buffer.from(
       [
