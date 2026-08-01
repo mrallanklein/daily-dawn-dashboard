@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, MapPin, Plus } from "lucide-react";
 import { getCalendarEvents } from "@/lib/agenda.functions";
+import { useWorkspace } from "@/lib/workspace";
 import { EventDialog, type EventDraft } from "@/components/calendar/event-dialog";
 import { RangeToggle } from "@/components/range-toggle";
 import { Button } from "@/components/ui/button";
@@ -12,13 +13,18 @@ export function AgendaPanel() {
   const [range, setRange] = useState<RangeDays>(1);
   const [draft, setDraft] = useState<EventDraft | null>(null);
   const fetchEvents = useServerFn(getCalendarEvents);
+  const { space } = useWorkspace();
+  const calendarIds = space?.calendar_ids ?? [];
   const { from, to } = rangeBounds(range);
 
   const { data, error, isLoading } = useQuery({
-    queryKey: ["calendar", "agenda", from.toISOString(), to.toISOString()],
+    queryKey: ["calendar", "agenda", from.toISOString(), to.toISOString(), calendarIds.join(",")],
     staleTime: 2 * 60 * 1000,
     retry: false,
-    queryFn: () => fetchEvents({ data: { timeMin: from.toISOString(), timeMax: to.toISOString() } }),
+    queryFn: () =>
+      fetchEvents({
+        data: { timeMin: from.toISOString(), timeMax: to.toISOString(), calendarIds },
+      }),
   });
 
   const events = data ?? [];

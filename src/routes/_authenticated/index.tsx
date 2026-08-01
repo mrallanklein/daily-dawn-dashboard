@@ -10,7 +10,7 @@ import { MailPreview } from "@/components/dashboard/mail-preview";
 import { FreeTodo } from "@/components/dashboard/free-todo";
 import { MonthCalendar } from "@/components/dashboard/month-calendar";
 import { profileQuery, projectsQuery, tasksQuery, weatherQuery } from "@/lib/data";
-import { useWorkspace, workspaceMeta } from "@/lib/workspace";
+import { useWorkspace } from "@/lib/workspace";
 import { todayISO } from "@/lib/dates";
 import portraitAsset from "@/assets/allan-klein.png.asset.json";
 
@@ -44,8 +44,7 @@ function greeting() {
 }
 
 function Dashboard() {
-  const { workspace } = useWorkspace();
-  const ws = workspaceMeta(workspace);
+  const { workspace, space } = useWorkspace();
   const { data: profile } = useQuery(profileQuery());
   const { data: projects } = useQuery(projectsQuery(workspace));
   const { data: tasks } = useQuery(tasksQuery(workspace));
@@ -57,10 +56,8 @@ function Dashboard() {
     enabled: Boolean(profile),
   });
 
-  const avatar =
-    (workspace === "alias" ? profile?.alias_avatar_url : profile?.avatar_url) ?? portraitAsset.url;
-  const name =
-    (workspace === "alias" ? profile?.alias_name : profile?.display_name) ?? ws.name;
+  const avatar = space?.avatar_url ?? profile?.avatar_url ?? portraitAsset.url;
+  const name = space?.name ?? profile?.display_name ?? "Allan Klein";
   const firstName = name.split(" ")[0] ?? "Allan";
 
   const active = (projects ?? []).filter((p) => !["termine", "archiver"].includes(p.status));
@@ -75,8 +72,8 @@ function Dashboard() {
         <div
           className="h-32 w-full bg-cover bg-center sm:h-44"
           style={
-            profile?.banner_url
-              ? { backgroundImage: `url(${profile.banner_url})` }
+            (space?.banner_url ?? profile?.banner_url)
+              ? { backgroundImage: `url(${space?.banner_url ?? profile?.banner_url})` }
               : {
                   backgroundImage:
                     "linear-gradient(120deg, color-mix(in oklab, var(--foreground) 12%, transparent), color-mix(in oklab, var(--muted) 90%, transparent))",
@@ -92,7 +89,7 @@ function Dashboard() {
             />
             <div className="min-w-0 pb-1">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                {ws.tag}
+                {space?.tag ?? ""}
               </p>
               <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
                 {greeting()} {firstName}
@@ -103,7 +100,10 @@ function Dashboard() {
             </div>
           </div>
           <div className="pb-1">
-            <WeatherBadge weather={weather} city={profile?.weather_city ?? "Toulouse"} />
+            <WeatherBadge
+              weather={weather}
+              city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
+            />
           </div>
         </div>
       </section>

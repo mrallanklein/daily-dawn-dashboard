@@ -12,6 +12,7 @@ import {
   LogOut,
   Mail,
   PanelLeftClose,
+  Plus,
   PanelLeftOpen,
   Search,
   Settings,
@@ -20,13 +21,16 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/data";
-import { WORKSPACES, useWorkspace, workspaceMeta } from "@/lib/workspace";
+import { useWorkspace } from "@/lib/workspace";
+import { createSpace, spaceInitials } from "@/lib/spaces";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -49,7 +53,7 @@ const NAV = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: profile } = useQuery(profileQuery());
-  const { workspace, setWorkspace } = useWorkspace();
+  const { workspace, setWorkspace, spaces, space } = useWorkspace();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(true);
@@ -79,14 +83,23 @@ export function AppShell({ children }: { children: ReactNode }) {
       return !prev;
     });
 
-  const ws = workspaceMeta(workspace);
-  const wsName =
-    workspace === "alias"
-      ? (profile?.alias_name ?? ws.name)
-      : (profile?.display_name ?? ws.name);
-  const wsAvatar =
-    workspace === "alias" ? profile?.alias_avatar_url : (profile?.avatar_url ?? portraitAsset.url);
-  const items = NAV.filter((n) => !("aliasOnly" in n && n.aliasOnly) || workspace === "alias");
+  const wsName = space?.name ?? profile?.display_name ?? "Espace";
+  const wsTag = space?.tag ?? "";
+  const wsAvatar = space?.avatar_url ?? (workspace === "allan" ? portraitAsset.url : null);
+  const items = NAV.filter(
+    (n) => !("aliasOnly" in n && n.aliasOnly) || workspace === "alias",
+  );
+
+  const newSpace = async () => {
+    try {
+      const slug = await createSpace("Nouvel espace", "Espace", spaces.length);
+      await queryClient.invalidateQueries({ queryKey: ["spaces"] });
+      setWorkspace(slug);
+      setSettingsOpen(true);
+    } catch {
+      /* l'erreur est visible dans les paramètres */
+    }
+  };
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -136,30 +149,55 @@ export function AppShell({ children }: { children: ReactNode }) {
                     className="grid size-8 shrink-0 place-items-center rounded-lg text-[0.7rem] font-display text-brand-foreground"
                     style={{ backgroundColor: "var(--brand)" }}
                   >
-                    {ws.initials}
+                    {spaceInitials(wsName)}
                   </span>
                 )}
                 {open ? (
                   <>
                     <span className="min-w-0 flex-1 leading-tight">
                       <span className="block truncate text-sm font-display">{wsName}</span>
-                      <span className="block text-[0.7rem] text-muted-foreground">{ws.tag}</span>
+                      <span className="block text-[0.7rem] text-muted-foreground">{wsTag}</span>
                     </span>
                     <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
                   </>
                 ) : null}
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56">
-              {WORKSPACES.map((w) => (
-                <DropdownMenuItem key={w.id} onClick={() => setWorkspace(w.id)}>
-                  <span className="flex-1">
-                    {w.name}
-                    <span className="ml-1.5 text-xs text-muted-foreground">{w.tag}</span>
+            <DropdownMenuContent align="start" className="w-64">
+              <DropdownMenuLabel className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
+                Espaces
+              </DropdownMenuLabel>
+              {spaces.map((w) => (
+                <DropdownMenuItem key={w.id} onClick={() => setWorkspace(w.slug)} className="gap-2">
+                  {w.avatar_url ? (
+                    <img
+                      src={w.avatar_url}
+                      alt={w.name}
+                      className="size-6 shrink-0 rounded-md object-cover"
+                    />
+                  ) : (
+                    <span className="grid size-6 shrink-0 place-items-center rounded-md bg-secondary text-[0.62rem] font-semibold">
+                      {spaceInitials(w.name)}
+                    </span>
+                  )}
+                  <span className="min-w-0 flex-1 leading-tight">
+                    <span className="block truncate text-sm font-semibold">{w.name}</span>
+                    {w.tag ? (
+                      <span className="block truncate text-[0.7rem] text-muted-foreground">
+                        {w.tag}
+                      </span>
+                    ) : null}
                   </span>
-                  {w.id === workspace ? <Check className="size-3.5" /> : null}
+                  {w.slug === workspace ? <Check className="size-3.5 shrink-0" /> : null}
                 </DropdownMenuItem>
               ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={newSpace}>
+                <Plus className="size-3.5" /> Nouvel espace de travail
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                <Settings className="size-3.5" /> Paramètres de l'espace
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

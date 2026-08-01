@@ -27,7 +27,8 @@ export function MonthCalendar() {
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState(() => new Date());
   const [draft, setDraft] = useState<EventDraft | null>(null);
-  const { workspace } = useWorkspace();
+  const { workspace, space } = useWorkspace();
+  const calendarIds = space?.calendar_ids ?? [];
   const { data: tasks } = useQuery(tasksQuery(workspace));
   const { data: projects } = useQuery(projectsQuery(workspace));
   const fetchEvents = useServerFn(getCalendarEvents);
@@ -40,12 +41,22 @@ export function MonthCalendar() {
   );
 
   const { data: events } = useQuery({
-    queryKey: ["calendar", "month", gridStart.toISOString(), gridEnd.toISOString()],
+    queryKey: [
+      "calendar",
+      "month",
+      gridStart.toISOString(),
+      gridEnd.toISOString(),
+      calendarIds.join(","),
+    ],
     staleTime: 2 * 60 * 1000,
     retry: false,
     queryFn: () =>
       fetchEvents({
-        data: { timeMin: gridStart.toISOString(), timeMax: gridEnd.toISOString() },
+        data: {
+          timeMin: gridStart.toISOString(),
+          timeMax: gridEnd.toISOString(),
+          calendarIds,
+        },
       }),
   });
 
