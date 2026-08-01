@@ -24,6 +24,9 @@ export type Project = {
   start_date: string | null;
   deadline: string | null;
   color: string;
+  cover_url: string | null;
+  next_step: string | null;
+  position: number;
 };
 
 export type Task = {
