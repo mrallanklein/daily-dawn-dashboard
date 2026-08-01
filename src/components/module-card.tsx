@@ -19,9 +19,11 @@ export function ModuleCard({
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           {eyebrow ? (
-            <p className="text-[0.65rem] uppercase tracking-[0.3em] text-gold/80">{eyebrow}</p>
+            <p className="text-[0.6rem] uppercase tracking-[0.35em] text-muted-foreground">
+              {eyebrow}
+            </p>
           ) : null}
-          <h2 className="text-xl font-medium">{title}</h2>
+          <h2 className="text-2xl font-accent">{title}</h2>
         </div>
         {action}
       </header>
