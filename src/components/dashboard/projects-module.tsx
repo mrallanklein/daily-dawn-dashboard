@@ -5,6 +5,7 @@ import { projectsQuery } from "@/lib/data";
 import { EmptyState, ModuleCard } from "@/components/module-card";
 import { RangeToggle } from "@/components/range-toggle";
 import { daysUntil, fmtShortDate, inRange, type RangeDays } from "@/lib/dates";
+import { statusLabel } from "@/lib/project-status";
 import { Progress } from "@/components/ui/progress";
 
 export function ProjectsModule() {
@@ -56,7 +57,8 @@ export function ProjectsModule() {
                 </div>
                 <Progress value={project.progress} className="mt-2 h-1.5" />
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {project.status} · {project.progress}%{project.client ? ` · ${project.client}` : ""}
+                  {statusLabel(project.status)} · {project.progress}%
+                  {project.client ? ` · ${project.client}` : ""}
                 </p>
               </li>
             );
