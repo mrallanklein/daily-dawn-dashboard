@@ -31,18 +31,14 @@ export function WeatherBadge({
   city: string;
 }) {
   if (!weather) {
-    return (
-      <div className="flex items-center gap-3 rounded-2xl border border-border/70 bg-secondary/40 px-4 py-3 text-sm text-muted-foreground">
-        Météo en cours de chargement…
-      </div>
-    );
+    return <div className="text-sm text-muted-foreground">Météo en cours de chargement…</div>;
   }
   const { Icon, label } = describe(weather.code);
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-border/70 bg-secondary/40 px-5 py-3">
-      <Icon className="size-8 text-gold" strokeWidth={1.4} />
+    <div className="flex items-center gap-3">
+      <Icon className="size-7 text-foreground" strokeWidth={1.4} />
       <div className="leading-tight">
-        <p className="text-2xl font-display">{weather.temperature}°</p>
+        <p className="text-xl font-display">{weather.temperature}°</p>
         <p className="text-xs text-muted-foreground">
           {label} · {city} · {weather.min}° / {weather.max}°
         </p>
