@@ -47,43 +47,40 @@ function Dashboard() {
 
   return (
     <AppShell>
-      <section className="panel relative mb-6 overflow-hidden p-7">
-        <img
-          src={portraitAsset.url}
-          alt="Allan Klein"
-          className="pointer-events-none absolute -right-6 top-0 hidden h-full w-64 object-cover opacity-25 mix-blend-luminosity [mask-image:linear-gradient(to_left,black,transparent)] md:block"
-        />
-        <div className="relative flex flex-wrap items-center justify-between gap-6 md:pr-56">
+      <section className="mb-8 flex flex-wrap items-end justify-between gap-6 border-b border-border/70 pb-6">
+        <div className="flex min-w-0 items-center gap-4">
+          <img
+            src={portraitAsset.url}
+            alt="Allan Klein"
+            className="hidden size-14 shrink-0 rounded-lg object-cover grayscale sm:block"
+          />
           <div className="min-w-0">
-            <p className="text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
-              Bienvenue
-            </p>
-            <h1 className="mt-3 text-4xl font-accent leading-[1.1] md:text-5xl">
+            <h1 className="text-3xl font-display leading-tight tracking-tight md:text-4xl">
               {greeting()}{" "}
-              <span className="text-gradient-gold">
+              <span className="font-accent">
                 {(profile?.display_name ?? "Allan").split(" ")[0]}
               </span>
             </h1>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               Voici votre journée, vos échéances et vos priorités.
             </p>
           </div>
-          <WeatherBadge weather={weather} city={profile?.weather_city ?? "Toulouse"} />
         </div>
+        <WeatherBadge weather={weather} city={profile?.weather_city ?? "Toulouse"} />
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-10 lg:grid-cols-3">
         <EventsModule />
         <TasksModule />
         <ProjectsModule />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+      <div className="mt-10 grid gap-10 border-t border-border/70 pt-10 lg:grid-cols-2">
         <DeadlinesTimeline />
         <FreeTodo />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-10 border-t border-border/70 pt-10">
         <MonthCalendar />
       </div>
     </AppShell>
