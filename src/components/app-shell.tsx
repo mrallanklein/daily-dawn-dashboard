@@ -9,6 +9,7 @@ import {
   ChevronsUpDown,
   BookOpen,
   Home,
+  Inbox,
   LogOut,
   Mail,
   PanelLeftClose,
@@ -40,8 +41,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
 
+const HOME = { to: "/", label: "Accueil", icon: Home, color: "#3F3F46" } as const;
+
 const NAV = [
-  { to: "/", label: "Accueil", icon: Home, color: "#6B7280", exact: true },
   { to: "/projets", label: "Projets", icon: BookOpen, color: "#F97316" },
   { to: "/taches", label: "Tâches", icon: CheckCircle, color: "#22C55E" },
   { to: "/calendrier", label: "Calendrier", icon: Calendar, color: "#3B82F6" },
@@ -203,31 +205,45 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </div>
 
-        <div className="px-3 pb-2">
-          <button
-            onClick={() => setPaletteOpen(true)}
+        {/* Accueil mis en avant + actions (boîte de réception / recherche) */}
+        <div className={cn("px-2 pb-2", !open && "px-1")}>
+          <Link
+            to={HOME.to}
+            title={HOME.label}
+            activeOptions={{ exact: true }}
+            activeProps={{ className: "bg-sidebar-accent text-foreground" }}
+            inactiveProps={{ className: "text-foreground/80 hover:bg-sidebar-accent/70" }}
             className={cn(
-              "flex w-full items-center gap-2 rounded-lg border border-sidebar-border bg-background/60 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground",
+              "press flex items-center gap-2.5 rounded-full px-3 py-2 text-sm font-semibold transition-colors active:bg-sidebar-accent",
               !open && "justify-center px-0",
             )}
           >
-            <Search className="size-3.5 shrink-0" />
-            {open ? (
-              <>
-                <span className="flex-1 text-left">Rechercher…</span>
-                <kbd
-                  className="rounded-full border px-1.5 py-0.5 text-[0.7rem] font-semibold leading-none"
-                  style={{
-                    color: "#6B7280",
-                    backgroundColor: "#F3F4F6",
-                    borderColor: "#E5E7EB",
-                  }}
-                >
-                  ⌘K
-                </kbd>
-              </>
-            ) : null}
-          </button>
+            <HOME.icon
+              className="size-[1.15rem] shrink-0"
+              strokeWidth={2}
+              style={{ color: HOME.color }}
+            />
+            {open ? <span className="truncate">{HOME.label}</span> : null}
+          </Link>
+
+          <div className={cn("mt-1 flex items-center gap-1", !open && "flex-col")}>
+            <Link
+              to="/mail"
+              aria-label="Boîte de réception"
+              title="Boîte de réception"
+              className="press grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
+            >
+              <Inbox className="size-[1.05rem]" strokeWidth={1.9} />
+            </Link>
+            <button
+              onClick={() => setPaletteOpen(true)}
+              aria-label="Rechercher (⌘K)"
+              title="Rechercher — ⌘K"
+              className="press grid size-9 place-items-center rounded-full bg-sidebar-accent text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <Search className="size-[1.05rem]" strokeWidth={1.9} />
+            </button>
+          </div>
         </div>
 
         <nav className="flex-1 space-y-0.5 px-2">
@@ -236,7 +252,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               key={item.to}
               to={item.to}
               title={item.label}
-              activeOptions={{ exact: "exact" in item ? item.exact : false }}
               activeProps={{
                 className: "bg-sidebar-accent text-foreground font-medium",
                 style: { boxShadow: "inset 2px 0 0 var(--brand)" },
@@ -249,7 +264,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                 !open && "justify-center px-0",
               )}
             >
-              <item.icon className="size-4 shrink-0" strokeWidth={1.9} style={{ color: item.color }} />
+              <item.icon
+                className="size-[1.05rem] shrink-0 text-sidebar"
+                strokeWidth={1.6}
+                style={{ fill: item.color, stroke: "var(--sidebar)" }}
+              />
               {open ? <span className="truncate">{item.label}</span> : null}
             </Link>
           ))}
@@ -299,17 +318,25 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/95 px-1 py-1.5 backdrop-blur md:hidden">
-        {items.slice(0, 5).map((item) => (
+        {[HOME, ...items].slice(0, 5).map((item) => (
           <Link
             key={item.to}
             to={item.to}
             aria-label={item.label}
-            activeOptions={{ exact: "exact" in item ? item.exact : false }}
+            activeOptions={{ exact: item.to === "/" }}
             activeProps={{ className: "text-brand" }}
             inactiveProps={{ className: "text-muted-foreground" }}
             className="grid place-items-center rounded-lg px-3 py-1.5"
           >
-            <item.icon className="size-5" strokeWidth={1.9} style={{ color: item.color }} />
+            <item.icon
+              className="size-5 text-sidebar"
+              strokeWidth={1.6}
+              style={
+                item.to === "/"
+                  ? { color: item.color, fill: "none", stroke: item.color }
+                  : { fill: item.color, stroke: "var(--sidebar)" }
+              }
+            />
           </Link>
         ))}
       </nav>
