@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
+import { Route as AuthenticatedCalendrierRouteImport } from './routes/_authenticated/calendrier'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedProjetsRouteImport } from './routes/_authenticated/projets'
 import { Route as AuthenticatedTachesRouteImport } from './routes/_authenticated/taches'
@@ -36,6 +37,11 @@ const AuthenticatedBudgetRoute = AuthenticatedBudgetRouteImport.update({
   path: '/budget',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCalendrierRoute = AuthenticatedCalendrierRouteImport.update({
+  id: '/calendrier',
+  path: '/calendrier',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
   id: '/crm',
   path: '/crm',
@@ -56,6 +62,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/budget': typeof AuthenticatedBudgetRoute
+  '/calendrier': typeof AuthenticatedCalendrierRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/budget': typeof AuthenticatedBudgetRoute
+  '/calendrier': typeof AuthenticatedCalendrierRoute
   '/crm': typeof AuthenticatedCrmRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
@@ -73,6 +81,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/budget': typeof AuthenticatedBudgetRoute
+  '/_authenticated/calendrier': typeof AuthenticatedCalendrierRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/projets': typeof AuthenticatedProjetsRoute
   '/_authenticated/taches': typeof AuthenticatedTachesRoute
@@ -80,14 +89,17 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/budget' | '/crm' | '/projets' | '/taches'
+  fullPaths:
+    '/' | '/auth' | '/budget' | '/calendrier' | '/crm' | '/projets' | '/taches'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/budget' | '/crm' | '/projets' | '/taches' | '/'
+  to:
+    '/auth' | '/budget' | '/calendrier' | '/crm' | '/projets' | '/taches' | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/budget'
+    | '/_authenticated/calendrier'
     | '/_authenticated/crm'
     | '/_authenticated/projets'
     | '/_authenticated/taches'
@@ -129,6 +141,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBudgetRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/calendrier': {
+      id: '/_authenticated/calendrier'
+      path: '/calendrier'
+      fullPath: '/calendrier'
+      preLoaderRoute: typeof AuthenticatedCalendrierRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/crm': {
       id: '/_authenticated/crm'
       path: '/crm'
@@ -155,6 +174,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
+  AuthenticatedCalendrierRoute: typeof AuthenticatedCalendrierRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedProjetsRoute: typeof AuthenticatedProjetsRoute
   AuthenticatedTachesRoute: typeof AuthenticatedTachesRoute
@@ -163,6 +183,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
+  AuthenticatedCalendrierRoute: AuthenticatedCalendrierRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedProjetsRoute: AuthenticatedProjetsRoute,
   AuthenticatedTachesRoute: AuthenticatedTachesRoute,
