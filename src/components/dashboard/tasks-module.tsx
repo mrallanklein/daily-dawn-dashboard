@@ -86,7 +86,7 @@ export function TasksModule() {
           {visible.map((task) => (
             <li
               key={task.id}
-              className="flex items-start gap-3 rounded-lg border border-border/60 bg-secondary/30 px-3 py-2"
+              className="soft-row flex items-start gap-3 px-2 py-1.5"
             >
               <Checkbox
                 checked={task.status === "termine"}
@@ -108,7 +108,7 @@ export function TasksModule() {
                 </p>
               </div>
               {task.priority === "haute" ? (
-                <span className="rounded-full bg-accent px-2 py-0.5 text-[0.65rem] text-accent-foreground">
+                <span className="rounded bg-muted px-1.5 py-0.5 text-[0.65rem] text-muted-foreground">
                   Priorité
                 </span>
               ) : null}
