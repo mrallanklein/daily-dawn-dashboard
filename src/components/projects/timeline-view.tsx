@@ -21,7 +21,7 @@ export function TimelineView({ projects }: { projects: Project[] }) {
       {[...groups.entries()].map(([month, items]) => (
         <div key={month} className="relative">
           <span className="absolute -left-[1.85rem] top-2 size-2.5 rounded-full bg-gold" />
-          <p className="text-xs uppercase tracking-[0.25em] text-gold/80">
+          <p className="text-xs font-medium text-muted-foreground">
             {new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric" }).format(
               new Date(`${month}-01T00:00:00`),
             )}
@@ -32,7 +32,7 @@ export function TimelineView({ projects }: { projects: Project[] }) {
               return (
                 <li
                   key={project.id}
-                  className="flex flex-wrap items-center gap-3 rounded-lg border border-border/60 bg-secondary/25 px-3 py-2"
+                  className="flex flex-wrap items-center gap-3 soft-row px-2 py-1.5"
                 >
                   <span className="min-w-24 text-xs text-muted-foreground">
                     {fmtShortDate(project.deadline!)}

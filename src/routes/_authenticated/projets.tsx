@@ -55,7 +55,7 @@ function ProjectsPage() {
         eyebrow={`${list.length} projet(s)`}
         title={VIEWS.find((v) => v.id === view)!.label}
         action={
-          <div className="flex flex-wrap gap-1 rounded-full border border-border/60 bg-secondary/40 p-1">
+          <div className="flex flex-wrap gap-1 rounded-md bg-muted/70 p-0.5">
             {VIEWS.map(({ id, label, Icon }) => (
               <button
                 key={id}

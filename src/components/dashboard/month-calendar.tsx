@@ -33,7 +33,7 @@ export function MonthCalendar() {
           onSelect={setSelected}
           modifiers={{ marked }}
           modifiersClassNames={{ marked: "text-gold font-semibold underline underline-offset-4" }}
-          className="rounded-lg border border-border/60 bg-secondary/20 p-3"
+          className="rounded-md border border-border/70 p-3"
         />
         <div>
           <p className="text-sm text-muted-foreground">
@@ -41,12 +41,12 @@ export function MonthCalendar() {
           </p>
           <ul className="mt-3 space-y-2">
             {dayProjects.map((p) => (
-              <li key={p.id} className="rounded-lg border border-border/60 px-3 py-2 text-sm">
+              <li key={p.id} className="soft-row px-2 py-1.5 text-sm">
                 <span className="text-gold">Échéance projet</span> · {p.name}
               </li>
             ))}
             {dayTasks.map((t) => (
-              <li key={t.id} className="rounded-lg border border-border/60 px-3 py-2 text-sm">
+              <li key={t.id} className="soft-row px-2 py-1.5 text-sm">
                 <span className="text-muted-foreground">Tâche</span> · {t.title}
               </li>
             ))}

@@ -110,7 +110,7 @@ function CrmPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[46rem] text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                <tr className="text-left text-xs font-medium text-muted-foreground">
                   <th className="pb-3">Contact</th>
                   <th className="pb-3">Coordonnées</th>
                   <th className="pb-3">Statut</th>

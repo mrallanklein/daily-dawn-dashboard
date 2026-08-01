@@ -47,8 +47,8 @@ function StrategyPage() {
           { label: "Avancement moyen", value: `${avg}%` },
           { label: "Tâches terminées", value: `${done}/${total}` },
         ].map((stat) => (
-          <div key={stat.label} className="panel p-5">
-            <p className="text-[0.65rem] uppercase tracking-[0.3em] text-gold/80">{stat.label}</p>
+          <div key={stat.label} className="rounded-md border border-border/70 p-4">
+            <p className="text-xs text-muted-foreground">{stat.label}</p>
             <p className="mt-2 text-3xl font-display">{stat.value}</p>
           </div>
         ))}
@@ -64,7 +64,7 @@ function StrategyPage() {
                 items.reduce((sum, p) => sum + p.progress, 0) / items.length,
               );
               return (
-                <div key={pillar} className="rounded-lg border border-border/60 bg-secondary/30 p-4">
+                <div key={pillar} className="rounded-md border border-border/70 p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm">{pillar}</p>
                     <span className="text-xs text-gold">{items.length} projet(s)</span>
