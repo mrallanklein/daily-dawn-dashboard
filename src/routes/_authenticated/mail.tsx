@@ -9,7 +9,14 @@ import { toast } from "sonner";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
 import { EmptyState } from "@/components/app/panel";
-import { getMailStatus, listMessages, sendMessage, type MailMessage } from "@/lib/mail.functions";
+import {
+  getMailStatus,
+  listMailAccounts,
+  listMessages,
+  sendMessage,
+  type MailAccountId,
+  type MailMessage,
+} from "@/lib/mail.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -41,14 +48,23 @@ export const Route = createFileRoute("/_authenticated/mail")({
 
 function MailPage() {
   const status = useServerFn(getMailStatus);
+  const fetchAccounts = useServerFn(listMailAccounts);
   const fetchMessages = useServerFn(listMessages);
   const send = useServerFn(sendMessage);
   const [query, setQuery] = useState("in:inbox");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [account, setAccount] = useState<MailAccountId>("primary");
 
   const { data: connection } = useQuery({
     queryKey: ["mail-status"],
     queryFn: () => status({}),
+    retry: false,
+  });
+
+  const { data: accounts } = useQuery({
+    queryKey: ["mail-accounts"],
+    queryFn: () => fetchAccounts({}),
+    enabled: connection?.connected === true,
     retry: false,
   });
 
@@ -58,28 +74,53 @@ function MailPage() {
     isFetching,
     refetch,
   } = useQuery({
-    queryKey: ["mail", query],
+    queryKey: ["mail", account, query],
     enabled: connection?.connected === true,
     retry: false,
-    queryFn: () => fetchMessages({ data: { query } }),
+    queryFn: () => fetchMessages({ data: { query, account } }),
   });
 
   const compose = useMutation({
-    mutationFn: (input: { to: string; subject: string; body: string }) => send({ data: input }),
+    mutationFn: (input: { to: string; subject: string; body: string }) =>
+      send({ data: { ...input, account } }),
     onSuccess: () => toast.success("Message envoyé"),
     onError: (e: Error) => toast.error(e.message),
   });
 
   const list = messages ?? [];
   const current = list.find((m) => m.id === openId) ?? list[0] ?? null;
+  const activeEmail =
+    accounts?.find((a) => a.id === account)?.email ??
+    (account === "secondary" ? "Compte pro" : "mr.allanklein@gmail.com");
 
   return (
     <AppShell>
       <PageHeader
         title="Boîte mail"
-        subtitle="mr.allanklein@gmail.com"
+        subtitle={activeEmail}
         actions={
           <>
+            {(accounts?.length ?? 0) > 1 && (
+              <div className="flex items-center gap-1 rounded-full border border-border p-0.5">
+                {accounts!.map((a) => (
+                  <button
+                    key={a.id}
+                    onClick={() => {
+                      setAccount(a.id);
+                      setOpenId(null);
+                    }}
+                    className={cn(
+                      "rounded-full px-3 py-1 text-xs transition-colors",
+                      account === a.id
+                        ? "bg-brand-soft font-medium text-foreground"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {a.email.split("@")[0]}
+                  </button>
+                ))}
+              </div>
+            )}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
