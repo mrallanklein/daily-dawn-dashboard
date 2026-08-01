@@ -216,16 +216,23 @@ export function SettingsDialog({
 
   const enabledMails = active?.mail_accounts ?? [];
   const enabledCals = active?.calendar_ids ?? [];
+  /** Toutes les clés d'agendas connues (utile quand aucun filtre n'est encore posé). */
+  const allCalKeys = (calendars ?? []).map((c) => `${c.accountKey}::${c.calendarId}`);
+  const allMailIds = mailboxes.map((m) => m.id);
   const toggleCal = (key: string) => {
-    const next = enabledCals.includes(key)
-      ? enabledCals.filter((k) => k !== key)
-      : [...enabledCals, key];
+    // Liste vide = « tout afficher » : on la matérialise avant de décocher,
+    // sinon décocher revenait à ne garder que l'agenda cliqué.
+    const current = enabledCals.length === 0 ? allCalKeys : enabledCals;
+    const next = current.includes(key)
+      ? current.filter((k) => k !== key)
+      : Array.from(new Set([...current, key]));
     patchGoogle.mutate({ calendar_ids: next });
   };
   const toggleMail = (id: string, on: boolean) => {
+    const current = enabledMails.length === 0 ? allMailIds : enabledMails;
     const next = on
-      ? Array.from(new Set([...enabledMails, id]))
-      : enabledMails.filter((k) => k !== id);
+      ? Array.from(new Set([...current, id]))
+      : current.filter((k) => k !== id);
     patchGoogle.mutate({ mail_accounts: next });
   };
 
