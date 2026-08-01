@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { CheckCircle, Plus, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
 import { Panel, EmptyState } from "@/components/app/panel";
@@ -71,7 +71,7 @@ function TasksPage() {
 
   return (
     <AppShell>
-      <PageHeader title="Tâches" subtitle={`${all.length} tâche(s) sur ce profil`} />
+      <PageHeader title="Tâches" icon={CheckCircle} iconColor="#22C55E" subtitle={`${all.length} tâche(s) sur ce profil`} />
 
       <form
         onSubmit={(e) => {

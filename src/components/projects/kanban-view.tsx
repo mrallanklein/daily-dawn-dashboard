@@ -26,10 +26,16 @@ export function KanbanView({
         return (
           <div
             key={col.id}
-            onDragOver={(e) => e.preventDefault()}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+            }}
             onDrop={(e) => {
-              const id = e.dataTransfer.getData("text/project");
-              if (id) patch.mutate({ id, status: col.id });
+              e.preventDefault();
+              const id =
+                e.dataTransfer.getData("text/project") || e.dataTransfer.getData("text/plain");
+              const source = projects.find((p) => p.id === id);
+              if (id && source && source.status !== col.id) patch.mutate({ id, status: col.id });
             }}
             className="w-[16.5rem] shrink-0 rounded-xl bg-muted/40 p-2"
           >
@@ -44,22 +50,34 @@ export function KanbanView({
                   (t) => t.project_id === p.id && t.status !== "termine",
                 ).length;
                 return (
-                  <button
+                  <div
                     key={p.id}
+                    role="button"
+                    tabIndex={0}
                     draggable
-                    onDragStart={(e) => e.dataTransfer.setData("text/project", p.id)}
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = "move";
+                      e.dataTransfer.setData("text/project", p.id);
+                      e.dataTransfer.setData("text/plain", p.id);
+                    }}
                     onClick={() => onSelect(p)}
-                    className="w-full rounded-lg border border-border bg-card p-2.5 text-left shadow-sm transition-shadow hover:shadow-md"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onSelect(p);
+                      }
+                    }}
+                    className="w-full cursor-grab rounded-lg border border-border bg-card p-2.5 text-left shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing"
                   >
                     {p.cover_url ? (
                       <img
                         src={p.cover_url}
                         alt={p.name}
                         loading="lazy"
-                        className="mb-2 h-20 w-full rounded object-cover"
+                        className="mb-2 aspect-[3/2] w-full rounded-md object-cover"
                       />
                     ) : null}
-                    <p className="line-clamp-2 text-sm font-medium">{p.name}</p>
+                    <p className="line-clamp-2 text-sm font-semibold">{p.name}</p>
                     {p.client ? (
                       <p className="truncate text-xs text-muted-foreground">{p.client}</p>
                     ) : null}
@@ -84,7 +102,7 @@ export function KanbanView({
                         <span className="pill border-warning/50 text-warning">Priorité</span>
                       ) : null}
                     </div>
-                  </button>
+                  </div>
                 );
               })}
               {list.length === 0 ? (

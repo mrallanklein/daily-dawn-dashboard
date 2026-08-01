@@ -3,12 +3,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   Banknote,
-  CalendarDays,
+  Calendar,
   Check,
+  CheckCircle,
   ChevronsUpDown,
-  KanbanSquare,
-  LayoutDashboard,
-  ListChecks,
+  BookOpen,
+  Home,
   LogOut,
   Mail,
   PanelLeftClose,
@@ -41,14 +41,14 @@ import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
 
 const NAV = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/projets", label: "Projets", icon: KanbanSquare },
-  { to: "/taches", label: "Tâches", icon: ListChecks },
-  { to: "/calendrier", label: "Calendrier", icon: CalendarDays },
-  { to: "/mail", label: "Boîte mail", icon: Mail },
-  { to: "/crm", label: "CRM", icon: Users },
-  { to: "/budget", label: "Budget", icon: Banknote },
-  { to: "/equipe", label: "Équipe", icon: UsersRound, aliasOnly: true },
+  { to: "/", label: "Accueil", icon: Home, color: "#6B7280", exact: true },
+  { to: "/projets", label: "Projets", icon: BookOpen, color: "#F97316" },
+  { to: "/taches", label: "Tâches", icon: CheckCircle, color: "#22C55E" },
+  { to: "/calendrier", label: "Calendrier", icon: Calendar, color: "#3B82F6" },
+  { to: "/mail", label: "Boîte mail", icon: Mail, color: "#EF4444" },
+  { to: "/crm", label: "CRM", icon: Users, color: "#A855F7" },
+  { to: "/budget", label: "Budget", icon: Banknote, color: "#EAB308" },
+  { to: "/equipe", label: "Équipe", icon: UsersRound, color: "#0EA5E9", aliasOnly: true },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -112,29 +112,30 @@ export function AppShell({ children }: { children: ReactNode }) {
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
-      <button
-        onClick={toggle}
-        aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
-        className={cn(
-          "press fixed top-4 z-50 hidden size-8 place-items-center rounded-lg border border-border bg-card/80 text-muted-foreground backdrop-blur transition-[left] duration-200 hover:text-foreground md:grid",
-          open ? "left-[15.25rem]" : "left-[3.6rem]",
-        )}
-      >
-        {open ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
-      </button>
-
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
           open ? "w-60" : "w-[4.25rem]",
         )}
       >
+        <button
+          onClick={toggle}
+          aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
+          className={cn(
+            "press absolute top-3 z-10 grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground",
+            open ? "right-2" : "left-1/2 -translate-x-1/2",
+          )}
+        >
+          {open ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
+        </button>
+
         <div className="p-3">
+          <div className={cn("h-7", open ? "hidden" : "block")} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-lg p-2 text-left transition-colors hover:bg-sidebar-accent",
+                  "flex w-full items-center gap-2.5 rounded-lg p-2 pr-9 text-left transition-colors hover:bg-sidebar-accent",
                   !open && "justify-center p-1.5",
                 )}
               >
@@ -214,7 +215,16 @@ export function AppShell({ children }: { children: ReactNode }) {
             {open ? (
               <>
                 <span className="flex-1 text-left">Rechercher…</span>
-                <kbd className="rounded border border-border px-1 text-[0.65rem]">⌘K</kbd>
+                <kbd
+                  className="rounded-full border px-1.5 py-0.5 text-[0.7rem] font-semibold leading-none"
+                  style={{
+                    color: "#6B7280",
+                    backgroundColor: "#F3F4F6",
+                    borderColor: "#E5E7EB",
+                  }}
+                >
+                  ⌘K
+                </kbd>
               </>
             ) : null}
           </button>
@@ -239,7 +249,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 !open && "justify-center px-0",
               )}
             >
-              <item.icon className="size-4 shrink-0" strokeWidth={1.8} />
+              <item.icon className="size-4 shrink-0" strokeWidth={1.9} style={{ color: item.color }} />
               {open ? <span className="truncate">{item.label}</span> : null}
             </Link>
           ))}
@@ -299,7 +309,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             inactiveProps={{ className: "text-muted-foreground" }}
             className="grid place-items-center rounded-lg px-3 py-1.5"
           >
-            <item.icon className="size-5" strokeWidth={1.8} />
+            <item.icon className="size-5" strokeWidth={1.9} style={{ color: item.color }} />
           </Link>
         ))}
       </nav>

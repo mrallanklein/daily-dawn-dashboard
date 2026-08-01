@@ -3,7 +3,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { ArrowDownRight, ArrowUpRight, Download, Plus, Trash2, Wallet } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Banknote,
+  Download,
+  Plus,
+  Trash2,
+  Wallet,
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
@@ -127,7 +135,9 @@ function BudgetPage() {
   return (
     <AppShell>
       <PageHeader
-        title="Budget"
+        title="Budget & Finances"
+        icon={Banknote}
+        iconColor="#EAB308"
         subtitle="Revenus, dépenses et factures par projet"
         actions={
           <Button variant="secondary" size="sm" onClick={exportCsv} className="gap-1.5">

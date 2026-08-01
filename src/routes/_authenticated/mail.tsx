@@ -9,6 +9,7 @@ import {
   ChevronsUpDown,
   FileEdit,
   Inbox,
+  Mail,
   MailOpen,
   Search,
   Send,
@@ -153,7 +154,9 @@ function MailPage() {
   return (
     <AppShell>
       <PageHeader
-        title="Boîte mail"
+        title="Boîte Mail"
+        icon={Mail}
+        iconColor="#EF4444"
         subtitle={activeEmail}
         actions={<ComposeDialog onSend={(v) => compose.mutate(v)} />}
       />

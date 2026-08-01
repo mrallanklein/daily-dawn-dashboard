@@ -1,7 +1,14 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarRange, GanttChartSquare, KanbanSquare, List, Search } from "lucide-react";
+import {
+  BookOpen,
+  CalendarRange,
+  GanttChartSquare,
+  KanbanSquare,
+  List,
+  Search,
+} from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
 import { projectsQuery, type Project } from "@/lib/data";
@@ -59,6 +66,8 @@ function ProjectsPage() {
     <AppShell>
       <PageHeader
         title="Projets"
+        icon={BookOpen}
+        iconColor="#F97316"
         subtitle={`${list.length} projet(s) sur ce profil`}
         actions={
           <>
