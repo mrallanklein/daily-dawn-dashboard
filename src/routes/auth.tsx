@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import logoAsset from "@/assets/logo-ak.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -79,8 +80,11 @@ function AuthPage() {
   return (
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="panel w-full max-w-md p-8">
-        <p className="text-xs uppercase tracking-[0.35em] text-gold">Atelier</p>
-        <h1 className="mt-3 text-3xl font-medium">
+        <img src={logoAsset.url} alt="Logo Allan Klein" className="size-12 rounded-lg" />
+        <p className="mt-5 text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
+          Atelier — Allan Klein
+        </p>
+        <h1 className="mt-2 text-4xl font-accent">
           {mode === "signin" ? "Bon retour" : "Créer votre espace"}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">

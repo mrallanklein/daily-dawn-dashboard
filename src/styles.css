@@ -4,6 +4,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Kinglard";
+  src: url("/__l5e/assets-v1/a9c80cc0-dba2-4c9d-8bd0-5732ab303901/Kinglard.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kinglard";
+  src: url("/__l5e/assets-v1/25d1569c-62e2-4013-b02f-c334c61ab9b5/Kinglard_Italic.otf")
+    format("opentype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 /*
  * Design system definition.
  *
@@ -66,29 +83,30 @@
   --color-warning: var(--warning);
   --color-info: var(--info);
   --font-display: var(--font-display);
+  --font-accent: var(--font-accent);
   --font-sans: var(--font-body);
 }
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.163 0.008 274);
-  --foreground: oklch(0.936 0.008 85);
-  --card: oklch(0.205 0.01 275);
-  --card-foreground: oklch(0.936 0.008 85);
-  --popover: oklch(0.205 0.01 275);
-  --popover-foreground: oklch(0.936 0.008 85);
+  --background: oklch(0.128 0.003 270);
+  --foreground: oklch(0.945 0.006 85);
+  --card: oklch(0.172 0.004 272);
+  --card-foreground: oklch(0.945 0.006 85);
+  --popover: oklch(0.172 0.004 272);
+  --popover-foreground: oklch(0.945 0.006 85);
   --primary: oklch(0.762 0.078 82);
   --primary-foreground: oklch(0.17 0.01 274);
-  --secondary: oklch(0.253 0.012 275);
-  --secondary-foreground: oklch(0.936 0.008 85);
-  --muted: oklch(0.243 0.011 275);
-  --muted-foreground: oklch(0.66 0.014 270);
+  --secondary: oklch(0.222 0.005 274);
+  --secondary-foreground: oklch(0.945 0.006 85);
+  --muted: oklch(0.212 0.005 274);
+  --muted-foreground: oklch(0.672 0.008 270);
   --accent: oklch(0.29 0.026 78);
   --accent-foreground: oklch(0.86 0.06 84);
   --destructive: oklch(0.58 0.19 22);
   --destructive-foreground: oklch(0.96 0.01 85);
-  --border: oklch(0.29 0.012 275);
-  --input: oklch(0.3 0.012 275);
+  --border: oklch(0.268 0.006 275);
+  --input: oklch(0.288 0.006 275);
   --ring: oklch(0.762 0.078 82);
   --gold: oklch(0.762 0.078 82);
   --gold-soft: oklch(0.86 0.055 86);
@@ -101,21 +119,22 @@
   --chart-3: oklch(0.72 0.09 235);
   --chart-4: oklch(0.72 0.14 20);
   --chart-5: oklch(0.7 0.1 300);
-  --sidebar: oklch(0.185 0.009 274);
+  --sidebar: oklch(0.108 0.003 270);
   --sidebar-foreground: oklch(0.936 0.008 85);
   --sidebar-primary: oklch(0.762 0.078 82);
   --sidebar-primary-foreground: oklch(0.17 0.01 274);
-  --sidebar-accent: oklch(0.253 0.012 275);
+  --sidebar-accent: oklch(0.222 0.005 274);
   --sidebar-accent-foreground: oklch(0.936 0.008 85);
-  --sidebar-border: oklch(0.29 0.012 275);
+  --sidebar-border: oklch(0.24 0.005 275);
   --sidebar-ring: oklch(0.762 0.078 82);
   --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-accent: "Kinglard", "Cormorant Garamond", Georgia, serif;
   --font-body: "Manrope", system-ui, sans-serif;
   --gradient-night: linear-gradient(
     160deg,
-    oklch(0.19 0.012 274) 0%,
-    oklch(0.163 0.008 274) 55%,
-    oklch(0.145 0.01 280) 100%
+    oklch(0.155 0.004 274) 0%,
+    oklch(0.128 0.003 270) 55%,
+    oklch(0.112 0.004 280) 100%
   );
   --gradient-gold: linear-gradient(100deg, oklch(0.86 0.055 86), oklch(0.72 0.082 78));
   --shadow-elevated: 0 24px 60px -30px oklch(0 0 0 / 0.75);
@@ -196,4 +215,10 @@
 
 @utility hairline {
   border-bottom: 1px solid color-mix(in oklab, var(--border) 80%, transparent);
+}
+
+@utility font-accent {
+  font-family: var(--font-accent);
+  font-style: italic;
+  letter-spacing: 0.005em;
 }

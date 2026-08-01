@@ -9,6 +9,7 @@ import { DeadlinesTimeline } from "@/components/dashboard/deadlines-timeline";
 import { FreeTodo } from "@/components/dashboard/free-todo";
 import { MonthCalendar } from "@/components/dashboard/month-calendar";
 import { profileQuery, weatherQuery } from "@/lib/data";
+import portraitAsset from "@/assets/allan-klein.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -46,18 +47,29 @@ function Dashboard() {
 
   return (
     <AppShell>
-      <section className="panel mb-6 flex flex-wrap items-center justify-between gap-6 p-7">
-        <div>
-          <p className="text-[0.65rem] uppercase tracking-[0.35em] text-gold/80">Bienvenue</p>
-          <h1 className="mt-2 text-4xl font-medium">
-            {greeting()}{" "}
-            <span className="text-gradient-gold">{profile?.display_name ?? "Allan"}</span>
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Voici votre journée, vos échéances et vos priorités.
-          </p>
+      <section className="panel relative mb-6 overflow-hidden p-7">
+        <img
+          src={portraitAsset.url}
+          alt="Allan Klein"
+          className="pointer-events-none absolute -right-6 top-0 hidden h-full w-64 object-cover opacity-25 mix-blend-luminosity [mask-image:linear-gradient(to_left,black,transparent)] md:block"
+        />
+        <div className="relative flex flex-wrap items-center justify-between gap-6 md:pr-56">
+          <div className="min-w-0">
+            <p className="text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
+              Bienvenue
+            </p>
+            <h1 className="mt-3 text-4xl font-accent leading-[1.1] md:text-5xl">
+              {greeting()}{" "}
+              <span className="text-gradient-gold">
+                {(profile?.display_name ?? "Allan").split(" ")[0]}
+              </span>
+            </h1>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Voici votre journée, vos échéances et vos priorités.
+            </p>
+          </div>
+          <WeatherBadge weather={weather} city={profile?.weather_city ?? "Toulouse"} />
         </div>
-        <WeatherBadge weather={weather} city={profile?.weather_city ?? "Toulouse"} />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-3">
