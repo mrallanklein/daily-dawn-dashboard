@@ -30,3 +30,8 @@ export function projectFamily(name: string, category: string | null): string {
   const [prefix, rest] = name.split(" - ");
   return rest && prefix ? prefix.trim() : "Sans famille";
 }
+/** Couleur CSS du statut, utilisable en style inline (pastilles calendrier). */
+export function statusColor(status: string): string {
+  const dot = statusDot(status).replace("bg-", "");
+  return `var(--${dot})`;
+}
