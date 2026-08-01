@@ -30,11 +30,11 @@ export function DeadlinesTimeline() {
             const remaining = daysUntil(item.date);
             return (
               <li key={item.id} className="relative">
-                <span className="absolute -left-[1.6rem] top-1.5 size-2 rounded-full bg-gold" />
+                <span className="absolute -left-[1.6rem] top-2 size-1.5 rounded-full bg-foreground/60" />
                 <p className="text-sm">{item.label}</p>
                 <p className="text-xs text-muted-foreground">
                   {item.kind} · {fmtShortDate(item.date)} ·{" "}
-                  <span className={remaining < 0 ? "text-destructive" : "text-gold"}>
+                  <span className={remaining < 0 ? "text-destructive" : "text-foreground"}>
                     {remaining < 0 ? `${Math.abs(remaining)} j de retard` : `J-${remaining}`}
                   </span>
                 </p>
