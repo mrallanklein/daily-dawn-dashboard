@@ -6,6 +6,9 @@ export type Profile = {
   id: string;
   display_name: string;
   avatar_url: string | null;
+  alias_name: string | null;
+  alias_avatar_url: string | null;
+  banner_url: string | null;
   weather_city: string;
   weather_lat: number;
   weather_lon: number;
@@ -24,6 +27,7 @@ export type Project = {
   budget_spent: number;
   start_date: string | null;
   deadline: string | null;
+  work_date: string | null;
   color: string;
   cover_url: string | null;
   next_step: string | null;
@@ -51,6 +55,8 @@ export type NoteItem = {
   content: string;
   checked: boolean;
   position: number;
+  parent_id: string | null;
+  due_date: string | null;
 };
 
 export type Contact = {
@@ -122,7 +128,9 @@ export const profileQuery = () =>
       if (!auth.user) return null;
       const res = await supabase
         .from("profiles")
-        .select("id, display_name, avatar_url, weather_city, weather_lat, weather_lon")
+        .select(
+          "id, display_name, avatar_url, alias_name, alias_avatar_url, banner_url, weather_city, weather_lat, weather_lon",
+        )
         .eq("id", auth.user.id)
         .maybeSingle();
       if (res.error) throw new Error(res.error.message);

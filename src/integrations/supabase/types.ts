@@ -114,7 +114,9 @@ export type Database = {
           checked: boolean
           content: string
           created_at: string
+          due_date: string | null
           id: string
+          parent_id: string | null
           position: number
           updated_at: string
           user_id: string
@@ -123,7 +125,9 @@ export type Database = {
           checked?: boolean
           content?: string
           created_at?: string
+          due_date?: string | null
           id?: string
+          parent_id?: string | null
           position?: number
           updated_at?: string
           user_id: string
@@ -132,16 +136,29 @@ export type Database = {
           checked?: boolean
           content?: string
           created_at?: string
+          due_date?: string | null
           id?: string
+          parent_id?: string | null
           position?: number
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notes_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "notes_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
+          alias_avatar_url: string | null
+          alias_name: string | null
           avatar_url: string | null
+          banner_url: string | null
           created_at: string
           display_name: string
           id: string
@@ -151,7 +168,10 @@ export type Database = {
           weather_lon: number
         }
         Insert: {
+          alias_avatar_url?: string | null
+          alias_name?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
           created_at?: string
           display_name?: string
           id: string
@@ -161,7 +181,10 @@ export type Database = {
           weather_lon?: number
         }
         Update: {
+          alias_avatar_url?: string | null
+          alias_name?: string | null
           avatar_url?: string | null
+          banner_url?: string | null
           created_at?: string
           display_name?: string
           id?: string
@@ -269,6 +292,7 @@ export type Database = {
           tags: string[]
           updated_at: string
           user_id: string
+          work_date: string | null
           workspace: string
         }
         Insert: {
@@ -293,6 +317,7 @@ export type Database = {
           tags?: string[]
           updated_at?: string
           user_id: string
+          work_date?: string | null
           workspace?: string
         }
         Update: {
@@ -317,6 +342,7 @@ export type Database = {
           tags?: string[]
           updated_at?: string
           user_id?: string
+          work_date?: string | null
           workspace?: string
         }
         Relationships: [

@@ -14,6 +14,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Search,
+  Settings,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -33,6 +34,7 @@ import logoAsset from "@/assets/logo-ak.png.asset.json";
 import portraitAsset from "@/assets/allan-klein.png.asset.json";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
+import { SettingsDialog } from "@/components/settings-dialog";
 
 const NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -52,6 +54,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ak-sidebar");
@@ -77,6 +80,12 @@ export function AppShell({ children }: { children: ReactNode }) {
     });
 
   const ws = workspaceMeta(workspace);
+  const wsName =
+    workspace === "alias"
+      ? (profile?.alias_name ?? ws.name)
+      : (profile?.display_name ?? ws.name);
+  const wsAvatar =
+    workspace === "alias" ? profile?.alias_avatar_url : (profile?.avatar_url ?? portraitAsset.url);
   const items = NAV.filter((n) => !("aliasOnly" in n && n.aliasOnly) || workspace === "alias");
 
   const signOut = async () => {
@@ -88,6 +97,18 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+
+      <button
+        onClick={toggle}
+        aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
+        className={cn(
+          "press fixed top-4 z-50 hidden size-8 place-items-center rounded-lg border border-border bg-card/80 text-muted-foreground backdrop-blur transition-[left] duration-200 hover:text-foreground md:grid",
+          open ? "left-[15.25rem]" : "left-[3.6rem]",
+        )}
+      >
+        {open ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
+      </button>
 
       <aside
         className={cn(
@@ -104,16 +125,24 @@ export function AppShell({ children }: { children: ReactNode }) {
                   !open && "justify-center p-1.5",
                 )}
               >
-                <span
-                  className="grid size-8 shrink-0 place-items-center rounded-lg text-[0.7rem] font-display text-brand-foreground"
-                  style={{ backgroundColor: "var(--brand)" }}
-                >
-                  {ws.initials}
-                </span>
+                {wsAvatar ? (
+                  <img
+                    src={wsAvatar}
+                    alt={wsName}
+                    className="size-8 shrink-0 rounded-lg object-cover"
+                  />
+                ) : (
+                  <span
+                    className="grid size-8 shrink-0 place-items-center rounded-lg text-[0.7rem] font-display text-brand-foreground"
+                    style={{ backgroundColor: "var(--brand)" }}
+                  >
+                    {ws.initials}
+                  </span>
+                )}
                 {open ? (
                   <>
                     <span className="min-w-0 flex-1 leading-tight">
-                      <span className="block truncate text-sm font-display">{ws.name}</span>
+                      <span className="block truncate text-sm font-display">{wsName}</span>
                       <span className="block text-[0.7rem] text-muted-foreground">{ws.tag}</span>
                     </span>
                     <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
@@ -199,15 +228,21 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div className={cn("flex gap-1", !open && "flex-col items-center")}>
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={toggle} aria-label="Replier le menu">
-              {open ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="press"
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Paramètres"
+            >
+              <Settings className="size-4" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
+              className="press text-muted-foreground hover:text-foreground"
               onClick={signOut}
               aria-label="Se déconnecter"
-              className="text-muted-foreground hover:text-foreground"
             >
               <LogOut className="size-4" />
             </Button>
