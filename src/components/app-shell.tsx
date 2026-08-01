@@ -156,8 +156,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main
         className={cn(
-          "min-h-screen px-4 py-8 transition-[padding] duration-300 ease-out sm:px-8",
-          open ? "pl-[17.5rem]" : "pl-[6rem]",
+          "min-h-screen px-4 py-8 transition-[margin] duration-300 ease-out sm:px-8",
+          open ? "ml-64" : "ml-[4.5rem]",
         )}
       >
         <div className="mx-auto max-w-7xl">{children}</div>
