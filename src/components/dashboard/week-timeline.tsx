@@ -23,7 +23,9 @@ export function WeekTimeline() {
                 (t.due_date && isSameDay(parseISO(t.due_date), day))),
           );
           const dayProjects = (projects ?? []).filter(
-            (p) => p.deadline && isSameDay(parseISO(p.deadline), day),
+            (p) =>
+              (p.deadline && isSameDay(parseISO(p.deadline), day)) ||
+              (p.work_date && isSameDay(parseISO(p.work_date), day)),
           );
           const today = isSameDay(day, new Date());
           return (
