@@ -19,12 +19,7 @@ export const PRIORITIES = [
   { id: "haute", label: "Haute", color: "#EF4444" },
 ] as const;
 
-export type TaskMutations = {
-  create: { mutate: (v: Record<string, unknown>) => void };
-  toggle: { mutate: (t: Task) => void };
-  patch: { mutate: (v: { id: string } & Record<string, unknown>) => void };
-  remove: { mutate: (id: string) => void };
-};
+export type TaskMutations = ReturnType<typeof import("./use-task-mutations").useTaskMutations>;
 
 export function TaskRow({
   task,
