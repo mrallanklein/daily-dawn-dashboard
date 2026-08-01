@@ -53,12 +53,12 @@ function Dashboard() {
           alt="Allan Klein"
           className="pointer-events-none absolute -right-6 top-0 hidden h-full w-64 object-cover opacity-25 mix-blend-luminosity [mask-image:linear-gradient(to_left,black,transparent)] md:block"
         />
-        <div className="relative flex flex-wrap items-center justify-between gap-6">
-          <div>
+        <div className="relative flex flex-wrap items-center justify-between gap-6 md:pr-56">
+          <div className="min-w-0">
             <p className="text-[0.6rem] uppercase tracking-[0.4em] text-muted-foreground">
               Bienvenue
             </p>
-            <h1 className="mt-3 text-5xl font-accent leading-[1.05] md:text-6xl">
+            <h1 className="mt-3 text-4xl font-accent leading-[1.1] md:text-5xl">
               {greeting()}{" "}
               <span className="text-gradient-gold">
                 {(profile?.display_name ?? "Allan").split(" ")[0]}
