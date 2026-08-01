@@ -178,7 +178,7 @@ function MailReader({
       <p className="mt-1 text-xs text-muted-foreground">
         {message.from} · {format(parseISO(message.date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
       </p>
-      <p className="mt-4 max-h-[42vh] overflow-y-auto whitespace-pre-wrap text-sm">
+      <p className="mt-4 max-h-[42vh] overflow-y-auto whitespace-pre-wrap break-words text-sm">
         {message.body || message.snippet}
       </p>
       <form
