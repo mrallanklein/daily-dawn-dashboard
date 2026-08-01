@@ -222,7 +222,8 @@
     background-color 0.15s ease,
     color 0.15s ease;
 }
-@utility soft-row:hover {
+
+.soft-row:hover {
   background-color: color-mix(in oklab, var(--muted) 70%, transparent);
 }
 
