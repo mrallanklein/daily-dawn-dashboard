@@ -229,7 +229,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className={cn("mt-1 flex items-center gap-1", !open && "flex-col")}>
             <Link
               to="/mail"
-            search={{}}
+              search={{}}
               aria-label="Boîte de réception"
               title="Boîte de réception"
               className="press grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
