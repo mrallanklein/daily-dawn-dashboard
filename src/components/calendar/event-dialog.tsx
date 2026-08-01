@@ -58,6 +58,7 @@ export function EventDialog({
   const [description, setDescription] = useState("");
   const [allDay, setAllDay] = useState(false);
   const [day, setDay] = useState("");
+  const [endDay, setEndDay] = useState("");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("10:00");
 
@@ -69,6 +70,9 @@ export function EventDialog({
     setDescription(ev?.description ?? "");
     setAllDay(ev?.allDay ?? false);
     setDay(format(ev ? new Date(ev.start) : draft.date, "yyyy-MM-dd"));
+    setEndDay(
+      format(ev?.end ? new Date(ev.end) : ev ? new Date(ev.start) : draft.date, "yyyy-MM-dd"),
+    );
     setStartTime(ev && !ev.allDay ? format(new Date(ev.start), "HH:mm") : "09:00");
     setEndTime(ev?.end && !ev.allDay ? format(new Date(ev.end), "HH:mm") : "10:00");
     setTarget(ev ? `${ev.accountKey}::${ev.calendarId}` : "");
@@ -86,10 +90,12 @@ export function EventDialog({
     mutationFn: async () => {
       const [accountKey, calendarId] = target.split("::");
       if (!accountKey || !calendarId) throw new Error("Choisissez un agenda");
+      const last = endDay && endDay >= day ? endDay : day;
       const start = allDay ? day : new Date(`${day}T${startTime}`).toISOString();
+      // Google attend une date de fin exclusive pour les évènements « journée entière ».
       const end = allDay
-        ? format(new Date(new Date(`${day}T00:00`).getTime() + 86400000), "yyyy-MM-dd")
-        : new Date(`${day}T${endTime}`).toISOString();
+        ? format(new Date(new Date(`${last}T00:00`).getTime() + 86400000), "yyyy-MM-dd")
+        : new Date(`${last}T${endTime}`).toISOString();
       await save({
         data: {
           accountKey,
@@ -153,9 +159,9 @@ export function EventDialog({
             <Switch id="ev-allday" checked={allDay} onCheckedChange={setAllDay} />
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             <div className="space-y-1.5">
-              <Label htmlFor="ev-day">Date</Label>
+              <Label htmlFor="ev-day">Début</Label>
               <Input
                 id="ev-day"
                 type="date"
@@ -163,10 +169,20 @@ export function EventDialog({
                 onChange={(e) => setDay(e.target.value)}
               />
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ev-endday">Fin</Label>
+              <Input
+                id="ev-endday"
+                type="date"
+                min={day}
+                value={endDay}
+                onChange={(e) => setEndDay(e.target.value)}
+              />
+            </div>
             {!allDay ? (
               <>
                 <div className="space-y-1.5">
-                  <Label htmlFor="ev-start">Début</Label>
+                  <Label htmlFor="ev-start">Heure début</Label>
                   <Input
                     id="ev-start"
                     type="time"
@@ -175,7 +191,7 @@ export function EventDialog({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="ev-end">Fin</Label>
+                  <Label htmlFor="ev-end">Heure fin</Label>
                   <Input
                     id="ev-end"
                     type="time"
