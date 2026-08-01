@@ -262,7 +262,7 @@ export function ProjectDetail({
                 }
               />
             </div>
-            <div className="surface p-3">
+            <div className="glass p-3">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Dépensé</span>
                 <span className="tabular-nums">
