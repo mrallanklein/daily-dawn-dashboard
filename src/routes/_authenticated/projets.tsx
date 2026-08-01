@@ -1,30 +1,32 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CalendarClock, Clock, LayoutGrid, Table2 } from "lucide-react";
+import { GanttChartSquare, KanbanSquare, List, Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { ModuleCard } from "@/components/module-card";
-import { projectsQuery } from "@/lib/data";
-import { ProjectForm } from "@/components/projects/project-form";
-import { BoardView } from "@/components/projects/board-view";
-import { TimelineView } from "@/components/projects/timeline-view";
-import { ToPlanView } from "@/components/projects/to-plan-view";
-import { TableView } from "@/components/projects/table-view";
+import { PageHeader } from "@/components/app/page-header";
+import { projectsQuery, type Project } from "@/lib/data";
+import { useWorkspace } from "@/lib/workspace";
+import { ProjectDialog } from "@/components/projects/project-dialog";
+import { KanbanView } from "@/components/projects/kanban-view";
+import { ListView } from "@/components/projects/list-view";
+import { GanttView } from "@/components/projects/gantt-view";
+import { ProjectDetail } from "@/components/projects/project-detail";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/projets")({
   head: () => ({
     meta: [
-      { title: "Projets — Atelier" },
+      { title: "Projets — Kanban, liste & Gantt" },
       {
         name: "description",
         content:
-          "Gestion de projet en quatre vues : projets par état, chronologie, à planifier et table complète.",
+          "Pilotage des projets en Kanban, liste éditable et Gantt, avec sous-tâches, budget et notes par projet.",
       },
-      { property: "og:title", content: "Projets — Atelier" },
+      { property: "og:title", content: "Projets — Kanban, liste & Gantt" },
       {
         property: "og:description",
-        content: "Projets par état, chronologie, à planifier et table complète.",
+        content: "Kanban, liste et Gantt avec sous-tâches, budget et notes.",
       },
     ],
   }),
@@ -32,52 +34,75 @@ export const Route = createFileRoute("/_authenticated/projets")({
 });
 
 const VIEWS = [
-  { id: "board", label: "Projets par État", Icon: LayoutGrid },
-  { id: "timeline", label: "Chronologie", Icon: Clock },
-  { id: "toplan", label: "À planifier", Icon: CalendarClock },
-  { id: "table", label: "Table - Projets", Icon: Table2 },
+  { id: "kanban", label: "Kanban", Icon: KanbanSquare },
+  { id: "list", label: "Liste", Icon: List },
+  { id: "gantt", label: "Gantt", Icon: GanttChartSquare },
 ] as const;
 
 type ViewId = (typeof VIEWS)[number]["id"];
 
 function ProjectsPage() {
-  const [view, setView] = useState<ViewId>("board");
-  const { data: projects } = useQuery(projectsQuery());
-  const list = projects ?? [];
+  const { workspace } = useWorkspace();
+  const [view, setView] = useState<ViewId>("kanban");
+  const [q, setQ] = useState("");
+  const [selected, setSelected] = useState<Project | null>(null);
+  const { data: projects } = useQuery(projectsQuery(workspace));
+
+  const list = (projects ?? []).filter((p) =>
+    (p.name + (p.client ?? "") + (p.category ?? "")).toLowerCase().includes(q.toLowerCase()),
+  );
+  const current = selected ? (projects ?? []).find((p) => p.id === selected.id) ?? null : null;
 
   return (
     <AppShell>
-      <h1 className="mb-6 text-3xl font-medium">Projets</h1>
-
-      <ProjectForm />
-
-      <ModuleCard
-        eyebrow={`${list.length} projet(s)`}
-        title={VIEWS.find((v) => v.id === view)!.label}
-        action={
-          <div className="flex flex-wrap gap-1 rounded-md bg-muted/70 p-0.5">
-            {VIEWS.map(({ id, label, Icon }) => (
-              <button
-                key={id}
-                onClick={() => setView(id)}
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded px-2.5 py-1.5 text-xs transition-colors",
-                  view === id
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <Icon className="size-3.5" /> {label}
-              </button>
-            ))}
-          </div>
+      <PageHeader
+        title="Projets"
+        subtitle={`${list.length} projet(s) sur ce profil`}
+        actions={
+          <>
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Filtrer…"
+                className="h-9 w-40 pl-8"
+              />
+            </div>
+            <div className="flex rounded-full border border-border bg-muted/50 p-0.5">
+              {VIEWS.map(({ id, label, Icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setView(id)}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition-colors",
+                    view === id
+                      ? "bg-background font-medium shadow-sm"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <Icon className="size-3.5" /> {label}
+                </button>
+              ))}
+            </div>
+            <ProjectDialog />
+          </>
         }
-      >
-        {view === "board" ? <BoardView projects={list} /> : null}
-        {view === "timeline" ? <TimelineView projects={list} /> : null}
-        {view === "toplan" ? <ToPlanView projects={list} /> : null}
-        {view === "table" ? <TableView projects={list} /> : null}
-      </ModuleCard>
+      />
+
+      {view === "kanban" ? <KanbanView projects={list} onSelect={setSelected} /> : null}
+      {view === "list" ? (
+        <div className="surface p-3">
+          <ListView projects={list} onSelect={setSelected} />
+        </div>
+      ) : null}
+      {view === "gantt" ? (
+        <div className="surface p-4">
+          <GanttView projects={list} onSelect={setSelected} />
+        </div>
+      ) : null}
+
+      <ProjectDetail project={current} onClose={() => setSelected(null)} />
     </AppShell>
   );
 }
