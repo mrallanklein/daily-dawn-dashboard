@@ -129,11 +129,14 @@ export type Database = {
           category: string | null
           client: string | null
           color: string
+          cover_url: string | null
           created_at: string
           deadline: string | null
           description: string | null
           id: string
           name: string
+          next_step: string | null
+          position: number
           priority: string
           progress: number
           start_date: string | null
@@ -147,11 +150,14 @@ export type Database = {
           category?: string | null
           client?: string | null
           color?: string
+          cover_url?: string | null
           created_at?: string
           deadline?: string | null
           description?: string | null
           id?: string
           name: string
+          next_step?: string | null
+          position?: number
           priority?: string
           progress?: number
           start_date?: string | null
@@ -165,11 +171,14 @@ export type Database = {
           category?: string | null
           client?: string | null
           color?: string
+          cover_url?: string | null
           created_at?: string
           deadline?: string | null
           description?: string | null
           id?: string
           name?: string
+          next_step?: string | null
+          position?: number
           priority?: string
           progress?: number
           start_date?: string | null
