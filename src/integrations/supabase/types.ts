@@ -14,7 +14,230 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      contacts: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          last_contact_date: string | null
+          notes: string | null
+          phone: string | null
+          role: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          last_contact_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          last_contact_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          role?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notes_items: {
+        Row: {
+          checked: boolean
+          content: string
+          created_at: string
+          id: string
+          position: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          checked?: boolean
+          content?: string
+          created_at?: string
+          id?: string
+          position?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          checked?: boolean
+          content?: string
+          created_at?: string
+          id?: string
+          position?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string
+          id: string
+          updated_at: string
+          weather_city: string
+          weather_lat: number
+          weather_lon: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id: string
+          updated_at?: string
+          weather_city?: string
+          weather_lat?: number
+          weather_lon?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
+          weather_city?: string
+          weather_lat?: number
+          weather_lon?: number
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          budget: number | null
+          budget_spent: number
+          category: string | null
+          client: string | null
+          color: string
+          created_at: string
+          deadline: string | null
+          description: string | null
+          id: string
+          name: string
+          priority: string
+          progress: number
+          start_date: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          budget?: number | null
+          budget_spent?: number
+          category?: string | null
+          client?: string | null
+          color?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          priority?: string
+          progress?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          budget?: number | null
+          budget_spent?: number
+          category?: string | null
+          client?: string | null
+          color?: string
+          created_at?: string
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          priority?: string
+          progress?: number
+          start_date?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          due_date: string | null
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          priority: string
+          project_id: string | null
+          scheduled_date: string | null
+          start_time: string | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          project_id?: string | null
+          scheduled_date?: string | null
+          start_time?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          priority?: string
+          project_id?: string | null
+          scheduled_date?: string | null
+          start_time?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
