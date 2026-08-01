@@ -8,6 +8,8 @@ export type MailMessage = {
   date: string;
   unread: boolean;
   body: string;
+  /** Corps HTML brut si disponible (rendu assaini côté client). */
+  bodyHtml: string;
 };
 
 export const MAIL_ACCOUNT_KEYS = ["primary", "secondary"] as const;
@@ -51,6 +53,16 @@ function extractBody(part: GmailPart | undefined): string {
     if (found) return found;
   }
   if (part.body?.data) return decodeBase64Url(part.body.data);
+  return "";
+}
+
+function extractHtml(part: GmailPart | undefined): string {
+  if (!part) return "";
+  if (part.mimeType === "text/html" && part.body?.data) return decodeBase64Url(part.body.data);
+  for (const child of part.parts ?? []) {
+    const found = extractHtml(child);
+    if (found) return found;
+  }
   return "";
 }
 
@@ -123,6 +135,7 @@ export async function fetchMessages(input: {
           : new Date().toISOString(),
         unread: (json.labelIds ?? []).includes("UNREAD"),
         body: extractBody(json.payload),
+        bodyHtml: extractHtml(json.payload),
       } satisfies MailMessage;
     }),
   );
