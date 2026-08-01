@@ -15,6 +15,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedBudgetRouteImport } from './routes/_authenticated/budget'
 import { Route as AuthenticatedCalendrierRouteImport } from './routes/_authenticated/calendrier'
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
+import { Route as AuthenticatedEquipeRouteImport } from './routes/_authenticated/equipe'
 import { Route as AuthenticatedProjetsRouteImport } from './routes/_authenticated/projets'
 import { Route as AuthenticatedTachesRouteImport } from './routes/_authenticated/taches'
 
@@ -47,6 +48,11 @@ const AuthenticatedCrmRoute = AuthenticatedCrmRouteImport.update({
   path: '/crm',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEquipeRoute = AuthenticatedEquipeRouteImport.update({
+  id: '/equipe',
+  path: '/equipe',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedProjetsRoute = AuthenticatedProjetsRouteImport.update({
   id: '/projets',
   path: '/projets',
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/budget': typeof AuthenticatedBudgetRoute
   '/calendrier': typeof AuthenticatedCalendrierRoute
   '/crm': typeof AuthenticatedCrmRoute
+  '/equipe': typeof AuthenticatedEquipeRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
 }
@@ -72,6 +79,7 @@ export interface FileRoutesByTo {
   '/budget': typeof AuthenticatedBudgetRoute
   '/calendrier': typeof AuthenticatedCalendrierRoute
   '/crm': typeof AuthenticatedCrmRoute
+  '/equipe': typeof AuthenticatedEquipeRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
   '/': typeof AuthenticatedIndexRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   '/_authenticated/budget': typeof AuthenticatedBudgetRoute
   '/_authenticated/calendrier': typeof AuthenticatedCalendrierRoute
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
+  '/_authenticated/equipe': typeof AuthenticatedEquipeRoute
   '/_authenticated/projets': typeof AuthenticatedProjetsRoute
   '/_authenticated/taches': typeof AuthenticatedTachesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -90,10 +99,24 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/budget' | '/calendrier' | '/crm' | '/projets' | '/taches'
+    | '/'
+    | '/auth'
+    | '/budget'
+    | '/calendrier'
+    | '/crm'
+    | '/equipe'
+    | '/projets'
+    | '/taches'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/auth' | '/budget' | '/calendrier' | '/crm' | '/projets' | '/taches' | '/'
+    | '/auth'
+    | '/budget'
+    | '/calendrier'
+    | '/crm'
+    | '/equipe'
+    | '/projets'
+    | '/taches'
+    | '/'
   id:
     | '__root__'
     | '/_authenticated'
@@ -101,6 +124,7 @@ export interface FileRouteTypes {
     | '/_authenticated/budget'
     | '/_authenticated/calendrier'
     | '/_authenticated/crm'
+    | '/_authenticated/equipe'
     | '/_authenticated/projets'
     | '/_authenticated/taches'
     | '/_authenticated/'
@@ -155,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCrmRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/equipe': {
+      id: '/_authenticated/equipe'
+      path: '/equipe'
+      fullPath: '/equipe'
+      preLoaderRoute: typeof AuthenticatedEquipeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/projets': {
       id: '/_authenticated/projets'
       path: '/projets'
@@ -176,6 +207,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBudgetRoute: typeof AuthenticatedBudgetRoute
   AuthenticatedCalendrierRoute: typeof AuthenticatedCalendrierRoute
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
+  AuthenticatedEquipeRoute: typeof AuthenticatedEquipeRoute
   AuthenticatedProjetsRoute: typeof AuthenticatedProjetsRoute
   AuthenticatedTachesRoute: typeof AuthenticatedTachesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -185,6 +217,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBudgetRoute: AuthenticatedBudgetRoute,
   AuthenticatedCalendrierRoute: AuthenticatedCalendrierRoute,
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
+  AuthenticatedEquipeRoute: AuthenticatedEquipeRoute,
   AuthenticatedProjetsRoute: AuthenticatedProjetsRoute,
   AuthenticatedTachesRoute: AuthenticatedTachesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
