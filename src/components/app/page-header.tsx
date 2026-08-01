@@ -12,7 +12,7 @@ export function PageHeader({
   title: string;
   subtitle?: string;
   actions?: ReactNode;
-  icon?: ComponentType<{ className?: string; style?: React.CSSProperties }>;
+  icon?: ComponentType<{ className?: string; style?: React.CSSProperties | undefined }>;
   iconColor?: string;
   /** Affiche la bannière de l'espace au-dessus du titre. */
   banner?: boolean;
