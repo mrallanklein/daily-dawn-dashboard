@@ -54,7 +54,10 @@ import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
 export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
     msg: typeof search["msg"] === "string" ? (search["msg"] as string) : undefined,
-    account: search["account"] === "secondary" ? ("secondary" as const) : undefined,
+    account:
+      typeof search["account"] === "string"
+        ? (search["account"] as MailAccountId)
+        : undefined,
   }),
   head: () => ({
     meta: [

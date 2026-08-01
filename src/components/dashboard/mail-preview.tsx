@@ -5,7 +5,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { formatDistanceToNowStrict } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Mail, Search, X } from "lucide-react";
-import { listMessages } from "@/lib/mail.functions";
+import { listMessages, type MailAccountId } from "@/lib/mail.functions";
 import { useWorkspace } from "@/lib/workspace";
 import { useMailColors } from "@/lib/mail-colors";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ export function MailPreview() {
   const navigate = useNavigate();
   const { space } = useWorkspace();
   const { colorFor } = useMailColors();
-  const account = (space?.mail_accounts?.[0] ?? "primary") as "primary" | "secondary";
+  const account = (space?.mail_accounts?.[0] ?? "primary") as MailAccountId;
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
   const [limit, setLimit] = useState(5);
@@ -46,7 +46,7 @@ export function MailPreview() {
           >
             {searchOpen ? <X className="size-3.5" /> : <Search className="size-3.5" />}
           </button>
-          <Link to="/mail" className="text-xs font-medium underline-offset-4 hover:underline">
+          <Link to="/mail" search={{}} className="text-xs font-medium underline-offset-4 hover:underline">
             Ouvrir
           </Link>
         </div>
