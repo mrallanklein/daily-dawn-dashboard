@@ -5,15 +5,18 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Mail } from "lucide-react";
 import { listMessages } from "@/lib/mail.functions";
+import { useWorkspace } from "@/lib/workspace";
 import { cn } from "@/lib/utils";
 
 export function MailPreview() {
   const fetchMessages = useServerFn(listMessages);
+  const { space } = useWorkspace();
+  const account = (space?.mail_accounts?.[0] ?? "primary") as "primary" | "secondary";
   const { data, error, isLoading } = useQuery({
-    queryKey: ["mail-preview"],
+    queryKey: ["mail-preview", account],
     staleTime: 3 * 60 * 1000,
     retry: false,
-    queryFn: () => fetchMessages({ data: { maxResults: 5, query: "in:inbox" } }),
+    queryFn: () => fetchMessages({ data: { maxResults: 5, query: "in:inbox", account } }),
   });
 
   const messages = data ?? [];

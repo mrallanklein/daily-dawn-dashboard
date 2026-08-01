@@ -355,6 +355,54 @@ export type Database = {
           },
         ]
       }
+      spaces: {
+        Row: {
+          avatar_url: string | null
+          banner_url: string | null
+          calendar_ids: string[]
+          created_at: string
+          id: string
+          mail_accounts: string[]
+          name: string
+          position: number
+          slug: string
+          tag: string
+          updated_at: string
+          user_id: string
+          weather_city: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          banner_url?: string | null
+          calendar_ids?: string[]
+          created_at?: string
+          id?: string
+          mail_accounts?: string[]
+          name: string
+          position?: number
+          slug: string
+          tag?: string
+          updated_at?: string
+          user_id: string
+          weather_city?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          banner_url?: string | null
+          calendar_ids?: string[]
+          created_at?: string
+          id?: string
+          mail_accounts?: string[]
+          name?: string
+          position?: number
+          slug?: string
+          tag?: string
+          updated_at?: string
+          user_id?: string
+          weather_city?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assignee_id: string | null
