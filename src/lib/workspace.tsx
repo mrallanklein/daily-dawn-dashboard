@@ -9,10 +9,10 @@ export const WORKSPACES: { id: Workspace; name: string; tag: string; initials: s
 
 type Ctx = { workspace: Workspace; setWorkspace: (w: Workspace) => void };
 
-const WorkspaceContext = createContext<Ctx>({ workspace: "alias", setWorkspace: () => {} });
+const WorkspaceContext = createContext<Ctx>({ workspace: "allan", setWorkspace: () => {} });
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
-  const [workspace, setWorkspace] = useState<Workspace>("alias");
+  const [workspace, setWorkspace] = useState<Workspace>("allan");
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ak-workspace");

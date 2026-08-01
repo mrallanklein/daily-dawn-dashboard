@@ -19,8 +19,8 @@ export function Panel({
   return (
     <section className={cn("surface flex flex-col overflow-hidden", className)}>
       {title || action ? (
-        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 py-3 sm:flex sm:justify-between">
-          <div className="min-w-0">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-border px-4 py-3">
+          <div className="min-w-0 flex-1">
             {eyebrow ? (
               <p className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
                 {eyebrow}
