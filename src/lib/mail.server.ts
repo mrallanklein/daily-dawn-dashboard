@@ -18,7 +18,7 @@ const GATEWAY = "https://connector-gateway.lovable.dev/google_mail/gmail/v1";
 
 export function connectionKeyFor(account: MailAccountId) {
   return account === "secondary"
-    ? process.env["GOOGLE_MAIL_API_KEY_2"]
+    ? process.env["GOOGLE_MAIL_API_KEY_1"]
     : process.env["GOOGLE_MAIL_API_KEY"];
 }
 
