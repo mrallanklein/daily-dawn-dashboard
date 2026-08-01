@@ -9,15 +9,15 @@ export function RangeToggle({
   onChange: (v: RangeDays) => void;
 }) {
   return (
-    <div className="flex rounded-full border border-border/80 bg-secondary/50 p-0.5">
+    <div className="flex rounded-md bg-muted/70 p-0.5">
       {RANGE_OPTIONS.map((opt) => (
         <button
           key={opt.value}
           onClick={() => onChange(opt.value)}
           className={cn(
-            "rounded-full px-3 py-1 text-xs transition-colors",
+            "rounded px-2.5 py-1 text-xs transition-colors",
             value === opt.value
-              ? "bg-gold text-gold-foreground"
+              ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground",
           )}
         >

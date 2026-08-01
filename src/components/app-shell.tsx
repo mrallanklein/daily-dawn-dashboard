@@ -22,6 +22,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import logoAsset from "@/assets/logo-ak.png.asset.json";
 import portraitAsset from "@/assets/allan-klein.png.asset.json";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { CustomCursor } from "@/components/custom-cursor";
 
 const NAV = [
   { to: "/", label: "Tableau de bord", icon: LayoutDashboard },
@@ -67,43 +69,42 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen">
+      <CustomCursor />
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-sidebar-border bg-sidebar/95 backdrop-blur-xl transition-[width] duration-300 ease-out",
+          "fixed inset-y-0 left-0 z-40 flex flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-300 ease-out",
           open ? "w-64" : "w-[4.5rem]",
         )}
       >
-        <div className="flex items-center gap-3 px-4 py-5">
+        <div className="flex items-center gap-3 px-4 py-4">
           <Link to="/" className="flex shrink-0 items-center" aria-label="Accueil">
-            <img src={logoAsset.url} alt="Logo Allan Klein" className="size-9 rounded-md" />
+            <img src={logoAsset.url} alt="Logo Allan Klein" className="size-8 rounded-md" />
           </Link>
           {open ? (
             <span className="min-w-0 leading-tight">
-              <span className="block truncate text-xl font-accent">Allan Klein</span>
-              <span className="block text-[0.55rem] uppercase tracking-[0.32em] text-muted-foreground">
-                Atelier
-              </span>
+              <span className="block truncate text-sm font-display font-semibold">Allan Klein</span>
+              <span className="block text-xs text-muted-foreground">Atelier</span>
             </span>
           ) : null}
         </div>
 
-        <nav className="flex-1 space-y-1 px-2">
+        <nav className="flex-1 space-y-0.5 px-2">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               title={item.label}
               activeOptions={{ exact: item.to === "/" }}
-              activeProps={{ className: "bg-sidebar-accent text-gold" }}
+              activeProps={{ className: "bg-sidebar-accent text-foreground font-medium" }}
               inactiveProps={{
                 className: "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
               }}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors",
                 !open && "justify-center px-0",
               )}
             >
-              <item.icon className="size-[1.05rem] shrink-0" />
+              <item.icon className="size-4 shrink-0" strokeWidth={1.7} />
               {open ? <span className="truncate">{item.label}</span> : null}
             </Link>
           ))}
@@ -111,24 +112,25 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="space-y-2 border-t border-sidebar-border p-3">
           <div className={cn("flex items-center gap-3", !open && "justify-center")}>
-            <Avatar className="size-9 shrink-0 border border-gold/30">
+            <Avatar className="size-8 shrink-0 border border-border">
               <AvatarImage
                 src={profile?.avatar_url ?? portraitAsset.url}
                 alt={profile?.display_name ?? "Allan Klein"}
                 className="object-cover"
               />
-              <AvatarFallback className="bg-secondary text-gold">{initials}</AvatarFallback>
+              <AvatarFallback className="bg-secondary">{initials}</AvatarFallback>
             </Avatar>
             {open ? (
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm">{profile?.display_name ?? "Allan Klein"}</p>
-                <p className="text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {format(new Date(), "d MMM", { locale: fr })}
                 </p>
               </div>
             ) : null}
           </div>
           <div className={cn("flex gap-1", !open && "flex-col items-center")}>
+            <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"

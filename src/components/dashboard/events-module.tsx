@@ -43,14 +43,14 @@ export function EventsModule() {
         <div className="space-y-5">
           {[...groups.entries()].map(([day, events]) => (
             <div key={day}>
-              <p className="hairline pb-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              <p className="hairline pb-1 text-xs font-medium text-muted-foreground">
                 {fmtDay(day)}
               </p>
               <ul className="mt-2 space-y-2">
                 {events.map((event) => (
                   <li
                     key={event.id}
-                    className="flex gap-3 rounded-lg border border-border/60 bg-secondary/30 px-3 py-2"
+                    className="flex gap-3 soft-row px-2 py-1.5"
                   >
                     <span className="min-w-14 text-sm text-gold">
                       {event.allDay ? "Journée" : fmtTime(event.start)}

@@ -135,7 +135,7 @@ function TasksPage() {
                   {list.map((task) => (
                     <li
                       key={task.id}
-                      className="group flex items-start gap-3 rounded-lg border border-border/60 bg-secondary/30 px-3 py-2"
+                      className="group flex items-start gap-3 soft-row px-2 py-1.5"
                     >
                       <Checkbox
                         checked={task.status === "termine"}

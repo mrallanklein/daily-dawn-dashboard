@@ -54,8 +54,8 @@ function BudgetPage() {
           { label: "Engagé", value: euro(spent) },
           { label: "Reste", value: euro(budget - spent) },
         ].map((stat) => (
-          <div key={stat.label} className="panel p-5">
-            <p className="text-[0.65rem] uppercase tracking-[0.3em] text-gold/80">{stat.label}</p>
+          <div key={stat.label} className="rounded-md border border-border/70 p-4">
+            <p className="text-xs text-muted-foreground">{stat.label}</p>
             <p className="mt-2 text-3xl font-display">{stat.value}</p>
           </div>
         ))}
@@ -68,7 +68,7 @@ function BudgetPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[42rem] text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-[0.15em] text-muted-foreground">
+                <tr className="text-left text-xs font-medium text-muted-foreground">
                   <th className="pb-3">Projet</th>
                   <th className="pb-3">Budget (€)</th>
                   <th className="pb-3">Engagé (€)</th>

@@ -20,7 +20,7 @@ export function BoardView({ projects }: { projects: Project[] }) {
         return (
           <section
             key={status.id}
-            className="w-72 shrink-0 rounded-xl border border-border/60 bg-secondary/20 p-3"
+            className="w-72 shrink-0 rounded-md border border-border/70 p-3"
           >
             <header className="mb-3 flex items-center justify-between">
               <span className={`text-sm ${status.tone}`}>{status.label}</span>

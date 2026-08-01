@@ -36,7 +36,7 @@ export function ProjectsModule() {
             return (
               <li
                 key={project.id}
-                className="rounded-lg border border-border/60 bg-secondary/30 px-3 py-3"
+                className="soft-row px-2 py-2"
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="truncate text-sm">{project.name}</p>
@@ -44,7 +44,7 @@ export function ProjectsModule() {
                     className={
                       remaining !== null && remaining < 0
                         ? "text-xs text-destructive"
-                        : "text-xs text-gold"
+                        : "text-xs text-muted-foreground"
                     }
                   >
                     {project.deadline ? fmtShortDate(project.deadline) : "—"}
