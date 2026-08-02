@@ -46,23 +46,28 @@ const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
 function ControlPill({
   vertical = false,
+  full = false,
   onSettings,
   onSignOut,
 }: {
   vertical?: boolean;
+  full?: boolean;
   onSettings: () => void;
   onSignOut: () => void;
 }) {
   const seg =
-    "grid size-8 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground";
+    "grid h-8 w-full min-w-8 place-items-center rounded-none text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground";
   return (
     <div
       className={cn(
-        "flex overflow-hidden rounded-full border border-border bg-card/70 backdrop-blur-xl",
-        vertical ? "flex-col divide-y divide-border" : "divide-x divide-border",
+        "overflow-hidden rounded-full border border-border bg-card/70 backdrop-blur-xl",
+        vertical
+          ? "grid grid-cols-1 grid-rows-3 divide-y divide-border w-8"
+          : "grid grid-cols-3 divide-x divide-border",
+        !vertical && (full ? "w-full" : "w-[6.5rem]"),
       )}
     >
-      <ThemeToggle className={cn(seg, "rounded-none")} />
+      <ThemeToggle className={seg} />
       <button type="button" onClick={onSettings} aria-label="Paramètres" title="Paramètres" className={seg}>
         <Settings className="size-4" strokeWidth={1.5} />
       </button>
