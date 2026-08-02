@@ -6,7 +6,11 @@ Route `/`. Résumé de la journée pour l'espace actif.
 
 - Lire une salutation personnalisée (« Bonjour Allan ») avec son identité d'espace.
 - Consulter la météo de sa position et l'ouvrir en détail sur un service externe.
-- Déclencher la détection de sa position pour définir la ville météo.
+- Déclencher la détection de sa position pour définir la ville météo (repli
+  automatique sur la localisation par IP si le navigateur refuse), ou saisir une
+  ville dans les réglages de l'espace.
+- Voir un état de chargement puis, en cas d'échec, un bouton « Météo
+  indisponible — cliquer pour réessayer ».
 - Consulter l'agenda du jour (tous les agendas activés) et ouvrir un événement.
 - Consulter les tâches à faire et les cocher directement.
 - Consulter les projets de la période avec leur statut et leur échéance.

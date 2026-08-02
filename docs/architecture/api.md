@@ -44,5 +44,12 @@
   `_authenticated/`.
 - Les identifiants de comptes Google sont abstraits en clés (`primary`,
   `secondary`) : aucune adresse mail n'est codée en dur côté client.
-- Météo : géocodage inverse public (Nominatim), coordonnées persistées sur
-  `spaces` ; aucun appel météo authentifié.
+- Météo : tous les appels externes passent par des fonctions serveur
+  (`src/lib/weather.functions.ts`), jamais par le navigateur — ce qui évite les
+  blocages CORS / iframe :
+  - `fetchWeather({ lat, lon })` → Open-Meteo (température, code, min/max du jour).
+  - `searchPlaces({ query })` → géocodage Open-Meteo pour la saisie de ville.
+  - `reverseGeocode({ lat, lon })` → Nominatim (avec `User-Agent`).
+  - `locateByIp()` → repli approximatif via l'IP de la requête quand la
+    géolocalisation navigateur est refusée ou indisponible.
+  Coordonnées persistées sur `spaces` (`weather_city`, `weather_lat`, `weather_lon`).
