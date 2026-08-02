@@ -258,10 +258,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="space-y-1.5 border-t border-sidebar-border p-2.5">
-          <button
-            type="button"
-            onClick={() => setSettingsOpen(true)}
+          <Link
+            to="/parametres"
             aria-label="Ouvrir les paramètres"
+            activeProps={{ className: "bg-sidebar-accent" }}
             className={cn(
               "press flex w-full items-center gap-2.5 rounded-[14px] p-1 text-left transition-colors hover:bg-sidebar-accent/80",
               !open && "justify-center",
@@ -285,7 +285,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </p>
               </div>
             ) : null}
-          </button>
+          </Link>
           <div
             className={cn(
               "flex overflow-hidden rounded-full bg-sidebar-accent/70 ring-1 ring-inset ring-[rgba(255,255,255,0.08)] dark:bg-sidebar-accent",
@@ -294,15 +294,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}
           >
             <ThemeToggle className="size-auto flex-1 rounded-none" />
-            <button
-              type="button"
-              onClick={() => setSettingsOpen(true)}
+            <Link
+              to="/parametres"
               aria-label="Paramètres"
               title="Paramètres"
+              activeProps={{ className: "bg-foreground/[0.1] text-foreground" }}
               className="grid flex-1 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
               <Settings className="size-4" strokeWidth={1.5} />
-            </button>
+            </Link>
             <button
               type="button"
               onClick={signOut}
