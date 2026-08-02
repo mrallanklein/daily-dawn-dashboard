@@ -57,7 +57,6 @@ export function MailBody({ html, text }: { html: string; text: string }) {
       ) : null}
       <div
         className="mail-html max-h-[58vh] overflow-y-auto break-words text-sm [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-2 [&_img]:h-auto [&_img]:max-w-full [&_table]:max-w-full"
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: markup }}
       />
     </div>
