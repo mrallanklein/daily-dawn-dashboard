@@ -47,7 +47,7 @@ export function TaskRow({
   return (
     <li>
       <div
-        className="soft-row group flex items-start gap-2 px-2 py-1.5"
+        className="soft-row group flex flex-wrap items-start gap-x-2 gap-y-1.5 px-2 py-1.5"
         style={{ paddingLeft: `${0.5 + depth * 1.25}rem` }}
       >
         {depth === 0 ? (
@@ -67,7 +67,7 @@ export function TaskRow({
 
         <Checkbox checked={done} onCheckedChange={() => toggle.mutate(task)} className="mt-0.5" />
 
-        <div className="min-w-0 flex-1">
+        <div className="min-w-[10rem] flex-1 basis-[14rem]">
           <input
             defaultValue={task.title}
             onBlur={(e) => {
@@ -75,11 +75,11 @@ export function TaskRow({
               if (v && v !== task.title) patch.mutate({ id: task.id, title: v });
             }}
             className={cn(
-              "w-full bg-transparent text-sm font-medium outline-none",
+              "w-full min-w-0 bg-transparent text-sm font-medium outline-none",
               done && "text-muted-foreground line-through",
             )}
           />
-          <p className="flex flex-wrap items-center gap-x-2 truncate text-xs font-medium text-muted-foreground">
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-medium text-muted-foreground">
             <span
               className="inline-flex items-center gap-1"
               style={{ color: priority?.color }}
@@ -91,17 +91,23 @@ export function TaskRow({
               />
               {priority?.label}
             </span>
-            <span>{task.scheduled_date ? fmtDay(task.scheduled_date) : "Sans date"}</span>
-            {showProject ? <span>{project ? project.name : "Tâche annexe"}</span> : null}
+            <span className="whitespace-nowrap">
+              {task.scheduled_date ? fmtDay(task.scheduled_date) : "Sans date"}
+            </span>
+            {showProject ? (
+              <span className="max-w-[12rem] truncate">
+                {project ? project.name : "Tâche annexe"}
+              </span>
+            ) : null}
             {subtasks.length > 0 ? (
-              <span className="tabular-nums">
+              <span className="whitespace-nowrap tabular-nums">
                 {doneSubs}/{subtasks.length} sous-tâches
               </span>
             ) : null}
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+        <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-1 opacity-60 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
           <Input
             type="date"
             value={task.scheduled_date ?? ""}
