@@ -182,16 +182,16 @@
   --popover-foreground: oklch(0.975 0 0);
   --primary: oklch(0.975 0 0);
   --primary-foreground: oklch(0.18 0 0);
-  --secondary: oklch(0.285 0 0);
+  --secondary: oklch(0.315 0 0);
   --secondary-foreground: oklch(0.96 0 0);
-  --muted: oklch(0.275 0 0);
-  --muted-foreground: oklch(0.765 0 0);
-  --accent: oklch(0.325 0 0);
+  --muted: oklch(0.305 0 0);
+  --muted-foreground: oklch(0.78 0 0);
+  --accent: oklch(0.355 0 0);
   --accent-foreground: oklch(0.975 0 0);
   --destructive: oklch(0.63 0.19 25);
   --destructive-foreground: oklch(0.18 0 0);
-  --border: oklch(1 0 0 / 0.15);
-  --input: oklch(1 0 0 / 0.24);
+  --border: oklch(1 0 0 / 0.18);
+  --input: oklch(1 0 0 / 0.3);
 
   --teal: oklch(0.68 0.1 190);
   --gold: oklch(0.78 0.15 58);
@@ -417,6 +417,38 @@
 [data-slot="alert-dialog-overlay"] {
   backdrop-filter: blur(8px);
   background-color: color-mix(in oklab, var(--foreground) 22%, transparent);
+}
+
+/* Sombre : contrôles interactifs légèrement éclaircis pour se détacher du fond */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select,
+.dark [data-slot="select-trigger"],
+.dark [data-slot="input"] {
+  background-color: oklch(1 0 0 / 0.07);
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):hover,
+.dark textarea:hover,
+.dark [data-slot="select-trigger"]:hover {
+  background-color: oklch(1 0 0 / 0.1);
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+.dark textarea:focus-visible,
+.dark [data-slot="select-trigger"]:focus-visible {
+  background-color: oklch(1 0 0 / 0.12);
+}
+
+/* Boutons discrets (outline/ghost/secondary) sur fond sombre */
+.dark button.bg-background,
+.dark a.bg-background {
+  background-color: oklch(1 0 0 / 0.08);
+}
+
+.dark button.bg-background:hover,
+.dark a.bg-background:hover {
+  background-color: oklch(1 0 0 / 0.13);
 }
 
 /* ============ Élévation & interactions ============ */
