@@ -31,7 +31,6 @@ export function CalendarSidebar({
   onToggleSource,
   onCreate,
   onSelectEvent,
-  onRespond,
 }: {
   cursor: Date;
   selected: Date;
