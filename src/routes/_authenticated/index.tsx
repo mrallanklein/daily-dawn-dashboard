@@ -45,15 +45,16 @@ function greeting() {
 
 function Dashboard() {
   const { workspace, space } = useWorkspace();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { data: profile } = useQuery(profileQuery());
   const { data: projects } = useQuery(projectsQuery(workspace));
   const { data: tasks } = useQuery(tasksQuery(workspace));
   const { data: weather } = useQuery({
     ...weatherQuery(
-      Number(profile?.weather_lat ?? 43.6045),
-      Number(profile?.weather_lon ?? 1.4442),
+      Number(space?.weather_lat ?? profile?.weather_lat ?? 43.6047),
+      Number(space?.weather_lon ?? profile?.weather_lon ?? 1.4442),
     ),
-    enabled: Boolean(profile),
+    enabled: Boolean(profile || space),
   });
 
   const avatar = space?.avatar_url ?? profile?.avatar_url ?? portraitAsset.url;
@@ -68,7 +69,8 @@ function Dashboard() {
 
   return (
     <AppShell>
-      <section className="glass mb-4">
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <section className="glass mb-8">
         <div
           className="h-32 w-full bg-cover bg-center sm:h-44"
           style={
@@ -80,17 +82,22 @@ function Dashboard() {
                 }
           }
         />
-        <div className="flex flex-wrap items-end justify-between gap-4 px-4 pb-4">
+        <div className="flex flex-wrap items-end justify-between gap-4 px-4 pb-6">
           <div className="-mt-8 flex min-w-0 items-end gap-3">
-            <img
-              src={avatar}
-              alt={name}
-              className="size-20 shrink-0 rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)]"
-            />
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Ouvrir les paramètres de l'espace de travail"
+              title="Paramètres de l'espace de travail"
+              className="press shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <img
+                src={avatar}
+                alt={name}
+                className="size-20 rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)] transition-transform hover:scale-[1.03]"
+              />
+            </button>
             <div className="min-w-0 pb-1">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                {space?.tag ?? ""}
-              </p>
               <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
                 {greeting()} {firstName}
               </h1>
