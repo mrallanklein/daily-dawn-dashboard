@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { format, isSameDay, parseISO } from "date-fns";
+import { addDays, format, isSameDay, parseISO, startOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { CalendarEvent } from "@/lib/agenda.functions";
 import { eventSpan, eventsOnDay, isDayBand, usefulHourRange } from "./calendar-utils";
