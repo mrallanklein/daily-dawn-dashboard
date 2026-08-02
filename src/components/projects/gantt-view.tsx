@@ -142,14 +142,14 @@ export function GanttView({
                   <p className="truncate text-xs text-muted-foreground">{statusLabel(p.status)}</p>
                 </div>
 
-                <div className="relative py-2.5" style={{ width: `${totalDays * DAY}px` }}>
+                <div className="relative h-11" style={{ width: `${totalDays * DAY}px` }}>
                   <span
                     aria-hidden
                     className="absolute inset-y-0 z-10 w-px bg-destructive/60"
                     style={{ left: `${x(today) + DAY / 2}px` }}
                   />
                   <span
-                    className="absolute inset-y-2.5 rounded-full"
+                    className="absolute top-1/2 h-2.5 -translate-y-1/2 rounded-full"
                     style={{ left: `${left}px`, width: `${width}px`, backgroundColor: color }}
                   />
                   {p.deadline ? (
