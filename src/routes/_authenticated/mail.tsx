@@ -51,6 +51,7 @@ import { cn } from "@/lib/utils";
 import { MailBody } from "@/components/mail/mail-body";
 import { useMailColors } from "@/lib/mail-colors";
 import { MailIcon } from "@/components/icons/notion-icons";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -104,6 +105,7 @@ function MailPage() {
   const [openId, setOpenId] = useState<string | null>(params.msg ?? null);
   const [account, setAccount] = useState<MailAccountId>(params.account ?? "primary");
   const [limit, setLimit] = useState(20);
+  const isMobile = useIsMobile();
 
   const { data: connection } = useQuery({
     queryKey: ["mail-status"],

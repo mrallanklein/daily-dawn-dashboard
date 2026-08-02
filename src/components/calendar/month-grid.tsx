@@ -5,6 +5,9 @@ import {
   format,
   isSameDay,
   isSameMonth,
+  parseISO,
+  startOfDay,
+  addDays,
   startOfMonth,
   startOfWeek,
 } from "date-fns";
@@ -47,7 +50,7 @@ export function MonthGrid({
           </p>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1 px-3 pb-3">
+      <div className="grid grid-cols-7 px-3 pb-3">
         {days.map((day) => {
           const dayEvents = eventsOnDay(events, day);
           const extra = markers?.(day) ?? [];
@@ -61,7 +64,7 @@ export function MonthGrid({
               onClick={() => onSelectDay(day)}
               onDoubleClick={() => onCreateDay(day)}
               className={cn(
-                "min-h-[6.5rem] cursor-pointer rounded-xl border border-transparent p-1.5 transition-colors hover:bg-muted/60",
+                "min-h-[6.5rem] cursor-pointer overflow-hidden rounded-xl border border-transparent p-1.5 transition-colors hover:bg-muted/60",
                 !isSameMonth(day, cursor) && "opacity-40",
                 isSelected && "border-border bg-muted/70 shadow-[var(--shadow-soft)]",
               )}
@@ -75,33 +78,56 @@ export function MonthGrid({
                 {format(day, "d")}
               </span>
               <div className="mt-1 space-y-0.5">
-                {shown.map((ev) => (
-                  <button
-                    key={ev.id + ev.calendarId}
-                    title={ev.title}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectEvent(ev);
-                    }}
-                    className="flex w-full items-center gap-1 rounded px-1 text-left text-[0.76rem] font-semibold"
-                    style={{
-                      backgroundColor: ev.allDay ? `${ev.color ?? "#7c7c7c"}33` : undefined,
-                    }}
-                  >
-                    {!ev.allDay ? (
-                      <span
-                        className="size-1.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: ev.color ?? "#5b8def" }}
-                      />
-                    ) : null}
-                    {!ev.allDay ? (
-                      <span className="shrink-0 tabular-nums text-muted-foreground">
-                        {format(new Date(ev.start), "HH")}h
-                      </span>
-                    ) : null}
-                    <span className="truncate">{ev.title}</span>
-                  </button>
-                ))}
+                {shown.map((ev) => {
+                  const start = startOfDay(parseISO(ev.start));
+                  const rawEnd = ev.end ? parseISO(ev.end) : parseISO(ev.start);
+                  // Fin exclusive pour les journées entières.
+                  const end = startOfDay(
+                    ev.allDay && rawEnd.getTime() > start.getTime() ? addDays(rawEnd, -1) : rawEnd,
+                  );
+                  const multi = end.getTime() > start.getTime();
+                  const isStart = isSameDay(start, day);
+                  const isEnd = isSameDay(end, day);
+                  const band = multi;
+                  return (
+                    <button
+                      key={ev.id + ev.calendarId}
+                      title={ev.title}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectEvent(ev);
+                      }}
+                      className={cn(
+                        "flex items-center gap-1 px-1 text-left text-[0.76rem] font-semibold",
+                        band
+                          ? cn(
+                              "-mx-1.5 w-[calc(100%+0.75rem)]",
+                              isStart && "ml-0 w-[calc(100%+0.375rem)] rounded-l-md pl-1.5",
+                              isEnd && "mr-0 rounded-r-md pr-1.5",
+                              isStart && isEnd && "w-full",
+                            )
+                          : "w-full rounded",
+                      )}
+                      style={{
+                        backgroundColor:
+                          ev.allDay || band ? `${ev.color ?? "#7c7c7c"}33` : undefined,
+                      }}
+                    >
+                      {!ev.allDay && !band ? (
+                        <span
+                          className="size-1.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: ev.color ?? "#5b8def" }}
+                        />
+                      ) : null}
+                      {!ev.allDay && !band ? (
+                        <span className="shrink-0 tabular-nums text-muted-foreground">
+                          {format(new Date(ev.start), "HH")}h
+                        </span>
+                      ) : null}
+                      <span className="truncate">{!band || isStart ? ev.title : "\u00A0"}</span>
+                    </button>
+                  );
+                })}
                 {extra.slice(0, 2).map((m) => (
                   <p
                     key={m.id}
