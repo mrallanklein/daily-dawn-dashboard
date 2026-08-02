@@ -128,7 +128,9 @@ export function TimeGrid({
                   />
                 ))}
 
-                {today ? (
+                {today &&
+                now.getHours() >= startHour &&
+                now.getHours() < startHour + hours.length ? (
                   <div
                     className="pointer-events-none absolute inset-x-0 z-20 border-t-2 border-destructive"
                     style={{
