@@ -88,3 +88,32 @@ export function eventSpan(ev: CalendarEvent, day: Date) {
 }
 
 export const HOURS = Array.from({ length: 24 }, (_, i) => i);
+
+/** Vrai si l'évènement couvre la journée entière ou déborde sur plusieurs jours. */
+export function isDayBand(ev: CalendarEvent, day: Date) {
+  if (ev.allDay) return true;
+  if (!ev.end) return false;
+  const start = parseISO(ev.start);
+  const end = parseISO(ev.end);
+  const dayStart = startOfDay(day);
+  const nextDay = startOfDay(addDays(day, 1));
+  // Multi-jours : commence avant ce jour ou finit après.
+  return start < dayStart || end > nextDay;
+}
+
+/** Fenêtre d'heures utiles pour les vues Jour/Semaine (pas de scroll inutile). */
+export function usefulHourRange(events: CalendarEvent[], days: Date[]) {
+  let min = 8;
+  let max = 20;
+  for (const day of days) {
+    for (const ev of eventsOnDay(events, day)) {
+      if (isDayBand(ev, day)) continue;
+      const { top, height } = eventSpan(ev, day);
+      min = Math.min(min, Math.floor(top));
+      max = Math.max(max, Math.ceil(top + height));
+    }
+  }
+  min = Math.max(0, min);
+  max = Math.min(24, Math.max(max, min + 6));
+  return { min, max };
+}
