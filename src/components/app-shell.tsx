@@ -296,6 +296,19 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
+      {/* Bouton de repli/dépli — à l'extérieur de la sidebar, à mi-hauteur */}
+      <button
+        onClick={toggle}
+        aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
+        title={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
+        className={cn(
+          "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-[var(--shadow-soft)] transition-[left,color] duration-200 ease-out hover:text-foreground md:grid",
+          open ? "left-[calc(15rem+0.5rem)]" : "left-[calc(68px+0.5rem)]",
+        )}
+      >
+        {open ? <ChevronLeft size={18} strokeWidth={1.5} /> : <ChevronRight size={18} strokeWidth={1.5} />}
+      </button>
+
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/95 px-1 py-1.5 backdrop-blur md:hidden">
         {[HOME, ...items].slice(0, 5).map((item) => (
           <Link
@@ -303,19 +316,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             to={item.to}
             aria-label={item.label}
             activeOptions={{ exact: item.to === "/" }}
-            activeProps={{ className: "text-brand" }}
+            activeProps={{ className: "text-foreground" }}
             inactiveProps={{ className: "text-muted-foreground" }}
             className="grid place-items-center rounded-lg px-3 py-1.5"
           >
-            <item.icon
-              className="size-5 text-sidebar"
-              strokeWidth={1.6}
-              style={
-                item.to === "/"
-                  ? { color: item.color, fill: "none", stroke: item.color }
-                  : { fill: item.color, stroke: "var(--sidebar)" }
-              }
-            />
+            <item.icon size={22} strokeWidth={1.5} />
           </Link>
         ))}
       </nav>
@@ -323,7 +328,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main
         className={cn(
           "min-h-screen px-4 pb-24 pt-6 transition-[margin] duration-200 ease-out sm:px-8 md:pb-10",
-          open ? "md:ml-60" : "md:ml-[4.25rem]",
+          open ? "md:ml-60" : "md:ml-[68px]",
         )}
       >
         <div className="mx-auto max-w-[1400px]">{children}</div>
