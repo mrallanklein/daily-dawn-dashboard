@@ -379,3 +379,166 @@
   backdrop-filter: blur(8px);
   background-color: color-mix(in oklab, var(--foreground) 22%, transparent);
 }
+
+/* ============ Élévation & interactions ============ */
+
+/* Verre plus dense : panneaux flottants, barres, popovers */
+@utility glass-strong {
+  position: relative;
+  border: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
+  border-radius: calc(var(--radius) + 6px);
+  background:
+    var(--sheen),
+    color-mix(in oklab, var(--card) 88%, transparent);
+  backdrop-filter: blur(28px) saturate(160%);
+  box-shadow: var(--elev-3);
+}
+
+/* Lumière ambiante cinématographique posée derrière le contenu */
+@utility ambient {
+  background-image: var(--ambient);
+}
+
+/* Carte qui se soulève au survol */
+@utility elevate {
+  transition:
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.24s ease;
+  will-change: transform;
+}
+
+.elevate:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elev-3);
+  border-color: color-mix(in oklab, var(--foreground) 14%, transparent);
+}
+
+.elevate:active {
+  transform: translateY(0) scale(0.995);
+  box-shadow: var(--elev-1);
+}
+
+/* Filet lumineux en haut d'une carte */
+@utility topline {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--foreground) 14%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+}
+
+/* Halo de marque discret au survol (Raycast) */
+@utility glow {
+  transition: box-shadow 0.28s ease;
+}
+
+.glow:hover {
+  box-shadow:
+    var(--elev-3),
+    0 0 0 1px color-mix(in oklab, var(--brand) 30%, transparent),
+    0 12px 40px -18px color-mix(in oklab, var(--brand) 45%, transparent);
+}
+
+/* ============ Animations ============ */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility rise {
+  animation: rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Entrée décalée des enfants directs */
+@utility stagger {
+  & > * {
+    animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  & > *:nth-child(1) {
+    animation-delay: 0.02s;
+  }
+  & > *:nth-child(2) {
+    animation-delay: 0.06s;
+  }
+  & > *:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  & > *:nth-child(4) {
+    animation-delay: 0.14s;
+  }
+  & > *:nth-child(5) {
+    animation-delay: 0.18s;
+  }
+  & > *:nth-child(6) {
+    animation-delay: 0.22s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .stagger > * {
+    animation: none;
+  }
+  .elevate:hover {
+    transform: none;
+  }
+}
+
+/* ============ Détails ============ */
+
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Barres de défilement fines, style macOS */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--foreground) 18%, transparent) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--foreground) 16%, transparent);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--foreground) 28%, transparent);
+  background-clip: content-box;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--brand) 70%, transparent);
+  outline-offset: 2px;
+}
