@@ -117,10 +117,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
-          open ? "w-64" : "w-[68px]",
+          open ? "w-56" : "w-[60px]",
         )}
       >
-        <div className={cn("p-2", !open && "px-3")}>
+        <div className={cn("p-2", !open && "px-2")}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -133,11 +133,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <img
                     src={wsAvatar}
                     alt={wsName}
-                    className="size-8 shrink-0 rounded-lg object-cover"
+                    className="size-9 shrink-0 rounded-lg object-cover"
                   />
                 ) : (
                   <span
-                    className="grid size-8 shrink-0 place-items-center rounded-lg text-[0.7rem] font-display text-brand-foreground"
+                    className="grid size-9 shrink-0 place-items-center rounded-lg text-[0.75rem] font-display text-brand-foreground"
                     style={{ backgroundColor: "var(--brand)" }}
                   >
                     {spaceInitials(wsName)}
@@ -146,8 +146,10 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {open ? (
                   <>
                     <span className="min-w-0 flex-1 leading-tight">
-                      <span className="block truncate text-sm font-display">{wsName}</span>
-                      <span className="block text-[0.7rem] text-muted-foreground">{wsTag}</span>
+                      <span className="block truncate text-[0.9375rem] font-display">{wsName}</span>
+                      <span className="block truncate text-[0.72rem] text-muted-foreground">
+                        {wsTag}
+                      </span>
                     </span>
                     <ChevronsUpDown className="size-3.5 shrink-0 text-muted-foreground" />
                   </>
@@ -194,7 +196,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
 
         {/* Ligne rapide : Accueil (pastille) · Boîte de réception · Recherche */}
-        <div className={cn("flex items-center gap-1 px-2 pb-2", !open && "flex-col")}>
+        <div className={cn("flex items-center gap-1 px-2 pb-2", !open && "flex-col gap-1.5")}>
           <Link
             to={HOME.to}
             title={HOME.label}
@@ -203,13 +205,13 @@ export function AppShell({ children }: { children: ReactNode }) {
             activeProps={{ className: "bg-muted text-foreground" }}
             inactiveProps={{ className: "bg-muted/60 text-foreground/80 hover:bg-muted" }}
             className={cn(
-              "press flex h-8 shrink-0 items-center gap-1.5 rounded-full transition-colors",
-              open ? "px-2.5" : "w-8 justify-center",
+              "press flex h-9 shrink-0 items-center gap-1.5 rounded-full transition-colors",
+              open ? "flex-1 px-2.5" : "w-9 justify-center",
             )}
           >
-            <HOME.icon size={open ? 17 : 22} strokeWidth={1.5} />
+            <HOME.icon size={open ? 19 : 22} strokeWidth={1.5} />
             {open ? (
-              <span className="text-[0.875rem] font-medium leading-none">{HOME.label}</span>
+              <span className="text-[0.9375rem] font-medium leading-none">{HOME.label}</span>
             ) : null}
           </Link>
           <Link
@@ -217,21 +219,21 @@ export function AppShell({ children }: { children: ReactNode }) {
             search={{}}
             aria-label="Boîte de réception"
             title="Boîte de réception"
-            className="press grid size-8 shrink-0 place-items-center rounded-[4px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
+            className="press grid size-9 shrink-0 place-items-center rounded-[6px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
           >
-            <Inbox size={open ? 20 : 24} strokeWidth={1.5} />
+            <Inbox size={open ? 21 : 22} strokeWidth={1.5} />
           </Link>
           <button
             onClick={() => setPaletteOpen(true)}
             aria-label="Rechercher (⌘K)"
             title="Rechercher — ⌘K"
-            className="press grid size-8 shrink-0 place-items-center rounded-[4px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
+            className="press grid size-9 shrink-0 place-items-center rounded-[6px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
           >
-            <Search size={open ? 20 : 24} strokeWidth={1.5} />
+            <Search size={open ? 21 : 22} strokeWidth={1.5} />
           </button>
         </div>
 
-        <nav className={cn("flex-1 space-y-px px-2")}>
+        <nav className={cn("flex-1 space-y-0.5 px-2 pt-1")}>
           {items.map((item) => (
             <Link
               key={item.to}
@@ -245,13 +247,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                   "text-foreground/85 hover:bg-sidebar-accent/70 hover:text-foreground hover:[&_svg]:opacity-100",
               }}
               className={cn(
-                "flex min-h-[30px] items-center gap-2 rounded-[4px] px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-colors",
+                "flex min-h-[34px] items-center gap-2.5 rounded-[6px] px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-colors",
                 !open && "justify-center px-0",
               )}
             >
               <item.icon
                 className="shrink-0 opacity-70 transition-opacity"
-                size={open ? 20 : 24}
+                size={open ? 21 : 22}
                 strokeWidth={1.5}
               />
               {open ? <span className="truncate">{item.label}</span> : null}
@@ -261,7 +263,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="space-y-2 border-t border-sidebar-border p-2">
           <div className={cn("flex items-center gap-2.5", !open && "justify-center")}>
-            <Avatar className="size-8 shrink-0">
+            <Avatar className="size-9 shrink-0">
               <AvatarImage
                 src={profile?.avatar_url ?? portraitAsset.url}
                 alt={profile?.display_name ?? "Allan Klein"}
@@ -309,7 +311,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         title={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
         className={cn(
           "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-[var(--shadow-soft)] transition-[left,color] duration-200 ease-out hover:text-foreground md:grid",
-          open ? "left-[calc(16rem+0.75rem)]" : "left-[calc(68px+0.75rem)]",
+          open ? "left-[calc(14rem+0.75rem)]" : "left-[calc(60px+0.75rem)]",
         )}
       >
         {open ? (
@@ -338,7 +340,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main
         className={cn(
           "min-h-screen px-4 pb-24 pt-6 transition-[margin,padding] duration-200 ease-out sm:px-8 md:pb-10 md:pl-14 lg:pl-16",
-          open ? "md:ml-64" : "md:ml-[68px]",
+          open ? "md:ml-56" : "md:ml-[60px]",
         )}
       >
         <div className="mx-auto max-w-[1400px]">{children}</div>
