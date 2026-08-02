@@ -1,13 +1,9 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { format, isSameDay, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { CalendarEvent } from "@/lib/agenda.functions";
-import { eventSpan, eventsOnDay } from "./calendar-utils";
+import { eventSpan, eventsOnDay, isDayBand, usefulHourRange } from "./calendar-utils";
 import { cn } from "@/lib/utils";
-
-const WEEK_HOUR_PX = 48;
-/** Fenêtre minimale affichée (heures utiles) quand la journée est vide. */
-const DEFAULT_RANGE = { start: 7, end: 22 };
 
 export function TimeGrid({
   days,
@@ -20,40 +16,18 @@ export function TimeGrid({
   onSelectEvent: (ev: CalendarEvent) => void;
   onCreateAt: (day: Date, hour: number) => void;
 }) {
-  const scroller = useRef<HTMLDivElement>(null);
-  const singleDay = days.length === 1;
-
-  // Vue Jour : on compacte les 24 h sur les seules heures utiles pour éviter le scroll.
-  const { hours, hourPx, startHour } = useMemo(() => {
-    if (!singleDay) {
-      return {
-        hours: Array.from({ length: 24 }, (_, i) => i),
-        hourPx: WEEK_HOUR_PX,
-        startHour: 0,
-      };
-    }
-    const day = days[0]!;
-    let min = DEFAULT_RANGE.start;
-    let max = DEFAULT_RANGE.end;
-    for (const ev of eventsOnDay(events, day).filter((e) => !e.allDay)) {
-      const { top, height } = eventSpan(ev, day);
-      min = Math.min(min, Math.floor(top));
-      max = Math.max(max, Math.ceil(top + height));
-    }
-    min = Math.max(0, min);
-    max = Math.min(24, Math.max(max, min + 6));
+  // Jour ET Semaine : on n'affiche que les heures utiles pour éviter le scroll.
+  const { hours, hourPx, startHour, labelStep } = useMemo(() => {
+    const { min, max } = usefulHourRange(events, days);
     const count = max - min;
+    const px = Math.max(28, Math.min(52, Math.round(640 / count)));
     return {
       hours: Array.from({ length: count }, (_, i) => min + i),
-      hourPx: Math.max(26, Math.min(54, Math.round(620 / count))),
+      hourPx: px,
       startHour: min,
+      labelStep: px < 34 ? 2 : 1,
     };
-  }, [singleDay, days.map((d) => d.toISOString()).join(","), events]);
-
-  useEffect(() => {
-    // Vue Semaine : cadre sur les heures de travail comme le calendrier Apple.
-    if (scroller.current && !singleDay) scroller.current.scrollTop = 7 * WEEK_HOUR_PX;
-  }, [singleDay]);
+  }, [days.map((d) => d.toISOString()).join(","), events]);
 
   return (
     <div className="flex w-full min-w-0 flex-col overflow-x-hidden rounded-2xl">
@@ -96,7 +70,7 @@ export function TimeGrid({
             className="min-w-0 space-y-0.5 border-l border-border/50 p-1"
           >
             {eventsOnDay(events, day)
-              .filter((ev) => ev.allDay)
+              .filter((ev) => isDayBand(ev, day))
               .map((ev) => (
                 <button
                   key={ev.id + ev.calendarId}
@@ -105,19 +79,19 @@ export function TimeGrid({
                   style={{ backgroundColor: `${ev.color ?? "#7c7c7c"}33` }}
                 >
                   {ev.title}
+                  {!ev.allDay ? (
+                    <span className="ml-1 font-medium text-muted-foreground">
+                      {format(parseISO(ev.start), "d MMM", { locale: fr })} →{" "}
+                      {ev.end ? format(parseISO(ev.end), "d MMM", { locale: fr }) : ""}
+                    </span>
+                  ) : null}
                 </button>
               ))}
           </div>
         ))}
       </div>
 
-      <div
-        ref={scroller}
-        className={cn(
-          "w-full overflow-x-hidden",
-          singleDay ? "overflow-y-visible" : "max-h-[32rem] overflow-y-auto",
-        )}
-      >
+      <div className="w-full overflow-x-hidden">
         <div
           className="relative grid w-full"
           style={{ gridTemplateColumns: `3rem repeat(${days.length}, minmax(0,1fr))` }}
@@ -130,14 +104,14 @@ export function TimeGrid({
                 style={{ height: hourPx }}
               >
                 <span className="absolute -top-2 right-2 text-[0.7rem] font-medium tabular-nums text-muted-foreground">
-                  {h === 0 && !singleDay ? "" : `${String(h).padStart(2, "0")}:00`}
+                  {(h - startHour) % labelStep === 0 ? `${String(h).padStart(2, "0")}:00` : ""}
                 </span>
               </div>
             ))}
           </div>
 
           {days.map((day) => {
-            const timed = eventsOnDay(events, day).filter((ev) => !ev.allDay);
+            const timed = eventsOnDay(events, day).filter((ev) => !isDayBand(ev, day));
             const today = isSameDay(day, new Date());
             const now = new Date();
             return (
@@ -152,7 +126,9 @@ export function TimeGrid({
                   />
                 ))}
 
-                {today ? (
+                {today &&
+                now.getHours() >= startHour &&
+                now.getHours() < startHour + hours.length ? (
                   <div
                     className="pointer-events-none absolute inset-x-0 z-20 border-t-2 border-destructive"
                     style={{

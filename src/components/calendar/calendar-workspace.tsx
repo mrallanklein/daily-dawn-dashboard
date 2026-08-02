@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -64,12 +64,12 @@ export function CalendarWorkspace() {
 
   const { from, to } = viewBounds(view, cursor);
   const { data, error, isLoading } = useQuery({
-    queryKey: ["calendar", view, from.toISOString(), to.toISOString(), calendarIds.join(",")],
+    queryKey: ["calendar", view, from.toISOString(), to.toISOString()],
     staleTime: 2 * 60 * 1000,
     retry: false,
     queryFn: () =>
       fetchEvents({
-        data: { timeMin: from.toISOString(), timeMax: to.toISOString(), calendarIds },
+        data: { timeMin: from.toISOString(), timeMax: to.toISOString(), calendarIds: [] },
       }),
   });
 
@@ -78,9 +78,19 @@ export function CalendarWorkspace() {
     [data, hidden],
   );
 
-  const visibleSources = (sources ?? []).filter(
-    (s) => calendarIds.length === 0 || calendarIds.includes(s.calendarId),
-  );
+  // On liste tous les agendas de chaque compte ; ceux non sélectionnés dans l'espace
+  // sont simplement décochés (comme dans Google/Apple Calendar).
+  const allSources = sources ?? [];
+  const initialized = useRef(false);
+  useEffect(() => {
+    if (initialized.current || allSources.length === 0 || calendarIds.length === 0) return;
+    initialized.current = true;
+    setHidden(
+      allSources
+        .filter((s) => !calendarIds.includes(s.calendarId))
+        .map((s) => `${s.accountKey}::${s.calendarId}`),
+    );
+  }, [allSources, calendarIds]);
 
   const invitations = useMemo(
     () => events.filter((ev) => ev.myResponse === "needsAction"),
@@ -265,7 +275,7 @@ export function CalendarWorkspace() {
         cursor={cursor}
         selected={selected}
         events={events}
-        sources={visibleSources}
+        sources={allSources}
         hidden={hidden}
         extras={extrasFor(selected)}
         onCursorChange={setCursor}
