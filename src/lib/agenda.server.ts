@@ -12,6 +12,9 @@ export type CalendarEvent = {
   accountEmail: string | null;
   color: string | null;
   htmlLink: string | null;
+  organizer: string | null;
+  /** Réponse du propriétaire de l'agenda : needsAction | accepted | declined | tentative */
+  myResponse: string | null;
 };
 
 export type CalendarSource = {
@@ -123,6 +126,8 @@ export async function listEvents(input: {
             description?: string;
             location?: string;
             htmlLink?: string;
+            organizer?: { email?: string; displayName?: string };
+            attendees?: Array<{ email?: string; self?: boolean; responseStatus?: string }>;
             start?: { dateTime?: string; date?: string };
             end?: { dateTime?: string; date?: string };
           }>;
@@ -134,6 +139,7 @@ export async function listEvents(input: {
           .map((item) => {
             const start = item.start?.dateTime ?? item.start?.date ?? null;
             if (!start) return null;
+            const me = (item.attendees ?? []).find((a) => a.self);
             const event: CalendarEvent = {
               id: item.id,
               title: item.summary ?? "(Sans titre)",
@@ -148,6 +154,9 @@ export async function listEvents(input: {
               accountEmail: source.accountEmail,
               color: source.color,
               htmlLink: item.htmlLink ?? null,
+              organizer:
+                item.organizer?.displayName ?? item.organizer?.email ?? source.accountEmail ?? null,
+              myResponse: me?.responseStatus ?? null,
             };
             return event;
           });
