@@ -77,7 +77,7 @@ export function MonthGrid({
               >
                 {format(day, "d")}
               </span>
-              <div className="mt-1 space-y-0.5">
+              <div className="mt-1 space-y-[3px]">
                 {shown.map((ev) => {
                   const start = startOfDay(parseISO(ev.start));
                   const rawEnd = ev.end ? parseISO(ev.end) : parseISO(ev.start);
@@ -89,6 +89,10 @@ export function MonthGrid({
                   const isStart = isSameDay(start, day);
                   const isEnd = isSameDay(end, day);
                   const band = multi;
+                  // Apple Calendar : le titre est répété au début de chaque semaine
+                  // pour rester lisible sur toute la durée de l'évènement.
+                  const isWeekStart = day.getDay() === 1;
+                  const showTitle = !band || isStart || isWeekStart;
                   return (
                     <button
                       key={ev.id + ev.calendarId}
@@ -98,13 +102,13 @@ export function MonthGrid({
                         onSelectEvent(ev);
                       }}
                       className={cn(
-                        "flex items-center gap-1 px-1 text-left text-[0.76rem] font-semibold",
+                        "flex h-[1.15rem] items-center gap-1 px-1 text-left text-[0.76rem] font-semibold leading-none",
                         band
                           ? cn(
-                              "-mx-1.5 w-[calc(100%+0.75rem)]",
-                              isStart && "ml-0 w-[calc(100%+0.375rem)] rounded-l-md pl-1.5",
-                              isEnd && "mr-0 rounded-r-md pr-1.5",
-                              isStart && isEnd && "w-full",
+                              "-mx-1.5 w-[calc(100%+0.75rem)] rounded-none px-1.5",
+                              isStart && "ml-0 w-[calc(100%+0.375rem)] rounded-l-full",
+                              isEnd && "mr-0 rounded-r-full",
+                              isStart && isEnd && "w-full rounded-full",
                             )
                           : "w-full rounded",
                       )}
@@ -124,7 +128,9 @@ export function MonthGrid({
                           {format(new Date(ev.start), "HH")}h
                         </span>
                       ) : null}
-                      <span className="truncate">{!band || isStart ? ev.title : "\u00A0"}</span>
+                      <span className={cn("truncate", band && !showTitle && "opacity-0")}>
+                        {showTitle ? ev.title : "\u00A0"}
+                      </span>
                     </button>
                   );
                 })}
