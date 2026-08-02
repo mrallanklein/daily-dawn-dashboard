@@ -14,10 +14,11 @@ import {
 } from "date-fns";
 import type { CalendarEvent } from "@/lib/agenda.functions";
 
-export type CalendarViewMode = "day" | "week" | "month" | "year";
+export type CalendarViewMode = "day" | "week" | "workweek" | "month" | "year";
 
 export const VIEW_LABELS: { value: CalendarViewMode; label: string }[] = [
   { value: "day", label: "Jour" },
+  { value: "workweek", label: "Lun–Ven" },
   { value: "week", label: "Semaine" },
   { value: "month", label: "Mois" },
   { value: "year", label: "Année" },
@@ -32,6 +33,11 @@ export function viewBounds(view: CalendarViewMode, cursor: Date) {
       return {
         from: startOfWeek(cursor, { weekStartsOn: 1 }),
         to: addDays(endOfWeek(cursor, { weekStartsOn: 1 }), 1),
+      };
+    case "workweek":
+      return {
+        from: startOfWeek(cursor, { weekStartsOn: 1 }),
+        to: addDays(startOfWeek(cursor, { weekStartsOn: 1 }), 5),
       };
     case "month":
       return {
@@ -48,6 +54,8 @@ export function shiftCursor(view: CalendarViewMode, cursor: Date, direction: -1 
     case "day":
       return addDays(cursor, direction);
     case "week":
+      return addDays(cursor, 7 * direction);
+    case "workweek":
       return addDays(cursor, 7 * direction);
     case "month":
       return addMonths(cursor, direction);
