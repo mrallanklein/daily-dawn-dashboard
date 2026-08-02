@@ -10,7 +10,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CalendarPlus, ChevronLeft, ChevronRight, Clock, MapPin } from "lucide-react";
+import { CalendarPlus, Check, ChevronLeft, ChevronRight, Clock, MapPin, X } from "lucide-react";
 import type { CalendarEvent, CalendarSource } from "@/lib/agenda.functions";
 import { eventsOnDay } from "./calendar-utils";
 import { Button } from "@/components/ui/button";
@@ -24,11 +24,13 @@ export function CalendarSidebar({
   sources,
   hidden,
   extras,
+  invitations,
   onCursorChange,
   onSelectDay,
   onToggleSource,
   onCreate,
   onSelectEvent,
+  onRespond,
 }: {
   cursor: Date;
   selected: Date;
@@ -36,11 +38,13 @@ export function CalendarSidebar({
   sources: CalendarSource[];
   hidden: string[];
   extras: { id: string; label: string; hint: string; color?: string }[];
+  invitations: CalendarEvent[];
   onCursorChange: (d: Date) => void;
   onSelectDay: (d: Date) => void;
   onToggleSource: (key: string) => void;
   onCreate: () => void;
   onSelectEvent: (ev: CalendarEvent) => void;
+  onRespond: (ev: CalendarEvent, response: "accepted" | "declined") => void;
 }) {
   const miniDays = eachDayOfInterval({
     start: startOfWeek(startOfMonth(cursor), { weekStartsOn: 1 }),
@@ -59,6 +63,48 @@ export function CalendarSidebar({
       <Button className="press w-full justify-start font-semibold" onClick={onCreate}>
         <CalendarPlus className="mr-2 size-4" /> Nouvel évènement
       </Button>
+
+      {invitations.length > 0 ? (
+        <section className="glass p-3">
+          <p className="mb-2 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Invitations · {invitations.length}
+          </p>
+          <div className="space-y-2">
+            {invitations.map((ev) => (
+              <div key={`inv-${ev.id}${ev.calendarId}`} className="rounded-lg bg-muted/45 p-2">
+                <button
+                  onClick={() => onSelectEvent(ev)}
+                  className="block w-full text-left"
+                  title="Voir le détail"
+                >
+                  <p className="truncate text-sm font-semibold">{ev.title}</p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {format(new Date(ev.start), "EEE d MMM · HH:mm", { locale: fr })}
+                    {ev.organizer ? ` · ${ev.organizer}` : ""}
+                  </p>
+                </button>
+                <div className="mt-1.5 flex gap-1">
+                  <Button
+                    size="sm"
+                    className="press h-7 flex-1 text-xs"
+                    onClick={() => onRespond(ev, "accepted")}
+                  >
+                    <Check size={14} strokeWidth={1.8} className="mr-1" /> Accepter
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="press h-7 flex-1 text-xs"
+                    onClick={() => onRespond(ev, "declined")}
+                  >
+                    <X size={14} strokeWidth={1.8} className="mr-1" /> Refuser
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="glass p-3">
         <header className="mb-1.5 flex items-center justify-between">
