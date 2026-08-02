@@ -51,6 +51,7 @@ import { cn } from "@/lib/utils";
 import { MailBody } from "@/components/mail/mail-body";
 import { useMailColors } from "@/lib/mail-colors";
 import { MailIcon } from "@/components/icons/notion-icons";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -104,6 +105,7 @@ function MailPage() {
   const [openId, setOpenId] = useState<string | null>(params.msg ?? null);
   const [account, setAccount] = useState<MailAccountId>(params.account ?? "primary");
   const [limit, setLimit] = useState(20);
+  const isMobile = useIsMobile();
 
   const { data: connection } = useQuery({
     queryKey: ["mail-status"],
@@ -340,15 +342,28 @@ function MailPage() {
             ) : null}
           </div>
 
-          <div className="glass p-5">
-            {current ? (
-              <MailReader message={current} onReply={(v) => compose.mutate(v)} />
-            ) : (
-              <div className="grid place-items-center py-16 text-sm text-muted-foreground">
-                <Inbox className="mb-2 size-6" /> Sélectionnez un message
-              </div>
-            )}
-          </div>
+          {isMobile ? (
+            <Dialog open={Boolean(current)} onOpenChange={(o) => !o && setOpenId(null)}>
+              <DialogContent className="max-h-[85vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="pr-6 text-left text-base">{current?.subject}</DialogTitle>
+                </DialogHeader>
+                {current ? (
+                  <MailReader message={current} onReply={(v) => compose.mutate(v)} hideSubject />
+                ) : null}
+              </DialogContent>
+            </Dialog>
+          ) : (
+            <div className="glass p-5">
+              {current ? (
+                <MailReader message={current} onReply={(v) => compose.mutate(v)} />
+              ) : (
+                <div className="grid place-items-center py-16 text-sm text-muted-foreground">
+                  <Inbox className="mb-2 size-6" /> Sélectionnez un message
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </AppShell>
@@ -358,16 +373,18 @@ function MailPage() {
 function MailReader({
   message,
   onReply,
+  hideSubject = false,
 }: {
   message: MailMessage;
   onReply: (v: { to: string; subject: string; body: string }) => void;
+  hideSubject?: boolean;
 }) {
   const [reply, setReply] = useState("");
   const address = message.from.match(/<(.+)>/)?.[1] ?? message.from;
 
   return (
     <article>
-      <h2 className="text-lg font-display">{message.subject}</h2>
+      {hideSubject ? null : <h2 className="text-lg font-display">{message.subject}</h2>}
       <p className="mt-1 text-xs text-muted-foreground">
         {message.from} · {format(parseISO(message.date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
       </p>

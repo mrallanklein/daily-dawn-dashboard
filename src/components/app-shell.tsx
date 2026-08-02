@@ -46,23 +46,28 @@ const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
 function ControlPill({
   vertical = false,
+  full = false,
   onSettings,
   onSignOut,
 }: {
   vertical?: boolean;
+  full?: boolean;
   onSettings: () => void;
   onSignOut: () => void;
 }) {
   const seg =
-    "grid size-8 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground";
+    "grid h-8 w-full min-w-8 place-items-center rounded-none text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground";
   return (
     <div
       className={cn(
-        "flex overflow-hidden rounded-full border border-border bg-card/70 backdrop-blur-xl",
-        vertical ? "flex-col divide-y divide-border" : "divide-x divide-border",
+        "overflow-hidden rounded-full border border-border bg-card/70 backdrop-blur-xl",
+        vertical
+          ? "grid grid-cols-1 grid-rows-3 divide-y divide-border w-8"
+          : "grid grid-cols-3 divide-x divide-border",
+        !vertical && (full ? "w-full" : "w-[6.5rem]"),
       )}
     >
-      <ThemeToggle className={cn(seg, "rounded-none")} />
+      <ThemeToggle className={seg} />
       <button type="button" onClick={onSettings} aria-label="Paramètres" title="Paramètres" className={seg}>
         <Settings className="size-4" strokeWidth={1.5} />
       </button>
@@ -97,6 +102,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mobileTools, setMobileTools] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ak-sidebar");
@@ -328,6 +334,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className={cn(!open && "flex justify-center pt-1.5")}>
             <ControlPill
               vertical={!open}
+              full={open}
               onSettings={() => setSettingsOpen(true)}
               onSignOut={signOut}
             />
@@ -353,8 +360,23 @@ export function AppShell({ children }: { children: ReactNode }) {
       </button>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/85 px-1 py-1.5 backdrop-blur-xl md:hidden">
-        <div className="pointer-events-auto fixed bottom-[4.25rem] right-3 md:hidden">
-          <ControlPill onSettings={() => setSettingsOpen(true)} onSignOut={signOut} />
+        <div className="pointer-events-auto fixed bottom-[4.25rem] right-3 flex items-center gap-1.5 md:hidden">
+          {mobileTools ? (
+            <ControlPill onSettings={() => setSettingsOpen(true)} onSignOut={signOut} />
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setMobileTools((v) => !v)}
+            aria-label={mobileTools ? "Masquer les actions" : "Afficher les actions"}
+            aria-expanded={mobileTools}
+            className="press grid size-8 place-items-center rounded-full border border-border bg-card/80 text-muted-foreground backdrop-blur-xl transition-transform"
+          >
+            {mobileTools ? (
+              <ChevronRight size={16} strokeWidth={1.5} />
+            ) : (
+              <ChevronLeft size={16} strokeWidth={1.5} />
+            )}
+          </button>
         </div>
         {[HOME, ...items].slice(0, 5).map((item) => (
           <Link

@@ -17,7 +17,7 @@ export function PageHeader({
 }) {
   return (
     <header className="rise mb-8">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between sm:gap-4">
         <div className="flex min-w-0 items-center gap-4">
           {Icon ? (
             <span className="glass grid size-12 shrink-0 place-items-center rounded-2xl">
@@ -28,7 +28,7 @@ export function PageHeader({
             </span>
           ) : null}
           <div className="min-w-0">
-            <h1 className="truncate text-[1.75rem] font-display font-bold tracking-[-0.03em] sm:text-[2.1rem] sm:leading-[1.1]">
+            <h1 className="text-[1.5rem] font-display font-bold leading-tight tracking-[-0.03em] sm:truncate sm:text-[2.1rem] sm:leading-[1.1]">
               {title}
             </h1>
             {subtitle ? (
@@ -39,7 +39,7 @@ export function PageHeader({
           </div>
         </div>
         {actions ? (
-          <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+          <div className="flex min-w-0 flex-wrap items-center gap-2 sm:shrink-0">{actions}</div>
         ) : null}
       </div>
     </header>

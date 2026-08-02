@@ -71,22 +71,22 @@ function ProjectsPage() {
         subtitle={`${list.length} projet(s) sur ce profil`}
         actions={
           <>
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Filtrer…"
-                className="h-9 w-40 pl-8"
+                className="h-9 w-full pl-8 sm:w-40"
               />
             </div>
-            <div className="flex rounded-full border border-border bg-muted/50 p-0.5">
+            <div className="flex max-w-full overflow-x-auto rounded-full border border-border bg-muted/50 p-0.5">
               {VIEWS.map(({ id, label, Icon }) => (
                 <button
                   key={id}
                   onClick={() => setView(id)}
                   className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition-colors",
+                    "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs transition-colors",
                     view === id
                       ? "bg-background font-medium shadow-sm"
                       : "text-muted-foreground hover:text-foreground",
