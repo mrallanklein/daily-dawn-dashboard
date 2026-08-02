@@ -72,24 +72,19 @@ export function WeatherBadge({
     if (!w) window.top?.location.assign(url);
   };
   return (
-    <div className="flex items-center gap-3">
+    <button
+      type="button"
+      onClick={open}
+      title={`Rechercher « météo ${city} » sur Google`}
+      className="press flex items-center gap-3 rounded-lg px-2 py-1 text-left transition-colors hover:bg-muted/60"
+    >
       <Icon size={28} strokeWidth={1.75} className="shrink-0" style={{ color }} />
       <div className="leading-tight">
         <p className="text-xl font-display font-bold">{weather.temperature}°</p>
         <p className="text-xs font-medium text-muted-foreground">
           {label} · {city} · {weather.min}° / {weather.max}°
         </p>
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={open}
-          title={`Voir la météo de ${city} sur Google`}
-          className="press mt-0.5 inline-block text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80"
-        >
-          Consulter la météo sur Google
-        </a>
       </div>
-    </div>
+    </button>
   );
 }
