@@ -4,6 +4,7 @@ import {
   CloudFog,
   CloudLightning,
   CloudRain,
+  CloudOff,
   CloudSnow,
   Sun,
   SunDim,
@@ -23,9 +24,44 @@ function describe(code: number) {
   return { Icon: CloudLightning, label: "Orage", color: "#8B5CF6" };
 }
 
-export function WeatherBadge({ weather, city }: { weather?: Weather | undefined; city: string }) {
+export function WeatherBadge({
+  weather,
+  city,
+  isLoading = false,
+  isError = false,
+  onRetry,
+}: {
+  weather?: Weather | undefined;
+  city: string;
+  isLoading?: boolean;
+  isError?: boolean;
+  onRetry?: () => void;
+}) {
   if (!weather) {
-    return <div className="text-sm text-muted-foreground">Météo en cours de chargement…</div>;
+    if (isError) {
+      return (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="press flex items-center gap-2 rounded-lg px-2 py-1 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/60"
+        >
+          <CloudOff size={22} strokeWidth={1.5} className="shrink-0" />
+          <span className="leading-tight">
+            Météo indisponible
+            <span className="block text-xs">Cliquer pour réessayer</span>
+          </span>
+        </button>
+      );
+    }
+    return (
+      <div className="flex items-center gap-3" aria-busy={isLoading}>
+        <div className="size-7 animate-pulse rounded-full bg-muted" />
+        <div className="space-y-1.5">
+          <div className="h-4 w-10 animate-pulse rounded bg-muted" />
+          <div className="h-3 w-32 animate-pulse rounded bg-muted" />
+        </div>
+      </div>
+    );
   }
   const { Icon, label, color } = describe(weather.code);
   const url = `https://www.google.com/search?q=${encodeURIComponent(`météo ${city}`)}`;

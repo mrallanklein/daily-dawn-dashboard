@@ -1,3 +1,5 @@
+import { locateByIp, reverseGeocode, searchPlaces } from "./weather.functions";
+
 export type CityOption = { name: string; lat: number; lon: number };
 
 export const CITIES: CityOption[] = [
@@ -29,37 +31,45 @@ export function searchCities(query: string, limit = 6) {
   return CITIES.filter((c) => normalize(c.name).includes(q)).slice(0, limit);
 }
 
-/** Position du navigateur → ville la plus proche (Nominatim, sans clé API). */
-export function locateCity(): Promise<CityOption> {
-  return new Promise((resolve, reject) => {
+/**
+ * Localisation : position du navigateur si autorisée, sinon repli sur l'IP
+ * (côté serveur, ce qui évite les blocages d'iframe et de permissions).
+ */
+export async function locateCity(): Promise<CityOption> {
+  const browser = await new Promise<{ lat: number; lon: number } | null>((resolve) => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
-      reject(new Error("La géolocalisation n'est pas disponible sur cet appareil"));
+      resolve(null);
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-            { headers: { Accept: "application/json" } },
-          );
-          if (!res.ok) throw new Error("Géocodage indisponible");
-          const json = (await res.json()) as {
-            address?: { city?: string; town?: string; village?: string; county?: string };
-          };
-          const city =
-            json.address?.city ??
-            json.address?.town ??
-            json.address?.village ??
-            json.address?.county;
-          resolve({ name: city ?? "Ma position", lat: latitude, lon: longitude });
-        } catch {
-          resolve({ name: "Ma position", lat: latitude, lon: longitude });
-        }
-      },
-      (error) => reject(new Error(error.message || "Position refusée")),
-      { timeout: 10000 },
+      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      () => resolve(null),
+      { timeout: 8000, maximumAge: 5 * 60 * 1000 },
     );
   });
+
+  if (browser) {
+    const place = await reverseGeocode({ data: browser });
+    return { name: place.name, lat: place.lat, lon: place.lon };
+  }
+
+  const byIp = await locateByIp();
+  if (byIp) return { name: byIp.name, lat: byIp.lat, lon: byIp.lon };
+
+  throw new Error(
+    "Position introuvable : autorise la localisation dans le navigateur ou saisis une ville.",
+  );
+}
+
+/** Recherche de ville en ligne, avec repli sur la liste locale. */
+export async function findCities(query: string): Promise<CityOption[]> {
+  const q = query.trim();
+  if (q.length < 2) return searchCities(q);
+  try {
+    const results = await searchPlaces({ data: { query: q } });
+    if (results.length) return results.map((r) => ({ name: r.name, lat: r.lat, lon: r.lon }));
+  } catch {
+    /* repli local */
+  }
+  return searchCities(q);
 }

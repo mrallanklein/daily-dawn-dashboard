@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check, ImagePlus, Loader2, LocateFixed, Mail, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { locateCity } from "@/lib/cities";
+import { findCities, locateCity, type CityOption } from "@/lib/cities";
 import { listMailAccounts } from "@/lib/mail.functions";
 import { listCalendars } from "@/lib/agenda.functions";
 import { createSpace, deleteSpace, spaceInitials, updateSpace, type Space } from "@/lib/spaces";
@@ -339,6 +339,7 @@ export function SettingsDialog({
                     <span className="min-w-0 flex-1 truncate text-sm">
                       {form.weather_city || "Position non définie"}
                     </span>
+                    <CitySearch onPick={(c) => set({ weather_city: c.name, weather_lat: c.lat, weather_lon: c.lon })} />
                     <Button
                       type="button"
                       variant="secondary"
@@ -541,5 +542,67 @@ export function SettingsDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function CitySearch({ onPick }: { onPick: (city: CityOption) => void }) {
+  const [q, setQ] = useState("");
+  const [results, setResults] = useState<CityOption[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (q.trim().length < 2) {
+      setResults([]);
+      return;
+    }
+    let alive = true;
+    setBusy(true);
+    const timer = setTimeout(async () => {
+      try {
+        const list = await findCities(q);
+        if (alive) setResults(list);
+      } finally {
+        if (alive) setBusy(false);
+      }
+    }, 300);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+      setBusy(false);
+    };
+  }, [q]);
+
+  return (
+    <div className="relative w-40 shrink-0">
+      <Input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        placeholder="Ville…"
+        className="h-8 text-sm"
+      />
+      {results.length > 0 ? (
+        <ul className="absolute right-0 top-9 z-50 w-56 overflow-hidden rounded-lg border border-border bg-popover shadow-lg">
+          {results.map((c) => (
+            <li key={`${c.name}-${c.lat}-${c.lon}`}>
+              <button
+                type="button"
+                className="w-full px-3 py-1.5 text-left text-sm hover:bg-muted"
+                onClick={() => {
+                  onPick(c);
+                  setQ("");
+                  setResults([]);
+                  toast.success(`Météo : ${c.name}`);
+                }}
+              >
+                {c.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {busy ? (
+        <span className="absolute right-2 top-2 text-[10px] text-muted-foreground">…</span>
+      ) : null}
+    </div>
   );
 }
