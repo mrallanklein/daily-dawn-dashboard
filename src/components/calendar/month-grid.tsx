@@ -107,7 +107,7 @@ export function MonthGrid({
                           ? cn(
                               "-mx-1.5 w-[calc(100%+0.75rem)] rounded-none px-1.5",
                               isStart && "ml-0 w-[calc(100%+0.375rem)] rounded-l-full",
-                              isEnd && "mr-0 rounded-r-full",
+                              isEnd && "mr-0 w-[calc(100%+0.375rem)] rounded-r-full",
                               isStart && isEnd && "w-full rounded-full",
                             )
                           : "w-full rounded",
