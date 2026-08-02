@@ -5,20 +5,20 @@ import {
   Banknote,
   Calendar,
   Check,
-  CheckCircle,
+  CheckSquare,
   ChevronsUpDown,
-  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  FolderClosed,
   Home,
   Inbox,
   LogOut,
   Mail,
-  PanelLeftClose,
   Plus,
-  PanelLeftOpen,
   Search,
   Settings,
+  User,
   Users,
-  UsersRound,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/data";
@@ -41,16 +41,16 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
 
-const HOME = { to: "/", label: "Accueil", icon: Home, color: "#3F3F46" } as const;
+const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
 const NAV = [
-  { to: "/projets", label: "Projets", icon: BookOpen, color: "#F97316" },
-  { to: "/taches", label: "Tâches", icon: CheckCircle, color: "#22C55E" },
-  { to: "/calendrier", label: "Calendrier", icon: Calendar, color: "#3B82F6" },
-  { to: "/mail", label: "Boîte mail", icon: Mail, color: "#EF4444" },
-  { to: "/crm", label: "CRM", icon: Users, color: "#A855F7" },
-  { to: "/budget", label: "Budget", icon: Banknote, color: "#EAB308" },
-  { to: "/equipe", label: "Équipe", icon: UsersRound, color: "#0EA5E9", aliasOnly: true },
+  { to: "/projets", label: "Projets", icon: FolderClosed },
+  { to: "/taches", label: "Tâches", icon: CheckSquare },
+  { to: "/calendrier", label: "Calendrier", icon: Calendar },
+  { to: "/mail", label: "Boîte mail", icon: Mail },
+  { to: "/crm", label: "CRM", icon: User },
+  { to: "/budget", label: "Budget", icon: Banknote },
+  { to: "/equipe", label: "Équipe", icon: Users, aliasOnly: true },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
