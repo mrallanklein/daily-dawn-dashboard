@@ -194,10 +194,10 @@
   --input: oklch(1 0 0 / 0.16);
 
   --teal: oklch(0.68 0.1 190);
-  --gold: oklch(0.78 0.13 84);
-  --brand: var(--teal);
-  --brand-soft: oklch(0.68 0.1 190 / 0.18);
-  --brand-foreground: oklch(0.17 0.006 265);
+  --gold: oklch(0.79 0.13 64);
+  --brand: var(--gold);
+  --brand-soft: oklch(0.79 0.13 64 / 0.2);
+  --brand-foreground: oklch(0.19 0.01 80);
 
   --success: oklch(0.74 0.12 158);
   --warning: oklch(0.8 0.13 84);
@@ -255,7 +255,7 @@
 
 .dark.ws-allan {
   --brand: var(--gold);
-  --brand-soft: oklch(0.78 0.13 84 / 0.2);
+  --brand-soft: oklch(0.79 0.13 64 / 0.2);
 }
 
 @font-face {
