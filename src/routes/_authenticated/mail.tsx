@@ -51,7 +51,7 @@ import { cn } from "@/lib/utils";
 import { MailBody } from "@/components/mail/mail-body";
 import { useMailColors } from "@/lib/mail-colors";
 import { MailIcon } from "@/components/icons/notion-icons";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsCompact } from "@/hooks/use-compact";
 
 export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -344,7 +344,7 @@ function MailPage() {
             ) : null}
           </div>
 
-          {isMobile ? (
+          {compact ? (
             <Dialog open={Boolean(current)} onOpenChange={(o) => !o && setOpenId(null)}>
               <DialogContent className="max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
