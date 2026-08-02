@@ -28,8 +28,6 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { ProjectsIcon, TasksIcon } from "@/components/icons/notion-icons";
-import { DatabaseView } from "@/components/views/database-view";
-import { useTasksSource } from "@/components/views/sources/tasks-source";
 
 export const Route = createFileRoute("/_authenticated/taches")({
   head: () => ({
@@ -72,7 +70,6 @@ function TasksPage() {
   const mutations = useTaskMutations(workspace);
 
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("todo");
-  const [mode, setMode] = useState<"views" | "plan">("views");
   const [search, setSearch] = useState("");
   const [projectFilter, setProjectFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
@@ -138,7 +135,6 @@ function TasksPage() {
 
   const openTask = all.find((t) => t.id === openTaskId) ?? null;
   const openCount = all.filter((t) => !t.parent_task_id && t.status !== "termine").length;
-  const source = useTasksSource(all, projects, { onOpen: setOpenTaskId });
 
   return (
     <AppShell>
@@ -146,29 +142,6 @@ function TasksPage() {
         title="Tâches"
         icon={TasksIcon}
         subtitle={`${openCount} tâche(s) en cours · une seule base, trois vues`}
-        actions={
-          <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5">
-            {(
-              [
-                ["views", "Vues"],
-                ["plan", "Planification"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                onClick={() => setMode(id)}
-                className={cn(
-                  "press rounded-md px-3 py-1 text-xs font-semibold transition-colors",
-                  mode === id
-                    ? "bg-background text-foreground shadow-[var(--shadow-soft)]"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        }
       />
 
       <form
@@ -215,14 +188,7 @@ function TasksPage() {
         </Button>
       </form>
 
-      {mode === "views" ? <DatabaseView source={source} /> : null}
-
-      <div
-        className={cn(
-          "mb-4 flex flex-wrap items-center justify-between gap-2",
-          mode === "views" && "hidden",
-        )}
-      >
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5">
           {TABS.map((t) => (
             <button
@@ -286,7 +252,7 @@ function TasksPage() {
         </div>
       </div>
 
-      {mode === "plan" && tab === "todo" ? (
+      {tab === "todo" ? (
         <div className="grid gap-4 xl:grid-cols-2">
           {GROUPS.map((g) => {
             const list = dated.filter(
@@ -317,7 +283,7 @@ function TasksPage() {
         </div>
       ) : null}
 
-      {mode === "plan" && (tab === "plan" || tab === "projects") ? (
+      {tab === "plan" || tab === "projects" ? (
         <div className="grid items-start gap-4 xl:grid-cols-2">
           <PlanBoard
             items={dated.map((t) => ({

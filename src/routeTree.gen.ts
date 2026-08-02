@@ -19,7 +19,6 @@ import { Route as AuthenticatedEquipeRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedMailRouteImport } from './routes/_authenticated/mail'
 import { Route as AuthenticatedProjetsRouteImport } from './routes/_authenticated/projets'
 import { Route as AuthenticatedTachesRouteImport } from './routes/_authenticated/taches'
-import { Route as AuthenticatedPagePageIdRouteImport } from './routes/_authenticated/page.$pageId'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -70,11 +69,6 @@ const AuthenticatedTachesRoute = AuthenticatedTachesRouteImport.update({
   path: '/taches',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedPagePageIdRoute = AuthenticatedPagePageIdRouteImport.update({
-  id: '/page/$pageId',
-  path: '/page/$pageId',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -86,7 +80,6 @@ export interface FileRoutesByFullPath {
   '/mail': typeof AuthenticatedMailRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
-  '/page/$pageId': typeof AuthenticatedPagePageIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -98,7 +91,6 @@ export interface FileRoutesByTo {
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
   '/': typeof AuthenticatedIndexRoute
-  '/page/$pageId': typeof AuthenticatedPagePageIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -112,7 +104,6 @@ export interface FileRoutesById {
   '/_authenticated/projets': typeof AuthenticatedProjetsRoute
   '/_authenticated/taches': typeof AuthenticatedTachesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/page/$pageId': typeof AuthenticatedPagePageIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -126,7 +117,6 @@ export interface FileRouteTypes {
     | '/mail'
     | '/projets'
     | '/taches'
-    | '/page/$pageId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/projets'
     | '/taches'
     | '/'
-    | '/page/$pageId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '/_authenticated/projets'
     | '/_authenticated/taches'
     | '/_authenticated/'
-    | '/_authenticated/page/$pageId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -231,13 +219,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTachesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/page/$pageId': {
-      id: '/_authenticated/page/$pageId'
-      path: '/page/$pageId'
-      fullPath: '/page/$pageId'
-      preLoaderRoute: typeof AuthenticatedPagePageIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
   }
 }
 
@@ -250,7 +231,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProjetsRoute: typeof AuthenticatedProjetsRoute
   AuthenticatedTachesRoute: typeof AuthenticatedTachesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedPagePageIdRoute: typeof AuthenticatedPagePageIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -262,7 +242,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedProjetsRoute: AuthenticatedProjetsRoute,
   AuthenticatedTachesRoute: AuthenticatedTachesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedPagePageIdRoute: AuthenticatedPagePageIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

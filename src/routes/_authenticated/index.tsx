@@ -62,6 +62,7 @@ function HomePage() {
   const avatar = space?.avatar_url ?? profile?.avatar_url ?? portraitAsset.url;
   const name = space?.name ?? profile?.display_name ?? "Allan Klein";
   const firstName = (profile?.display_name ?? "Allan").split(" ")[0] ?? "Allan";
+  const banner = space?.banner_url ?? profile?.banner_url ?? null;
 
   const active = (projects ?? []).filter((p) => !["termine", "archiver"].includes(p.status));
   const todayTasks = (tasks ?? []).filter(
@@ -73,41 +74,56 @@ function HomePage() {
     <AppShell>
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
-      {/* Hero card : profil, salutation, stats et météo dans un seul bandeau */}
-      <section className="mb-8 @container">
-        <div className="flex flex-col items-start gap-4 rounded-[22px] border border-border bg-card p-5 shadow-sm @min-[520px]:flex-row @min-[520px]:items-center @min-[520px]:gap-5">
-          <button
-            type="button"
-            onClick={() => setSettingsOpen(true)}
-            aria-label="Ouvrir les paramètres de l'espace de travail"
-            title="Paramètres de l'espace de travail"
-            className="press shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
-            <img
-              src={avatar}
-              alt={name}
-              className="size-14 rounded-[1rem] border-2 border-border object-cover shadow-sm transition-transform hover:scale-[1.03] @min-[520px]:size-16 @min-[680px]:size-20 @min-[520px]:rounded-[1.15rem]"
-            />
-          </button>
+      {/* Bannière de l'espace : visuel, icône cliquable et nom */}
+      <section className="mb-8">
+        <div className="overflow-hidden rounded-[22px] border border-border bg-card">
+          <div
+            className="h-28 w-full bg-secondary sm:h-36"
+            style={
+              banner
+                ? { backgroundImage: `url(${banner})`, backgroundSize: "cover", backgroundPosition: "center" }
+                : undefined
+            }
+          />
+          <div className="flex items-center gap-3.5 px-5 pb-4 pt-3">
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              aria-label="Ouvrir les paramètres de l'espace de travail"
+              title="Paramètres de l'espace de travail"
+              className="press -mt-10 shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <img
+                src={avatar}
+                alt={name}
+                className="size-16 rounded-2xl border-2 border-card object-cover shadow-[var(--elev-2)] transition-transform hover:scale-[1.03] sm:size-[4.5rem]"
+              />
+            </button>
+            <div className="min-w-0">
+              <p className="truncate text-[1.15rem] font-display leading-tight">{name}</p>
+              {space?.tag ? (
+                <p className="truncate text-[0.8rem] text-muted-foreground">{space.tag}</p>
+              ) : null}
+            </div>
+          </div>
+        </div>
 
-          <div className="min-w-0 flex-1">
-            <h1 className="text-xl font-display font-bold tracking-tight @min-[520px]:text-2xl @min-[680px]:text-3xl">
+        {/* Salutation espacée sous la bannière + météo sur le côté */}
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
               {greeting()} {firstName}
             </h1>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
               {active.length} projet(s) actifs · {remaining} tâche(s) restantes aujourd'hui
             </p>
           </div>
-
-          <div className="w-full @min-[520px]:w-auto @min-[520px]:shrink-0">
-            <WeatherBadge
-              weather={weather}
-              city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
-            />
-          </div>
+          <WeatherBadge
+            weather={weather}
+            city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
+          />
         </div>
       </section>
-
 
       <div className="mb-4 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <AgendaPanel />

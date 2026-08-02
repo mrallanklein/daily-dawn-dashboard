@@ -32,8 +32,6 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { BudgetIcon } from "@/components/icons/notion-icons";
-import { DatabaseView } from "@/components/views/database-view";
-import { useTransactionsSource } from "@/components/views/sources/transactions-source";
 
 export const Route = createFileRoute("/_authenticated/budget")({
   head: () => ({
@@ -113,8 +111,6 @@ function BudgetPage() {
 
   const projectName = (id: string | null) =>
     id ? ((projects ?? []).find((p) => p.id === id)?.name ?? "—") : "—";
-
-  const source = useTransactionsSource(list, projects ?? []);
 
   const exportCsv = () => {
     const rows = [
@@ -249,7 +245,74 @@ function BudgetPage() {
         </form>
       </Panel>
 
-      <DatabaseView source={source} />
+      <Panel eyebrow={`${list.length} écriture(s)`} title="Transactions" bodyClassName="p-3">
+        {list.length === 0 ? (
+          <EmptyState>Aucune transaction pour ce profil.</EmptyState>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[48rem] text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">
+                  <th className="px-2 py-2 font-normal">Date</th>
+                  <th className="px-2 py-2 font-normal">Description</th>
+                  <th className="px-2 py-2 font-normal">Projet</th>
+                  <th className="px-2 py-2 font-normal">Facture</th>
+                  <th className="px-2 py-2 font-normal">Statut</th>
+                  <th className="px-2 py-2 text-right font-normal">Montant</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {list.map((t) => (
+                  <tr key={t.id} className="group border-b border-border/60 last:border-0">
+                    <td className="px-2 py-2 tabular-nums text-muted-foreground">
+                      {format(parseISO(t.occurred_on), "d MMM yyyy", { locale: fr })}
+                    </td>
+                    <td className="max-w-[16rem] truncate px-2 py-2">
+                      {t.description}
+                      <span className="ml-1.5 text-xs text-muted-foreground">{t.category}</span>
+                    </td>
+                    <td className="px-2 py-2 text-muted-foreground">{projectName(t.project_id)}</td>
+                    <td className="px-2 py-2 text-muted-foreground">{t.invoice_number ?? "—"}</td>
+                    <td className="px-2 py-2">
+                      <span
+                        className={cn(
+                          "pill",
+                          t.status === "paye" ? "text-success" : "text-warning",
+                        )}
+                      >
+                        {t.status === "paye"
+                          ? "Payé"
+                          : t.status === "en_attente"
+                            ? "En attente"
+                            : "Brouillon"}
+                      </span>
+                    </td>
+                    <td
+                      className={cn(
+                        "px-2 py-2 text-right tabular-nums",
+                        t.kind === "revenu" ? "text-success" : "text-foreground",
+                      )}
+                    >
+                      {t.kind === "revenu" ? "+" : "−"}
+                      {fmtEUR(Number(t.amount))}
+                    </td>
+                    <td className="px-1">
+                      <button
+                        onClick={() => remove.mutate(t.id)}
+                        aria-label="Supprimer la transaction"
+                        className="opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 className="size-3.5 text-muted-foreground hover:text-destructive" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
     </AppShell>
   );
 }

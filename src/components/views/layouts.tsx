@@ -74,21 +74,13 @@ function Cell({ prop, row }: { prop: PropertyDef; row: Row }) {
     );
   if (prop.type === "email" && raw)
     return (
-      <a
-        href={`mailto:${raw}`}
-        className="truncate hover:underline"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <a href={`mailto:${raw}`} className="truncate hover:underline" onClick={(e) => e.stopPropagation()}>
         {String(raw)}
       </a>
     );
   if (prop.type === "phone" && raw)
     return (
-      <a
-        href={`tel:${raw}`}
-        className="truncate hover:underline"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <a href={`tel:${raw}`} className="truncate hover:underline" onClick={(e) => e.stopPropagation()}>
         {String(raw)}
       </a>
     );
@@ -213,8 +205,7 @@ export function GalleryLayout({ source, props, rows, colorOf }: LayoutProps) {
 
 export function KanbanLayout({ source, props, rows, colorOf, config }: LayoutProps) {
   const groupId = config.groupBy ?? source.statusProp ?? "";
-  const groupProp =
-    props.find((p) => p.id === groupId) ?? source.properties.find((p) => p.id === groupId);
+  const groupProp = props.find((p) => p.id === groupId) ?? source.properties.find((p) => p.id === groupId);
   const [dragged, setDragged] = useState<string | null>(null);
 
   const columns = useMemo(() => {
@@ -354,20 +345,18 @@ export function CalendarLayout({ source, rows, colorOf }: LayoutProps) {
           >
             <p className="mb-1 text-[0.72rem] text-muted-foreground">{format(day, "d")}</p>
             <ul className="space-y-1">
-              {forDay(day)
-                .slice(0, 3)
-                .map((row) => (
-                  <li key={row.id}>
-                    <button
-                      type="button"
-                      onClick={() => source.onOpen?.(row.id)}
-                      style={tint(colorOf(row) ?? "blue")}
-                      className="block w-full truncate rounded-full px-1.5 py-0.5 text-left text-[0.7rem]"
-                    >
-                      {String(row.values[source.titleProp] ?? "Sans titre")}
-                    </button>
-                  </li>
-                ))}
+              {forDay(day).slice(0, 3).map((row) => (
+                <li key={row.id}>
+                  <button
+                    type="button"
+                    onClick={() => source.onOpen?.(row.id)}
+                    style={tint(colorOf(row) ?? "blue")}
+                    className="block w-full truncate rounded-full px-1.5 py-0.5 text-left text-[0.7rem]"
+                  >
+                    {String(row.values[source.titleProp] ?? "Sans titre")}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
         ))}
@@ -404,9 +393,7 @@ export function TimelineLayout({ source, rows, colorOf }: LayoutProps) {
       ) : (
         dated.map((row) => {
           const from = new Date(String(row.values[startKey]).slice(0, 10)).getTime();
-          const to = new Date(
-            String(row.values[endKey!] ?? row.values[startKey]).slice(0, 10),
-          ).getTime();
+          const to = new Date(String(row.values[endKey!] ?? row.values[startKey]).slice(0, 10)).getTime();
           const left = ((from - min) / span) * 100;
           const width = Math.max(((to - from) / span) * 100, 4);
           return (
