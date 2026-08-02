@@ -63,30 +63,33 @@
   --font-sans: var(--font-body);
   --shadow-soft: var(--shadow-soft);
   --shadow-pop: var(--shadow-pop);
+  --shadow-xs: var(--elev-1);
+  --shadow-lift: var(--elev-3);
+  --shadow-float: var(--elev-4);
 }
 
 :root {
   --radius: 0.75rem;
 
-  /* Clair — blanc cassé chaud */
-  --background: oklch(0.973 0.006 85);
-  --foreground: oklch(0.205 0.004 80);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.205 0.004 80);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.205 0.004 80);
-  --primary: oklch(0.205 0.004 80);
-  --primary-foreground: oklch(0.985 0.005 85);
-  --secondary: oklch(0.955 0.006 85);
-  --secondary-foreground: oklch(0.26 0.004 80);
-  --muted: oklch(0.952 0.006 85);
-  --muted-foreground: oklch(0.52 0.008 80);
-  --accent: oklch(0.938 0.008 85);
-  --accent-foreground: oklch(0.24 0.004 80);
+  /* Clair — neutre chaud, papier argentique (jamais de blanc pur) */
+  --background: oklch(0.955 0.011 80);
+  --foreground: oklch(0.195 0.006 65);
+  --card: oklch(0.988 0.006 82);
+  --card-foreground: oklch(0.195 0.006 65);
+  --popover: oklch(0.99 0.005 82);
+  --popover-foreground: oklch(0.195 0.006 65);
+  --primary: oklch(0.205 0.008 60);
+  --primary-foreground: oklch(0.985 0.006 85);
+  --secondary: oklch(0.938 0.011 80);
+  --secondary-foreground: oklch(0.26 0.006 65);
+  --muted: oklch(0.934 0.012 80);
+  --muted-foreground: oklch(0.505 0.014 70);
+  --accent: oklch(0.918 0.014 80);
+  --accent-foreground: oklch(0.23 0.006 65);
   --destructive: oklch(0.52 0.19 27);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.2 0.01 80 / 0.1);
-  --input: oklch(0.2 0.01 80 / 0.16);
+  --border: oklch(0.24 0.02 65 / 0.11);
+  --input: oklch(0.24 0.02 65 / 0.16);
   --ring: oklch(0.46 0.078 192);
 
   --teal: oklch(0.46 0.078 192);
@@ -111,13 +114,13 @@
   --chart-4: oklch(0.62 0.09 158);
   --chart-5: oklch(0.72 0.02 80);
 
-  --sidebar: oklch(0.985 0.005 85);
+  --sidebar: oklch(0.965 0.012 80);
   --sidebar-foreground: oklch(0.24 0.004 80);
   --sidebar-primary: oklch(0.205 0.004 80);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.94 0.008 85);
+  --sidebar-accent: oklch(0.915 0.015 80);
   --sidebar-accent-foreground: oklch(0.2 0.004 80);
-  --sidebar-border: oklch(0.2 0.01 80 / 0.09);
+  --sidebar-border: oklch(0.24 0.02 65 / 0.1);
   --sidebar-ring: var(--brand);
 
   --font-display:
@@ -128,8 +131,31 @@
     "SF Pro Text", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter",
     system-ui, sans-serif;
 
-  --shadow-soft: 0 1px 2px oklch(0.3 0.03 80 / 0.05), 0 8px 24px -16px oklch(0.3 0.03 80 / 0.16);
-  --shadow-pop: 0 2px 6px oklch(0.3 0.03 80 / 0.06), 0 20px 48px -24px oklch(0.3 0.03 80 / 0.22);
+  /* Échelle d'élévation — profondeur douce, jamais dure */
+  --elev-1: 0 1px 1px oklch(0.3 0.03 70 / 0.04), 0 1px 2px oklch(0.3 0.03 70 / 0.04);
+  --elev-2: 0 1px 2px oklch(0.3 0.03 70 / 0.05), 0 8px 24px -16px oklch(0.3 0.03 70 / 0.16);
+  --elev-3:
+    0 1px 2px oklch(0.3 0.03 70 / 0.06), 0 4px 12px -6px oklch(0.3 0.03 70 / 0.12),
+    0 18px 40px -22px oklch(0.3 0.03 70 / 0.2);
+  --elev-4:
+    0 2px 6px oklch(0.3 0.03 70 / 0.07), 0 12px 28px -12px oklch(0.3 0.03 70 / 0.16),
+    0 40px 80px -40px oklch(0.3 0.03 70 / 0.28);
+  --shadow-soft: var(--elev-2);
+  --shadow-pop: var(--elev-4);
+
+  /* Dégradés subtils, lumière rasante */
+  --sheen: linear-gradient(
+    180deg,
+    color-mix(in oklab, white 55%, transparent),
+    color-mix(in oklab, white 0%, transparent) 55%
+  );
+  --ambient:
+    radial-gradient(
+      120% 80% at 12% -10%,
+      color-mix(in oklab, var(--brand) 10%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(90% 70% at 110% 0%, oklch(0.72 0.09 60 / 0.14), transparent 60%);
 }
 
 /* Profil actif : ALIAS (teal) / ALLAN (or) */
@@ -146,20 +172,20 @@
 }
 
 .dark {
-  /* Sombre — inspiration Linear */
-  --background: oklch(0.178 0.005 265);
+  /* Sombre — salle de montage, gris chauds profonds (Linear × Arc) */
+  --background: oklch(0.172 0.006 60);
   --foreground: oklch(0.965 0.003 265);
-  --card: oklch(0.21 0.006 265);
+  --card: oklch(0.212 0.008 60);
   --card-foreground: oklch(0.965 0.003 265);
-  --popover: oklch(0.222 0.006 265);
+  --popover: oklch(0.226 0.008 60);
   --popover-foreground: oklch(0.965 0.003 265);
   --primary: oklch(0.965 0.003 265);
   --primary-foreground: oklch(0.19 0.006 265);
-  --secondary: oklch(0.26 0.007 265);
+  --secondary: oklch(0.262 0.009 60);
   --secondary-foreground: oklch(0.96 0.003 265);
-  --muted: oklch(0.26 0.007 265);
-  --muted-foreground: oklch(0.68 0.01 265);
-  --accent: oklch(0.28 0.008 265);
+  --muted: oklch(0.262 0.009 60);
+  --muted-foreground: oklch(0.705 0.012 70);
+  --accent: oklch(0.288 0.01 60);
   --accent-foreground: oklch(0.97 0.003 265);
   --destructive: oklch(0.63 0.19 25);
   --destructive-foreground: oklch(0.16 0.006 265);
@@ -188,16 +214,37 @@
   --chart-4: oklch(0.7 0.1 158);
   --chart-5: oklch(0.5 0.02 265);
 
-  --sidebar: oklch(0.158 0.005 265);
+  --sidebar: oklch(0.148 0.006 60);
   --sidebar-foreground: oklch(0.93 0.004 265);
   --sidebar-primary: oklch(0.97 0.003 265);
   --sidebar-primary-foreground: oklch(0.17 0.006 265);
-  --sidebar-accent: oklch(0.26 0.007 265);
+  --sidebar-accent: oklch(0.272 0.01 60);
   --sidebar-accent-foreground: oklch(0.97 0.003 265);
   --sidebar-border: oklch(1 0 0 / 0.08);
 
-  --shadow-soft: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px -16px oklch(0 0 0 / 0.5);
-  --shadow-pop: 0 2px 8px oklch(0 0 0 / 0.35), 0 24px 56px -28px oklch(0 0 0 / 0.6);
+  --elev-1: 0 1px 1px oklch(0 0 0 / 0.35), 0 1px 3px oklch(0 0 0 / 0.3);
+  --elev-2: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px -16px oklch(0 0 0 / 0.5);
+  --elev-3:
+    0 1px 2px oklch(0 0 0 / 0.4), 0 6px 16px -8px oklch(0 0 0 / 0.45),
+    0 20px 44px -24px oklch(0 0 0 / 0.55);
+  --elev-4:
+    0 2px 8px oklch(0 0 0 / 0.4), 0 16px 36px -16px oklch(0 0 0 / 0.5),
+    0 48px 88px -44px oklch(0 0 0 / 0.7);
+  --shadow-soft: var(--elev-2);
+  --shadow-pop: var(--elev-4);
+
+  --sheen: linear-gradient(
+    180deg,
+    color-mix(in oklab, white 9%, transparent),
+    color-mix(in oklab, white 0%, transparent) 60%
+  );
+  --ambient:
+    radial-gradient(
+      120% 80% at 12% -10%,
+      color-mix(in oklab, var(--brand) 14%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(90% 70% at 110% 0%, oklch(0.6 0.08 60 / 0.12), transparent 60%);
 }
 
 .dark.ws-alias {
@@ -260,11 +307,13 @@
 /* Liquid glass : fond translucide, flou et grain fin */
 @utility glass {
   position: relative;
-  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
-  border-radius: var(--radius);
-  background: color-mix(in oklab, var(--card) 72%, transparent);
-  backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid color-mix(in oklab, var(--foreground) 7%, transparent);
+  border-radius: calc(var(--radius) + 4px);
+  background:
+    var(--sheen),
+    color-mix(in oklab, var(--card) 78%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: var(--elev-2);
   overflow: hidden;
 }
 
@@ -329,4 +378,167 @@
 [data-slot="alert-dialog-overlay"] {
   backdrop-filter: blur(8px);
   background-color: color-mix(in oklab, var(--foreground) 22%, transparent);
+}
+
+/* ============ Élévation & interactions ============ */
+
+/* Verre plus dense : panneaux flottants, barres, popovers */
+@utility glass-strong {
+  position: relative;
+  border: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
+  border-radius: calc(var(--radius) + 6px);
+  background:
+    var(--sheen),
+    color-mix(in oklab, var(--card) 88%, transparent);
+  backdrop-filter: blur(28px) saturate(160%);
+  box-shadow: var(--elev-3);
+}
+
+/* Lumière ambiante cinématographique posée derrière le contenu */
+@utility ambient {
+  background-image: var(--ambient);
+}
+
+/* Carte qui se soulève au survol */
+@utility elevate {
+  transition:
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.24s ease;
+  will-change: transform;
+}
+
+.elevate:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elev-3);
+  border-color: color-mix(in oklab, var(--foreground) 14%, transparent);
+}
+
+.elevate:active {
+  transform: translateY(0) scale(0.995);
+  box-shadow: var(--elev-1);
+}
+
+/* Filet lumineux en haut d'une carte */
+@utility topline {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--foreground) 14%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+}
+
+/* Halo de marque discret au survol (Raycast) */
+@utility glow {
+  transition: box-shadow 0.28s ease;
+}
+
+.glow:hover {
+  box-shadow:
+    var(--elev-3),
+    0 0 0 1px color-mix(in oklab, var(--brand) 30%, transparent),
+    0 12px 40px -18px color-mix(in oklab, var(--brand) 45%, transparent);
+}
+
+/* ============ Animations ============ */
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility rise {
+  animation: rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Entrée décalée des enfants directs */
+@utility stagger {
+  & > * {
+    animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  & > *:nth-child(1) {
+    animation-delay: 0.02s;
+  }
+  & > *:nth-child(2) {
+    animation-delay: 0.06s;
+  }
+  & > *:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  & > *:nth-child(4) {
+    animation-delay: 0.14s;
+  }
+  & > *:nth-child(5) {
+    animation-delay: 0.18s;
+  }
+  & > *:nth-child(6) {
+    animation-delay: 0.22s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .stagger > * {
+    animation: none;
+  }
+  .elevate:hover {
+    transform: none;
+  }
+}
+
+/* ============ Détails ============ */
+
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@utility num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Barres de défilement fines, style macOS */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--foreground) 18%, transparent) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--foreground) 16%, transparent);
+  border: 3px solid transparent;
+  background-clip: content-box;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--foreground) 28%, transparent);
+  background-clip: content-box;
+}
+
+:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--brand) 70%, transparent);
+  outline-offset: 2px;
 }

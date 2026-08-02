@@ -110,13 +110,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="ambient relative min-h-screen bg-background">
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
+          "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar/80 backdrop-blur-2xl transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
           open ? "w-56" : "w-[60px]",
         )}
       >
@@ -240,14 +240,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               to={item.to}
               title={item.label}
               activeProps={{
-                className: "bg-sidebar-accent text-foreground [&_svg]:opacity-100",
+                className:
+                  "bg-sidebar-accent text-foreground shadow-[var(--shadow-xs)] [&_svg]:opacity-100",
               }}
               inactiveProps={{
                 className:
-                  "text-foreground/85 hover:bg-sidebar-accent/70 hover:text-foreground hover:[&_svg]:opacity-100",
+                  "text-foreground/80 hover:bg-sidebar-accent/60 hover:text-foreground hover:[&_svg]:opacity-100",
               }}
               className={cn(
-                "flex min-h-[34px] items-center gap-2.5 rounded-[6px] px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-colors",
+                "flex min-h-[36px] items-center gap-2.5 rounded-lg px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-[background-color,color,box-shadow] duration-200",
                 !open && "justify-center px-0",
               )}
             >
@@ -320,7 +321,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
         title={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
         className={cn(
-          "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-[var(--shadow-soft)] transition-[left,color] duration-200 ease-out hover:text-foreground md:grid",
+          "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/90 text-muted-foreground shadow-[var(--shadow-lift)] backdrop-blur-xl transition-[left,color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:text-foreground md:grid",
           open ? "left-[calc(14rem-1rem)]" : "left-[calc(60px-1rem)]",
         )}
       >
@@ -331,7 +332,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
       </button>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/95 px-1 py-1.5 backdrop-blur md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/85 px-1 py-1.5 backdrop-blur-xl md:hidden">
         {[HOME, ...items].slice(0, 5).map((item) => (
           <Link
             key={item.to}
@@ -349,7 +350,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main
         className={cn(
-          "min-h-screen px-4 pb-24 pt-6 transition-[margin,padding] duration-200 ease-out sm:px-6 md:pb-10 md:pl-7 lg:px-8 lg:pl-8",
+          "min-h-screen px-4 pb-24 pt-8 transition-[margin,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 md:pb-12 md:pl-7 lg:px-10 lg:pl-10",
           open ? "md:ml-56" : "md:ml-[60px]",
         )}
       >
