@@ -41,6 +41,8 @@ import portraitAsset from "@/assets/allan-klein.png.asset.json";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
+import { useAppShortcuts } from "@/hooks/use-app-shortcuts";
+import { useReminders } from "@/hooks/use-reminders";
 
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
@@ -120,6 +122,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  useAppShortcuts({ onPalette: () => setPaletteOpen(true) });
+  useReminders();
 
   const toggle = () =>
     setOpen((prev) => {
