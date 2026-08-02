@@ -1,11 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { format, isSameDay, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { CalendarEvent } from "@/lib/agenda.functions";
-import { HOURS, eventSpan, eventsOnDay } from "./calendar-utils";
+import { eventSpan, eventsOnDay } from "./calendar-utils";
 import { cn } from "@/lib/utils";
 
-const HOUR_PX = 48;
+const WEEK_HOUR_PX = 48;
+/** Fenêtre minimale affichée (heures utiles) quand la journée est vide. */
+const DEFAULT_RANGE = { start: 7, end: 22 };
 
 export function TimeGrid({
   days,
@@ -19,11 +21,39 @@ export function TimeGrid({
   onCreateAt: (day: Date, hour: number) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
+  const singleDay = days.length === 1;
+
+  // Vue Jour : on compacte les 24 h sur les seules heures utiles pour éviter le scroll.
+  const { hours, hourPx, startHour } = useMemo(() => {
+    if (!singleDay) {
+      return {
+        hours: Array.from({ length: 24 }, (_, i) => i),
+        hourPx: WEEK_HOUR_PX,
+        startHour: 0,
+      };
+    }
+    const day = days[0]!;
+    let min = DEFAULT_RANGE.start;
+    let max = DEFAULT_RANGE.end;
+    for (const ev of eventsOnDay(events, day).filter((e) => !e.allDay)) {
+      const { top, height } = eventSpan(ev, day);
+      min = Math.min(min, Math.floor(top));
+      max = Math.max(max, Math.ceil(top + height));
+    }
+    min = Math.max(0, min);
+    max = Math.min(24, Math.max(max, min + 6));
+    const count = max - min;
+    return {
+      hours: Array.from({ length: count }, (_, i) => min + i),
+      hourPx: Math.max(26, Math.min(54, Math.round(620 / count))),
+      startHour: min,
+    };
+  }, [singleDay, days.map((d) => d.toISOString()).join(","), events]);
 
   useEffect(() => {
-    // Cadre la journée sur les heures de travail comme le calendrier Apple.
-    if (scroller.current) scroller.current.scrollTop = 7 * HOUR_PX;
-  }, []);
+    // Vue Semaine : cadre sur les heures de travail comme le calendrier Apple.
+    if (scroller.current && !singleDay) scroller.current.scrollTop = 7 * WEEK_HOUR_PX;
+  }, [singleDay]);
 
   return (
     <div className="flex w-full min-w-0 flex-col overflow-x-hidden rounded-2xl">
@@ -36,12 +66,12 @@ export function TimeGrid({
           const today = isSameDay(day, new Date());
           return (
             <div key={day.toISOString()} className="min-w-0 px-1 py-2 text-center">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                 {format(day, "EEE", { locale: fr })}
               </p>
               <p
                 className={cn(
-                  "mx-auto mt-0.5 grid size-7 place-items-center rounded-full text-sm font-bold tabular-nums",
+                  "mx-auto mt-0.5 grid size-8 place-items-center rounded-full text-[0.95rem] font-bold tabular-nums",
                   today ? "bg-destructive text-destructive-foreground" : "text-foreground",
                 )}
               >
@@ -57,7 +87,7 @@ export function TimeGrid({
         className="grid w-full border-b border-border/70 bg-muted/25"
         style={{ gridTemplateColumns: `3rem repeat(${days.length}, minmax(0,1fr))` }}
       >
-        <p className="px-2 py-1 text-right text-[0.6rem] uppercase tracking-[0.1em] text-muted-foreground">
+        <p className="px-2 py-1 text-right text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">
           jour
         </p>
         {days.map((day) => (
@@ -71,7 +101,7 @@ export function TimeGrid({
                 <button
                   key={ev.id + ev.calendarId}
                   onClick={() => onSelectEvent(ev)}
-                  className="press block w-full truncate rounded-md px-1.5 py-0.5 text-left text-[0.68rem] font-semibold text-foreground"
+                  className="press block w-full truncate rounded-md px-1.5 py-0.5 text-left text-[0.78rem] font-semibold text-foreground"
                   style={{ backgroundColor: `${ev.color ?? "#7c7c7c"}33` }}
                 >
                   {ev.title}
@@ -81,20 +111,26 @@ export function TimeGrid({
         ))}
       </div>
 
-      <div ref={scroller} className="max-h-[32rem] w-full overflow-x-hidden overflow-y-auto">
+      <div
+        ref={scroller}
+        className={cn(
+          "w-full overflow-x-hidden",
+          singleDay ? "overflow-y-visible" : "max-h-[32rem] overflow-y-auto",
+        )}
+      >
         <div
           className="relative grid w-full"
           style={{ gridTemplateColumns: `3rem repeat(${days.length}, minmax(0,1fr))` }}
         >
           <div>
-            {HOURS.map((h) => (
+            {hours.map((h) => (
               <div
                 key={h}
                 className="relative border-t border-border/40 pr-2 text-right"
-                style={{ height: HOUR_PX }}
+                style={{ height: hourPx }}
               >
-                <span className="absolute -top-2 right-2 text-[0.62rem] font-medium tabular-nums text-muted-foreground">
-                  {h === 0 ? "" : `${String(h).padStart(2, "0")}:00`}
+                <span className="absolute -top-2 right-2 text-[0.7rem] font-medium tabular-nums text-muted-foreground">
+                  {h === 0 && !singleDay ? "" : `${String(h).padStart(2, "0")}:00`}
                 </span>
               </div>
             ))}
@@ -106,20 +142,22 @@ export function TimeGrid({
             const now = new Date();
             return (
               <div key={day.toISOString()} className="relative min-w-0 border-l border-border/50">
-                {HOURS.map((h) => (
+                {hours.map((h) => (
                   <button
                     key={h}
                     aria-label={`Créer un évènement à ${h}:00`}
                     onClick={() => onCreateAt(day, h)}
                     className="block w-full border-t border-border/40 transition-colors hover:bg-muted/50"
-                    style={{ height: HOUR_PX }}
+                    style={{ height: hourPx }}
                   />
                 ))}
 
                 {today ? (
                   <div
                     className="pointer-events-none absolute inset-x-0 z-20 border-t-2 border-destructive"
-                    style={{ top: (now.getHours() + now.getMinutes() / 60) * HOUR_PX }}
+                    style={{
+                      top: (now.getHours() + now.getMinutes() / 60 - startHour) * hourPx,
+                    }}
                   >
                     <span className="absolute -left-1 -top-1 size-2 rounded-full bg-destructive" />
                   </div>
@@ -133,18 +171,18 @@ export function TimeGrid({
                       onClick={() => onSelectEvent(ev)}
                       className="press absolute z-10 overflow-hidden rounded-xl border-l-[3px] px-1.5 py-1 text-left shadow-[var(--shadow-soft)] backdrop-blur-sm"
                       style={{
-                        top: top * HOUR_PX,
-                        height: Math.max(20, height * HOUR_PX - 2),
+                        top: (top - startHour) * hourPx,
+                        height: Math.max(20, height * hourPx - 2),
                         left: `${(i % 2) * 4 + 2}%`,
                         width: "94%",
                         backgroundColor: `${ev.color ?? "#5b8def"}2e`,
                         borderLeftColor: ev.color ?? "#5b8def",
                       }}
                     >
-                      <span className="block truncate text-[0.7rem] font-bold leading-tight">
+                      <span className="block truncate text-[0.82rem] font-bold leading-tight">
                         {ev.title}
                       </span>
-                      <span className="block truncate text-[0.62rem] font-medium text-muted-foreground">
+                      <span className="block truncate text-[0.72rem] font-medium text-muted-foreground">
                         {format(parseISO(ev.start), "HH:mm")}
                         {ev.location ? ` · ${ev.location}` : ""}
                       </span>
