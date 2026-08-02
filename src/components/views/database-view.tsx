@@ -1,7 +1,14 @@
 import { useMemo, useState } from "react";
 import {
   ArrowDownUp,
+  Copy,
+  Eye,
+  EyeOff,
   Filter,
+  GripVertical,
+  Maximize2,
+  Minimize2,
+  Pencil,
   Palette,
   Plus,
   Search,
@@ -16,6 +23,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -108,6 +128,8 @@ export function DatabaseView({
     entryValues,
     createView,
     updateView,
+    duplicateView,
+    reorderViews,
     deleteView,
     saveProperty,
     deleteProperty,
@@ -119,8 +141,15 @@ export function DatabaseView({
   const [editing, setEditing] = useState<PropertyDef | null>(null);
   const [newViewName, setNewViewName] = useState("");
   const [newViewLayout, setNewViewLayout] = useState<Layout>("table");
+  const [newViewEmoji, setNewViewEmoji] = useState("");
+  const [fullscreen, setFullscreen] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
+  const [renameId, setRenameId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [dragTab, setDragTab] = useState<string | null>(null);
 
-  const view = views.find((v) => v.id === activeId) ?? views[0];
+  const tabs = views.filter((v) => !v.hidden);
+  const view = views.find((v) => v.id === activeId) ?? tabs[0] ?? views[0];
   const config: ViewConfig = view?.config ?? DEFAULT_CONFIG;
 
   const properties = useMemo<PropertyDef[]>(
@@ -159,25 +188,83 @@ export function DatabaseView({
   const enrichedSource: DataSource = { ...source, properties };
 
   return (
-    <section className="space-y-3">
+    <section
+      className={cn(
+        "space-y-3",
+        fullscreen && "fixed inset-0 z-50 overflow-y-auto bg-background p-4 sm:p-6",
+      )}
+    >
       {/* Onglets de vues */}
       <div className="flex flex-wrap items-center gap-2 border-b border-border pb-2">
         <div className="flex flex-wrap items-center gap-1">
-          {views.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              onClick={() => setActiveId(v.id)}
-              className={cn(
-                "press h-8 rounded-full px-3 text-[0.8125rem] transition-colors",
-                v.id === view?.id
-                  ? "bg-secondary font-medium text-foreground"
-                  : "text-muted-foreground hover:bg-secondary/60",
-              )}
-            >
-              {v.emoji ? <span className="mr-1">{v.emoji}</span> : null}
-              {v.name}
-            </button>
+          {tabs.map((v) => (
+            <ContextMenu key={v.id}>
+              <ContextMenuTrigger asChild>
+                <button
+                  type="button"
+                  draggable
+                  onDragStart={() => setDragTab(v.id)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => {
+                    if (!dragTab || dragTab === v.id) return;
+                    const ids = tabs.map((t) => t.id).filter((id) => id !== dragTab);
+                    const at = ids.indexOf(v.id);
+                    ids.splice(at < 0 ? ids.length : at, 0, dragTab);
+                    reorderViews.mutate(ids);
+                    setDragTab(null);
+                  }}
+                  onClick={() => setActiveId(v.id)}
+                  onDoubleClick={() => {
+                    setRenameId(v.id);
+                    setRenameValue(v.name);
+                  }}
+                  className={cn(
+                    "press h-8 rounded-full px-3 text-[0.8125rem] transition-colors",
+                    v.id === view?.id
+                      ? "bg-secondary font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-secondary/60",
+                  )}
+                >
+                  {v.emoji ? <span className="mr-1">{v.emoji}</span> : null}
+                  {v.name}
+                </button>
+              </ContextMenuTrigger>
+              <ContextMenuContent className="w-52">
+                <ContextMenuItem
+                  onSelect={() => {
+                    setRenameId(v.id);
+                    setRenameValue(v.name);
+                  }}
+                >
+                  <Pencil size={14} strokeWidth={1.6} /> Renommer
+                </ContextMenuItem>
+                <ContextMenuItem onSelect={() => duplicateView.mutate(v.id)}>
+                  <Copy size={14} strokeWidth={1.6} /> Dupliquer
+                </ContextMenuItem>
+                <ContextMenuItem
+                  onSelect={() =>
+                    updateView.mutate({ id: v.id, patch: { hidden: true }, base: v })
+                  }
+                >
+                  <EyeOff size={14} strokeWidth={1.6} /> Masquer
+                </ContextMenuItem>
+                <ContextMenuSeparator />
+                <ContextMenuItem onSelect={() => setManageOpen(true)}>
+                  <SlidersHorizontal size={14} strokeWidth={1.6} /> Gérer les vues
+                </ContextMenuItem>
+                {v.id.startsWith("default:") ? null : (
+                  <ContextMenuItem
+                    className="text-destructive"
+                    onSelect={() => {
+                      deleteView.mutate(v.id);
+                      setActiveId(null);
+                    }}
+                  >
+                    <Trash2 size={14} strokeWidth={1.6} /> Supprimer
+                  </ContextMenuItem>
+                )}
+              </ContextMenuContent>
+            </ContextMenu>
           ))}
 
           <Popover>
@@ -185,14 +272,26 @@ export function DatabaseView({
               <Plus size={15} strokeWidth={1.6} />
             </PopoverTrigger>
             <PopoverContent align="start" className="w-64 space-y-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="view-name">Nom de la vue</Label>
-                <Input
-                  id="view-name"
-                  value={newViewName}
-                  onChange={(e) => setNewViewName(e.target.value)}
-                  placeholder="Ma vue"
-                />
+              <div className="flex items-end gap-2">
+                <div className="w-14 space-y-1.5">
+                  <Label htmlFor="view-emoji">Emoji</Label>
+                  <Input
+                    id="view-emoji"
+                    value={newViewEmoji}
+                    onChange={(e) => setNewViewEmoji(e.target.value.slice(0, 2))}
+                    placeholder="🗂"
+                    className="text-center"
+                  />
+                </div>
+                <div className="flex-1 space-y-1.5">
+                  <Label htmlFor="view-name">Nom de la vue</Label>
+                  <Input
+                    id="view-name"
+                    value={newViewName}
+                    onChange={(e) => setNewViewName(e.target.value)}
+                    placeholder="Ma vue"
+                  />
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label>Disposition</Label>
@@ -214,12 +313,29 @@ export function DatabaseView({
                 size="sm"
                 onClick={() => {
                   createView.mutate(
-                    { name: newViewName.trim() || "Vue", emoji: "", layout: newViewLayout },
-                    { onSuccess: () => setNewViewName("") },
+                    {
+                      name: newViewName.trim() || "Vue",
+                      emoji: newViewEmoji,
+                      layout: newViewLayout,
+                    },
+                    {
+                      onSuccess: () => {
+                        setNewViewName("");
+                        setNewViewEmoji("");
+                      },
+                    },
                   );
                 }}
               >
                 Créer la vue
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full"
+                onClick={() => setManageOpen(true)}
+              >
+                Gérer les vues
               </Button>
             </PopoverContent>
           </Popover>
@@ -764,6 +880,39 @@ export function DatabaseView({
             </PopoverContent>
           </Popover>
 
+          <Select
+            value={String(config.pageSize)}
+            onValueChange={(v) => patch({ pageSize: Number(v) })}
+          >
+            <SelectTrigger
+              aria-label="Éléments par page"
+              className="h-8 w-[5.75rem] rounded-full text-[0.8125rem]"
+            >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[10, 25, 50, 100].map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n} / page
+                </SelectItem>
+              ))}
+              <SelectItem value="0">Sans limite</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <button
+            type="button"
+            aria-label={fullscreen ? "Quitter le plein écran" : "Ouvrir en page entière"}
+            onClick={() => setFullscreen((v) => !v)}
+            className="press grid size-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            {fullscreen ? (
+              <Minimize2 size={14} strokeWidth={1.6} />
+            ) : (
+              <Maximize2 size={14} strokeWidth={1.6} />
+            )}
+          </button>
+
           {actions}
           {source.onCreate ? (
             <Button size="sm" className="h-8 rounded-full" onClick={source.onCreate}>
@@ -789,6 +938,92 @@ export function DatabaseView({
           colorOf={(row) => rowColor(row, config.colors)}
         />
       )}
+
+      {/* Renommer une vue */}
+      <Dialog open={Boolean(renameId)} onOpenChange={(o) => !o && setRenameId(null)}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="font-display">Renommer la vue</DialogTitle>
+          </DialogHeader>
+          <Input
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+            placeholder="Nom de la vue"
+          />
+          <Button
+            onClick={() => {
+              const target = views.find((v) => v.id === renameId);
+              if (target)
+                updateView.mutate({
+                  id: target.id,
+                  patch: { name: renameValue.trim() || target.name },
+                  base: target,
+                });
+              setRenameId(null);
+            }}
+          >
+            Enregistrer
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Gérer les vues */}
+      <Dialog open={manageOpen} onOpenChange={setManageOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display">Gérer les vues</DialogTitle>
+          </DialogHeader>
+          <ul className="space-y-1.5">
+            {views.map((v) => (
+              <li
+                key={v.id}
+                className="flex items-center gap-2 rounded-[10px] border border-border px-2 py-1.5"
+              >
+                <GripVertical size={14} strokeWidth={1.6} className="text-muted-foreground" />
+                <span className="min-w-0 flex-1 truncate text-[0.875rem]">
+                  {v.emoji ? `${v.emoji} ` : ""}
+                  {v.name}
+                  <span className="ml-1.5 text-[0.75rem] text-muted-foreground">
+                    {LAYOUTS.find((l) => l.id === v.layout)?.label}
+                  </span>
+                </span>
+                <button
+                  type="button"
+                  aria-label={v.hidden ? "Afficher la vue" : "Masquer la vue"}
+                  onClick={() =>
+                    updateView.mutate({ id: v.id, patch: { hidden: !v.hidden }, base: v })
+                  }
+                  className="press grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-secondary"
+                >
+                  {v.hidden ? (
+                    <EyeOff size={14} strokeWidth={1.6} />
+                  ) : (
+                    <Eye size={14} strokeWidth={1.6} />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  aria-label="Dupliquer la vue"
+                  onClick={() => duplicateView.mutate(v.id)}
+                  className="press grid size-7 place-items-center rounded-md text-muted-foreground hover:bg-secondary"
+                >
+                  <Copy size={14} strokeWidth={1.6} />
+                </button>
+                {v.id.startsWith("default:") ? null : (
+                  <button
+                    type="button"
+                    aria-label="Supprimer la vue"
+                    onClick={() => deleteView.mutate(v.id)}
+                    className="press grid size-7 place-items-center rounded-md text-destructive hover:bg-secondary"
+                  >
+                    <Trash2 size={14} strokeWidth={1.6} />
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
+        </DialogContent>
+      </Dialog>
 
       <PropertyEditor
         open={editorOpen}
