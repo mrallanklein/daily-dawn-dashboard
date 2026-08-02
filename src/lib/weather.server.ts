@@ -81,14 +81,14 @@ async function fromMetNo(lat: number, lon: number): Promise<WeatherResult | null
     const first = series[0];
     const temp = first?.data?.instant?.details?.air_temperature;
     if (temp == null) return null;
-    const day = (first.time ?? "").slice(0, 10);
+    const day = (first?.time ?? "").slice(0, 10);
     const todays = series
       .filter((s) => s.time.slice(0, 10) === day)
       .map((s) => s.data?.instant?.details?.air_temperature)
       .filter((v): v is number => v != null);
     const symbol =
-      first.data?.next_1_hours?.summary?.symbol_code ??
-      first.data?.next_6_hours?.summary?.symbol_code ??
+      first?.data?.next_1_hours?.summary?.symbol_code ??
+      first?.data?.next_6_hours?.summary?.symbol_code ??
       "cloudy";
     return {
       temperature: Math.round(temp),
