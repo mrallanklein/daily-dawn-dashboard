@@ -19,13 +19,13 @@ import portraitAsset from "@/assets/allan-klein.png.asset.json";
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "Tableau de bord — ALIAS & Allan Klein" },
+      { title: "Accueil — ALIAS & Allan Klein" },
       {
         name: "description",
         content:
           "Accueil : météo du jour, planning Google Agenda, projets et tâches du jour, chronologie des deadlines, to-do libre et calendrier.",
       },
-      { property: "og:title", content: "Tableau de bord — ALIAS & Allan Klein" },
+      { property: "og:title", content: "Accueil — ALIAS & Allan Klein" },
       {
         property: "og:description",
         content: "Planning, projets, tâches, deadlines et calendrier réunis sur un écran.",
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Dashboard,
+  component: HomePage,
 });
 
 function greeting() {
@@ -45,7 +45,7 @@ function greeting() {
   return "Bonne soirée";
 }
 
-function Dashboard() {
+function HomePage() {
   const { workspace, space } = useWorkspace();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { data: profile } = useQuery(profileQuery());
@@ -61,7 +61,8 @@ function Dashboard() {
 
   const avatar = space?.avatar_url ?? profile?.avatar_url ?? portraitAsset.url;
   const name = space?.name ?? profile?.display_name ?? "Allan Klein";
-  const firstName = name.split(" ")[0] ?? "Allan";
+  const firstName = (profile?.display_name ?? "Allan").split(" ")[0] ?? "Allan";
+  const banner = space?.banner_url ?? profile?.banner_url ?? null;
 
   const active = (projects ?? []).filter((p) => !["termine", "archiver"].includes(p.status));
   const todayTasks = (tasks ?? []).filter(
@@ -72,37 +73,55 @@ function Dashboard() {
   return (
     <AppShell>
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
-      <section className="glass mb-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-8 pt-8">
-          <div className="flex min-w-0 items-center gap-4">
+
+      {/* Bannière de l'espace : visuel, icône cliquable et nom */}
+      <section className="mb-8">
+        <div className="overflow-hidden rounded-[22px] border border-border bg-card">
+          <div
+            className="h-28 w-full bg-secondary sm:h-36"
+            style={
+              banner
+                ? { backgroundImage: `url(${banner})`, backgroundSize: "cover", backgroundPosition: "center" }
+                : undefined
+            }
+          />
+          <div className="flex items-center gap-3.5 px-5 pb-4 pt-3">
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
               aria-label="Ouvrir les paramètres de l'espace de travail"
               title="Paramètres de l'espace de travail"
-              className="press shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="press -mt-10 shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <img
                 src={avatar}
                 alt={name}
-                className="size-[5.5rem] rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)] transition-transform hover:scale-[1.03] sm:size-24"
+                className="size-16 rounded-2xl border-2 border-card object-cover shadow-[var(--elev-2)] transition-transform hover:scale-[1.03] sm:size-[4.5rem]"
               />
             </button>
             <div className="min-w-0">
-              <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
-                {greeting()} {firstName}
-              </h1>
-              <p className="text-sm font-medium text-muted-foreground">
-                {active.length} projet(s) actifs · {remaining} tâche(s) restantes aujourd'hui
-              </p>
+              <p className="truncate text-[1.15rem] font-display leading-tight">{name}</p>
+              {space?.tag ? (
+                <p className="truncate text-[0.8rem] text-muted-foreground">{space.tag}</p>
+              ) : null}
             </div>
           </div>
-          <div>
-            <WeatherBadge
-              weather={weather}
-              city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
-            />
+        </div>
+
+        {/* Salutation espacée sous la bannière + météo sur le côté */}
+        <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
+              {greeting()} {firstName}
+            </h1>
+            <p className="mt-1 text-sm font-medium text-muted-foreground">
+              {active.length} projet(s) actifs · {remaining} tâche(s) restantes aujourd'hui
+            </p>
           </div>
+          <WeatherBadge
+            weather={weather}
+            city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
+          />
         </div>
       </section>
 
@@ -116,8 +135,11 @@ function Dashboard() {
         <TasksPanel />
       </div>
 
-      <div className="mb-4 grid gap-4 lg:grid-cols-2">
+      <div className="mb-4">
         <DeadlinesPanel />
+      </div>
+
+      <div className="mb-4">
         <TaskList />
       </div>
 

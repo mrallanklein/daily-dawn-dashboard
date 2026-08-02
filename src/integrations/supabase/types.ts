@@ -109,6 +109,159 @@ export type Database = {
         }
         Relationships: []
       }
+      entry_history: {
+        Row: {
+          author: string
+          created_at: string
+          entry_id: string
+          id: string
+          module: string
+          snapshot: Json
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          author?: string
+          created_at?: string
+          entry_id: string
+          id?: string
+          module: string
+          snapshot?: Json
+          summary?: string
+          user_id: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          entry_id?: string
+          id?: string
+          module?: string
+          snapshot?: Json
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      entry_props: {
+        Row: {
+          created_at: string
+          entry_id: string
+          id: string
+          module: string
+          updated_at: string
+          user_id: string
+          values: Json
+        }
+        Insert: {
+          created_at?: string
+          entry_id: string
+          id?: string
+          module: string
+          updated_at?: string
+          user_id: string
+          values?: Json
+        }
+        Update: {
+          created_at?: string
+          entry_id?: string
+          id?: string
+          module?: string
+          updated_at?: string
+          user_id?: string
+          values?: Json
+        }
+        Relationships: []
+      }
+      module_properties: {
+        Row: {
+          config: Json
+          created_at: string
+          hidden: boolean
+          id: string
+          module: string
+          name: string
+          position: number
+          type: string
+          updated_at: string
+          user_id: string
+          workspace: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          module: string
+          name?: string
+          position?: number
+          type?: string
+          updated_at?: string
+          user_id: string
+          workspace?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          hidden?: boolean
+          id?: string
+          module?: string
+          name?: string
+          position?: number
+          type?: string
+          updated_at?: string
+          user_id?: string
+          workspace?: string
+        }
+        Relationships: []
+      }
+      module_views: {
+        Row: {
+          config: Json
+          created_at: string
+          emoji: string
+          hidden: boolean
+          id: string
+          layout: string
+          module: string
+          name: string
+          position: number
+          share_token: string | null
+          updated_at: string
+          user_id: string
+          workspace: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          emoji?: string
+          hidden?: boolean
+          id?: string
+          layout?: string
+          module: string
+          name?: string
+          position?: number
+          share_token?: string | null
+          updated_at?: string
+          user_id: string
+          workspace?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          emoji?: string
+          hidden?: boolean
+          id?: string
+          layout?: string
+          module?: string
+          name?: string
+          position?: number
+          share_token?: string | null
+          updated_at?: string
+          user_id?: string
+          workspace?: string
+        }
+        Relationships: []
+      }
       notes_items: {
         Row: {
           checked: boolean
@@ -153,6 +306,71 @@ export type Database = {
           },
         ]
       }
+      notification_reads: {
+        Row: {
+          created_at: string
+          id: string
+          notification_key: string
+          read_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notification_key: string
+          read_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notification_key?: string
+          read_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      page_entries: {
+        Row: {
+          created_at: string
+          id: string
+          page_id: string
+          position: number
+          title: string
+          updated_at: string
+          user_id: string
+          values: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          page_id: string
+          position?: number
+          title?: string
+          updated_at?: string
+          user_id: string
+          values?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          page_id?: string
+          position?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+          values?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "page_entries_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "workspace_pages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           alias_avatar_url: string | null
@@ -162,6 +380,7 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          shortcuts: Json
           updated_at: string
           weather_city: string
           weather_lat: number
@@ -175,6 +394,7 @@ export type Database = {
           created_at?: string
           display_name?: string
           id: string
+          shortcuts?: Json
           updated_at?: string
           weather_city?: string
           weather_lat?: number
@@ -188,6 +408,7 @@ export type Database = {
           created_at?: string
           display_name?: string
           id?: string
+          shortcuts?: Json
           updated_at?: string
           weather_city?: string
           weather_lat?: number
@@ -367,51 +588,78 @@ export type Database = {
           banner_url: string | null
           calendar_ids: string[]
           created_at: string
+          date_format: string
+          hidden_modules: string[]
           id: string
+          locale: string
           mail_accounts: string[]
+          module_labels: Json
+          module_order: string[]
           name: string
+          number_format: string
           position: number
           slug: string
           tag: string
+          timezone: string
+          timezone_auto: boolean
           updated_at: string
           user_id: string
           weather_city: string
           weather_lat: number
           weather_lon: number
+          week_start: string
         }
         Insert: {
           avatar_url?: string | null
           banner_url?: string | null
           calendar_ids?: string[]
           created_at?: string
+          date_format?: string
+          hidden_modules?: string[]
           id?: string
+          locale?: string
           mail_accounts?: string[]
+          module_labels?: Json
+          module_order?: string[]
           name: string
+          number_format?: string
           position?: number
           slug: string
           tag?: string
+          timezone?: string
+          timezone_auto?: boolean
           updated_at?: string
           user_id: string
           weather_city?: string
           weather_lat?: number
           weather_lon?: number
+          week_start?: string
         }
         Update: {
           avatar_url?: string | null
           banner_url?: string | null
           calendar_ids?: string[]
           created_at?: string
+          date_format?: string
+          hidden_modules?: string[]
           id?: string
+          locale?: string
           mail_accounts?: string[]
+          module_labels?: Json
+          module_order?: string[]
           name?: string
+          number_format?: string
           position?: number
           slug?: string
           tag?: string
+          timezone?: string
+          timezone_auto?: boolean
           updated_at?: string
           user_id?: string
           weather_city?: string
           weather_lat?: number
           weather_lon?: number
+          week_start?: string
         }
         Relationships: []
       }
@@ -596,6 +844,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      workspace_emojis: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          label: string
+          user_id: string
+          workspace: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          label?: string
+          user_id: string
+          workspace?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          label?: string
+          user_id?: string
+          workspace?: string
+        }
+        Relationships: []
+      }
+      workspace_pages: {
+        Row: {
+          content: Json
+          created_at: string
+          emoji: string
+          hidden: boolean
+          id: string
+          kind: string
+          name: string
+          position: number
+          updated_at: string
+          user_id: string
+          workspace: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          emoji?: string
+          hidden?: boolean
+          id?: string
+          kind?: string
+          name?: string
+          position?: number
+          updated_at?: string
+          user_id: string
+          workspace?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          emoji?: string
+          hidden?: boolean
+          id?: string
+          kind?: string
+          name?: string
+          position?: number
+          updated_at?: string
+          user_id?: string
+          workspace?: string
+        }
+        Relationships: []
       }
     }
     Views: {
