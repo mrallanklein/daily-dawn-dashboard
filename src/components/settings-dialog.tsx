@@ -137,7 +137,17 @@ export function SettingsDialog({
     queryFn: () => fetchCalendars(),
   });
 
-  const [form, setForm] = useState({ name: "", tag: "", avatar_url: "", banner_url: "", weather_city: "" });
+  const [form, setForm] = useState({
+    name: "",
+    tag: "",
+    avatar_url: "",
+    banner_url: "",
+    weather_city: "",
+    weather_lat: null as number | null,
+    weather_lon: null as number | null,
+  });
+  const [cityFocus, setCityFocus] = useState(false);
+  const citySuggestions = searchCities(form.weather_city);
 
   useEffect(() => {
     if (!active) return;
@@ -147,6 +157,8 @@ export function SettingsDialog({
       avatar_url: active.avatar_url ?? "",
       banner_url: active.banner_url ?? "",
       weather_city: active.weather_city ?? "",
+      weather_lat: active.weather_lat ?? null,
+      weather_lon: active.weather_lon ?? null,
     });
   }, [active?.id]);
 
@@ -161,6 +173,8 @@ export function SettingsDialog({
         avatar_url: form.avatar_url || null,
         banner_url: form.banner_url || null,
         weather_city: form.weather_city || "Toulouse",
+        weather_lat: form.weather_lat,
+        weather_lon: form.weather_lon,
       });
     },
     onSuccess: () => {
@@ -326,11 +340,55 @@ export function SettingsDialog({
                 />
                 <div className="space-y-1.5">
                   <Label htmlFor="s-city">Ville pour la météo</Label>
-                  <Input
-                    id="s-city"
-                    value={form.weather_city}
-                    onChange={(e) => set({ weather_city: e.target.value })}
-                  />
+                  <div className="flex gap-1.5">
+                    <div className="relative min-w-0 flex-1">
+                      <Input
+                        id="s-city"
+                        autoComplete="off"
+                        placeholder="Toulouse"
+                        value={form.weather_city}
+                        onFocus={() => setCityFocus(true)}
+                        onBlur={() => window.setTimeout(() => setCityFocus(false), 120)}
+                        onChange={(e) => set({ weather_city: e.target.value })}
+                      />
+                      {cityFocus && citySuggestions.length > 0 ? (
+                        <ul className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-[var(--shadow-pop)]">
+                          {citySuggestions.map((c) => (
+                            <li key={c.name}>
+                              <button
+                                type="button"
+                                className="w-full px-2.5 py-1.5 text-left text-sm hover:bg-muted"
+                                onClick={() => {
+                                  set({ weather_city: c.name, weather_lat: c.lat, weather_lon: c.lon });
+                                  setCityFocus(false);
+                                }}
+                              >
+                                {c.name}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="press shrink-0"
+                      onClick={async () => {
+                        try {
+                          const c = await locateCity();
+                          set({ weather_city: c.name, weather_lat: c.lat, weather_lon: c.lon });
+                          toast.success(`Position détectée : ${c.name}`);
+                        } catch (e) {
+                          toast.error((e as Error).message);
+                        }
+                      }}
+                    >
+                      <LocateFixed size={16} strokeWidth={1.5} className="mr-1.5" />
+                      Géolocalisation
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex items-center justify-between border-t border-border pt-3">
                   <Button
