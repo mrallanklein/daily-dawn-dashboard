@@ -230,15 +230,7 @@ export function SettingsView() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
-        <DialogHeader>
-          <DialogTitle>Paramètres</DialogTitle>
-          <DialogDescription>
-            Réglages propres à chaque espace : identité, images et comptes Google.
-          </DialogDescription>
-        </DialogHeader>
-
+    <div className="mx-auto w-full max-w-3xl space-y-5">
         <div className="flex flex-wrap gap-1.5">
           {spaces.map((s) => (
             <button
