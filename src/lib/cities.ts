@@ -49,7 +49,10 @@ export function locateCity(): Promise<CityOption> {
             address?: { city?: string; town?: string; village?: string; county?: string };
           };
           const city =
-            json.address?.city ?? json.address?.town ?? json.address?.village ?? json.address?.county;
+            json.address?.city ??
+            json.address?.town ??
+            json.address?.village ??
+            json.address?.county;
           resolve({ name: city ?? "Ma position", lat: latitude, lon: longitude });
         } catch {
           resolve({ name: "Ma position", lat: latitude, lon: longitude });
