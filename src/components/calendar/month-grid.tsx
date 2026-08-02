@@ -37,17 +37,17 @@ export function MonthGrid({
 
   return (
     <div className="min-w-0">
-      <div className="grid grid-cols-7 border-b border-border/70">
+      <div className="grid grid-cols-7 px-3 pt-2">
         {["lun", "mar", "mer", "jeu", "ven", "sam", "dim"].map((d) => (
           <p
             key={d}
-            className="px-2 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground"
+            className="px-1 pb-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground"
           >
             {d}
           </p>
         ))}
       </div>
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 gap-1 px-3 pb-3">
         {days.map((day) => {
           const dayEvents = eventsOnDay(events, day);
           const extra = markers?.(day) ?? [];
@@ -61,9 +61,9 @@ export function MonthGrid({
               onClick={() => onSelectDay(day)}
               onDoubleClick={() => onCreateDay(day)}
               className={cn(
-                "min-h-[6.5rem] cursor-pointer border-b border-l border-border/40 p-1.5 transition-colors first:border-l-0 hover:bg-muted/40",
-                !isSameMonth(day, cursor) && "bg-muted/20 opacity-55",
-                isSelected && "bg-muted/60 ring-1 ring-inset ring-border",
+                "min-h-[6.5rem] cursor-pointer rounded-xl border border-transparent p-1.5 transition-colors hover:bg-muted/60",
+                !isSameMonth(day, cursor) && "opacity-40",
+                isSelected && "border-border bg-muted/70 shadow-[var(--shadow-soft)]",
               )}
             >
               <span
