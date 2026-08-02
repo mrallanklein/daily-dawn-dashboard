@@ -27,7 +27,6 @@ import { profileQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { createSpace, spaceInitials } from "@/lib/spaces";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
