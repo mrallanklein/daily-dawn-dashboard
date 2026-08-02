@@ -108,8 +108,7 @@ export function PropertyEditor({
       .filter((p) => p.type !== "formula")
       .filter(
         (p) =>
-          p.name.toLowerCase().includes(formulaToken) ||
-          p.id.toLowerCase().includes(formulaToken),
+          p.name.toLowerCase().includes(formulaToken) || p.id.toLowerCase().includes(formulaToken),
       )
       .slice(0, 6);
   }, [formulaToken, properties]);

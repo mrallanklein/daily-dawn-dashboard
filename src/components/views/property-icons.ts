@@ -1,5 +1,10 @@
 import {
   AlignLeft,
+  Grid2x2,
+  GalleryVerticalEnd,
+  List,
+  Rows3,
+  Table2,
   AtSign,
   Calendar,
   CalendarClock,
@@ -20,7 +25,7 @@ import {
   UserCircle,
   Users,
 } from "lucide-react";
-import type { PropertyType } from "./types";
+import type { Layout, PropertyType } from "./types";
 
 export const PROPERTY_ICONS: Record<PropertyType, typeof Text> = {
   text: AlignLeft,
@@ -46,4 +51,13 @@ export const PROPERTY_ICONS: Record<PropertyType, typeof Text> = {
   id: Hash,
   button: MousePointerClick,
   place: MapPin,
+};
+
+export const LAYOUT_ICONS: Record<Layout, typeof Text> = {
+  table: Table2,
+  kanban: Grid2x2,
+  timeline: GalleryVerticalEnd,
+  calendar: Calendar,
+  list: List,
+  gallery: Rows3,
 };

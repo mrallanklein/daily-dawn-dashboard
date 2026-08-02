@@ -231,7 +231,13 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
   });
 
   const saveProperty = useMutation({
-    mutationFn: async (input: { id?: string; name: string; type: string; config: Record<string, unknown>; hidden?: boolean }) => {
+    mutationFn: async (input: {
+      id?: string;
+      name: string;
+      type: string;
+      config: Record<string, unknown>;
+      hidden?: boolean;
+    }) => {
       const uid = await userId();
       if (!uid) throw new Error("Session expirée");
       if (input.id) {

@@ -31,12 +31,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -64,12 +59,7 @@ import {
   TimelineLayout,
 } from "./layouts";
 import { PropertyEditor } from "./property-editor";
-import {
-  ColorPanel,
-  FilterPanel,
-  SortPanel,
-  ViewSettingsPanel,
-} from "./view-settings";
+import { ColorPanel, FilterPanel, SortPanel, ViewSettingsPanel } from "./view-settings";
 import {
   DEFAULT_CONFIG,
   LAYOUTS,
@@ -262,9 +252,7 @@ export function DatabaseView({
                   <Copy size={14} strokeWidth={1.6} /> Dupliquer
                 </ContextMenuItem>
                 <ContextMenuItem
-                  onSelect={() =>
-                    updateView.mutate({ id: v.id, patch: { hidden: true }, base: v })
-                  }
+                  onSelect={() => updateView.mutate({ id: v.id, patch: { hidden: true }, base: v })}
                 >
                   <EyeOff size={14} strokeWidth={1.6} /> Masquer
                 </ContextMenuItem>
@@ -288,7 +276,10 @@ export function DatabaseView({
           ))}
 
           <Popover>
-            <PopoverTrigger aria-label="Nouvelle vue" className="press grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary">
+            <PopoverTrigger
+              aria-label="Nouvelle vue"
+              className="press grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary"
+            >
               <Plus size={15} strokeWidth={1.6} />
             </PopoverTrigger>
             <PopoverContent align="start" className="w-64 space-y-3">
@@ -445,10 +436,7 @@ export function DatabaseView({
             <PopoverTrigger asChild>
               <ToolButton icon={SlidersHorizontal} label="Afficher les paramètres" />
             </PopoverTrigger>
-            <PopoverContent
-              align="end"
-              className="max-h-[32rem] w-[22rem] overflow-y-auto"
-            >
+            <PopoverContent align="end" className="max-h-[32rem] w-[22rem] overflow-y-auto">
               <ViewSettingsPanel
                 viewName={view?.name ?? "Vue"}
                 viewEmoji={view?.emoji ?? ""}
@@ -465,9 +453,7 @@ export function DatabaseView({
                   if (!view) return;
                   const token = view.share_token ?? crypto.randomUUID().slice(0, 12);
                   updateView.mutate({ id: view.id, patch: { share_token: token }, base: view });
-                  void navigator.clipboard?.writeText(
-                    `${window.location.origin}/partage/${token}`,
-                  );
+                  void navigator.clipboard?.writeText(`${window.location.origin}/partage/${token}`);
                   toast.success("Lien de la vue copié");
                 }}
                 onEditProperty={(p) => {
@@ -490,7 +476,11 @@ export function DatabaseView({
           {/* Nouveau */}
           <div className="ml-1 flex items-center overflow-hidden rounded-full">
             {source.onCreate ? (
-              <Button size="sm" className="h-8 rounded-none rounded-l-full" onClick={source.onCreate}>
+              <Button
+                size="sm"
+                className="h-8 rounded-none rounded-l-full"
+                onClick={source.onCreate}
+              >
                 Nouveau
               </Button>
             ) : null}

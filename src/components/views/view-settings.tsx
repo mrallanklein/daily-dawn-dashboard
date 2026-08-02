@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { colorTokens, operatorsFor } from "./engine";
-import { PROPERTY_ICONS } from "./property-icons";
+import { LAYOUT_ICONS, PROPERTY_ICONS } from "./property-icons";
 import {
   LAYOUTS,
   OPTION_COLORS,
@@ -46,15 +46,6 @@ import {
   type SortRule,
   type ViewConfig,
 } from "./types";
-
-export const LAYOUT_ICONS: Record<Layout, typeof Table2> = {
-  table: Table2,
-  kanban: Grid2x2,
-  timeline: GalleryVerticalEnd,
-  calendar: Calendar,
-  list: List,
-  gallery: Rows3,
-};
 
 const uid = () => crypto.randomUUID();
 
@@ -256,9 +247,15 @@ export function FilterPanel({
 
       {config.filters.map((rule) => {
         const prop = properties.find((p) => p.id === rule.propertyId);
-        const needsValue = !["empty", "not_empty", "checked", "unchecked", "today", "this_week", "this_month"].includes(
-          rule.op,
-        );
+        const needsValue = ![
+          "empty",
+          "not_empty",
+          "checked",
+          "unchecked",
+          "today",
+          "this_week",
+          "this_month",
+        ].includes(rule.op);
         const update = (next: Partial<FilterRule>) =>
           patch({
             filters: config.filters.map((f) => (f.id === rule.id ? { ...f, ...next } : f)),
@@ -457,8 +454,8 @@ export function ColorPanel({
   return (
     <div className="space-y-2">
       <p className="text-[0.8125rem] leading-snug text-muted-foreground">
-        Personnalisez les couleurs pour distinguer les catégories et mettre en évidence les
-        éléments en retard.
+        Personnalisez les couleurs pour distinguer les catégories et mettre en évidence les éléments
+        en retard.
       </p>
 
       {config.colors.map((rule) => {
@@ -466,7 +463,11 @@ export function ColorPanel({
         const update = (next: Partial<ColorRule>) =>
           patch({ colors: config.colors.map((c) => (c.id === rule.id ? { ...c, ...next } : c)) });
         return (
-          <div key={rule.id} {...drag(rule)} className="space-y-2 rounded-[12px] border border-border p-2">
+          <div
+            key={rule.id}
+            {...drag(rule)}
+            className="space-y-2 rounded-[12px] border border-border p-2"
+          >
             <div className="flex items-center gap-1.5">
               <GripVertical
                 size={14}
@@ -559,9 +560,7 @@ export function PropertyVisibilityPanel({
   onCreate: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const list = properties.filter((p) =>
-    p.name.toLowerCase().includes(query.trim().toLowerCase()),
-  );
+  const list = properties.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()));
   const allHidden = properties.every((p) => config.hiddenProps.includes(p.id));
 
   return (
@@ -578,9 +577,7 @@ export function PropertyVisibilityPanel({
         </span>
         <button
           type="button"
-          onClick={() =>
-            patch({ hiddenProps: allHidden ? [] : properties.map((p) => p.id) })
-          }
+          onClick={() => patch({ hiddenProps: allHidden ? [] : properties.map((p) => p.id) })}
           className="press text-[0.8125rem] text-brand hover:underline"
         >
           {allHidden ? "Tout afficher" : "Tout masquer"}
@@ -591,7 +588,10 @@ export function PropertyVisibilityPanel({
           const Icon = PROPERTY_ICONS[p.type];
           const visible = !config.hiddenProps.includes(p.id);
           return (
-            <li key={p.id} className="flex items-center gap-2 rounded-[10px] px-1 py-1 hover:bg-secondary/60">
+            <li
+              key={p.id}
+              className="flex items-center gap-2 rounded-[10px] px-1 py-1 hover:bg-secondary/60"
+            >
               <GripVertical size={13} strokeWidth={1.6} className="text-muted-foreground/70" />
               <Icon size={15} strokeWidth={1.6} className="text-muted-foreground" />
               <button
@@ -631,13 +631,7 @@ export function PropertyVisibilityPanel({
 }
 
 export type SettingsPage =
-  | "root"
-  | "layout"
-  | "properties"
-  | "filter"
-  | "sort"
-  | "group"
-  | "colors";
+  "root" | "layout" | "properties" | "filter" | "sort" | "group" | "colors";
 
 export function ViewSettingsPanel({
   viewName,

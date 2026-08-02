@@ -77,11 +77,7 @@ function startOfWeek(d: Date) {
   return out;
 }
 
-export function matchRule(
-  value: unknown,
-  op: FilterOperator,
-  target: string | undefined,
-): boolean {
+export function matchRule(value: unknown, op: FilterOperator, target: string | undefined): boolean {
   const text = asText(value).toLowerCase();
   const needle = (target ?? "").toLowerCase();
   const empty = text.trim() === "";
@@ -225,7 +221,6 @@ export function evalFormula(expression: string, row: Row): string {
   });
   if (!/^[-+*/()%.\d\s"'<>=!&|?:a-zA-Z_]*$/.test(replaced)) return "";
   try {
-    // eslint-disable-next-line no-new-func
     const fn = new Function(`"use strict"; return (${replaced});`);
     const out = fn();
     return out == null ? "" : String(out);
