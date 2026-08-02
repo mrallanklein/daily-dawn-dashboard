@@ -60,3 +60,13 @@
   de liste en cascade légère.
 - Retour au clic par enfoncement et surbrillance des contrôles.
 - Aucune animation décorative sur les données ; rien qui retarde une action.
+
+## Mobile et tablette
+
+- Barre de navigation basse : cibles tactiles d'au moins 44 px, surbrillance à
+  l'appui.
+- Sous 1024 px, la lecture d'un mail s'ouvre en feuille plein écran et la fiche
+  projet en feuille basse avec poignée de préhension, refermable par glissement
+  vers le bas.
+- La barre latérale reste flottante sur tablette ; elle est remplacée par la
+  barre basse uniquement sur mobile.

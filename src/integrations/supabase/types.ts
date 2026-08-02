@@ -490,6 +490,50 @@ export type Database = {
           },
         ]
       }
+      project_milestones: {
+        Row: {
+          created_at: string
+          due_date: string
+          id: string
+          position: number
+          project_id: string
+          reached: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          due_date: string
+          id?: string
+          position?: number
+          project_id: string
+          reached?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          due_date?: string
+          id?: string
+          position?: number
+          project_id?: string
+          reached?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_milestones_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           budget: number | null
@@ -501,6 +545,7 @@ export type Database = {
           cover_url: string | null
           created_at: string
           deadline: string | null
+          depends_on_id: string | null
           description: string | null
           id: string
           local_folder: string | null
@@ -528,6 +573,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           deadline?: string | null
+          depends_on_id?: string | null
           description?: string | null
           id?: string
           local_folder?: string | null
@@ -555,6 +601,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string
           deadline?: string | null
+          depends_on_id?: string | null
           description?: string | null
           id?: string
           local_folder?: string | null
@@ -578,6 +625,13 @@ export type Database = {
             columns: ["contact_id"]
             isOneToOne: false
             referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_depends_on_id_fkey"
+            columns: ["depends_on_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]

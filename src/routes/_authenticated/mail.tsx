@@ -346,7 +346,7 @@ function MailPage() {
 
           {compact ? (
             <Dialog open={Boolean(current)} onOpenChange={(o) => !o && setOpenId(null)}>
-              <DialogContent className="max-h-[85vh] overflow-y-auto">
+              <DialogContent className="h-[100dvh] max-h-none w-screen max-w-none overflow-y-auto rounded-none border-0 sm:h-[92vh] sm:w-[min(46rem,94vw)] sm:rounded-[22px] sm:border">
                 <DialogHeader>
                   <DialogTitle className="pr-6 text-left text-base">{current?.subject}</DialogTitle>
                 </DialogHeader>

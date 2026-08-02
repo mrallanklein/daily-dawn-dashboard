@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { listMessagesSchema, sendMessageSchema } from "./mail.schemas";
 import {
   fetchAccounts,
   fetchMessages,
@@ -22,17 +23,10 @@ export const listMailAccounts = createServerFn({ method: "GET" })
 
 export const listMessages = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input: { query?: string; maxResults?: number; account?: MailAccountId }) => input ?? {},
-  )
+  .inputValidator(listMessagesSchema)
   .handler(async ({ data }): Promise<MailMessage[]> => fetchMessages(data));
 
 export const sendMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
-    (input: { to: string; subject: string; body: string; account?: MailAccountId }) => {
-      if (!input?.to || !input.subject) throw new Error("Destinataire et objet requis");
-      return input;
-    },
-  )
+  .inputValidator(sendMessageSchema)
   .handler(async ({ data }) => sendGmail(data));

@@ -1,5 +1,7 @@
 import { PROJECT_STATUSES, statusLabel } from "@/lib/project-status";
-import { fmtEUR, type Project } from "@/lib/data";
+import { fmtEUR, type Project, type Task } from "@/lib/data";
+import { projectRisk } from "@/lib/project-risk";
+import { RiskBadge } from "@/components/projects/risk-badge";
 import { daysUntil, fmtShortDate } from "@/lib/dates";
 import { useWorkspace } from "@/lib/workspace";
 import { useProjectMutations } from "@/components/projects/use-project-mutations";
@@ -15,9 +17,11 @@ import { cn } from "@/lib/utils";
 
 export function ListView({
   projects,
+  tasks = [],
   onSelect,
 }: {
   projects: Project[];
+  tasks?: Task[];
   onSelect: (p: Project) => void;
 }) {
   const { workspace } = useWorkspace();
@@ -39,6 +43,7 @@ export function ListView({
         <tbody>
           {projects.map((p) => {
             const left = p.deadline ? daysUntil(p.deadline) : null;
+            const risk = projectRisk(p, tasks, { projects });
             return (
               <tr key={p.id} className="border-b border-border/60 last:border-0 hover:bg-muted/40">
                 <td className="max-w-[18rem] px-2 py-2">
@@ -51,6 +56,9 @@ export function ListView({
                   {p.category ? (
                     <span className="ml-2 text-xs text-muted-foreground">{p.category}</span>
                   ) : null}
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    <RiskBadge risk={risk} />
+                  </div>
                 </td>
                 <td className="px-2 py-2">
                   <Select

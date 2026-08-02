@@ -36,6 +36,16 @@ export type Project = {
   tags: string[];
   onedrive_url: string | null;
   local_folder: string | null;
+  depends_on_id: string | null;
+};
+
+export type Milestone = {
+  id: string;
+  project_id: string;
+  title: string;
+  due_date: string;
+  reached: boolean;
+  position: number;
 };
 
 export type Task = {
@@ -152,6 +162,7 @@ export const profileQuery = () =>
 export const projectsQuery = (ws: Workspace) =>
   queryOptions({
     queryKey: ["projects", ws],
+    staleTime: 60 * 1000,
     queryFn: async () =>
       unwrap<Project[]>(
         await supabase
@@ -166,6 +177,7 @@ export const projectsQuery = (ws: Workspace) =>
 export const tasksQuery = (ws: Workspace) =>
   queryOptions({
     queryKey: ["tasks", ws],
+    staleTime: 60 * 1000,
     queryFn: async () =>
       unwrap<Task[]>(
         await supabase
@@ -175,6 +187,19 @@ export const tasksQuery = (ws: Workspace) =>
           .order("scheduled_date", { ascending: true, nullsFirst: false })
           .order("position", { ascending: true })
           .order("start_time", { ascending: true, nullsFirst: false }),
+      ),
+  });
+
+export const milestonesQuery = () =>
+  queryOptions({
+    queryKey: ["project_milestones"],
+    staleTime: 60 * 1000,
+    queryFn: async () =>
+      unwrap<Milestone[]>(
+        await supabase
+          .from("project_milestones")
+          .select("id, project_id, title, due_date, reached, position")
+          .order("due_date", { ascending: true }),
       ),
   });
 
@@ -226,6 +251,7 @@ export const interactionsQuery = (contactId: string | null) =>
 export const transactionsQuery = (ws: Workspace) =>
   queryOptions({
     queryKey: ["transactions", ws],
+    staleTime: 60 * 1000,
     queryFn: async () =>
       unwrap<Transaction[]>(
         await supabase

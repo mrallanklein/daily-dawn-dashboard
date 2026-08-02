@@ -90,9 +90,9 @@ export async function fetchAccounts(): Promise<MailAccount[]> {
 }
 
 export async function fetchMessages(input: {
-  query?: string;
-  maxResults?: number;
-  account?: MailAccountId;
+  query?: string | undefined;
+  maxResults?: number | undefined;
+  account?: MailAccountId | undefined;
 }): Promise<MailMessage[]> {
   const headers = gatewayHeaders(input.account ?? "primary");
   if (!headers) throw new Error("Gmail n'est pas connecté");
@@ -147,7 +147,7 @@ export async function sendGmail(input: {
   to: string;
   subject: string;
   body: string;
-  account?: MailAccountId;
+  account?: MailAccountId | undefined;
 }) {
   const headers = gatewayHeaders(input.account ?? "primary");
   if (!headers) throw new Error("Gmail n'est pas connecté");

@@ -70,7 +70,13 @@ function ControlPill({
       )}
     >
       <ThemeToggle className={seg} />
-      <button type="button" onClick={onSettings} aria-label="Paramètres" title="Paramètres" className={seg}>
+      <button
+        type="button"
+        onClick={onSettings}
+        aria-label="Paramètres"
+        title="Paramètres"
+        className={seg}
+      >
         <Settings className="size-4" strokeWidth={1.5} />
       </button>
       <button
@@ -289,19 +295,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                   "bg-card text-foreground shadow-[var(--elev-2)] ring-1 ring-border [&_svg]:text-brand",
               }}
               inactiveProps={{
-                className:
-                  "text-foreground/75 hover:bg-sidebar-accent/70 hover:text-foreground",
+                className: "text-foreground/75 hover:bg-sidebar-accent/70 hover:text-foreground",
               }}
               className={cn(
                 "press flex min-h-[38px] items-center gap-2.5 rounded-[14px] px-2.5 py-1 text-[0.9375rem] font-medium leading-tight transition-[background-color,color,box-shadow,transform] duration-200",
                 !open && "justify-center px-0",
               )}
             >
-              <item.icon
-                className="shrink-0"
-                size={open ? 21 : 22}
-                strokeWidth={1.5}
-              />
+              <item.icon className="shrink-0" size={open ? 21 : 22} strokeWidth={1.5} />
               {open ? <span className="truncate">{item.label}</span> : null}
             </Link>
           ))}
@@ -391,7 +392,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             activeOptions={{ exact: item.to === "/" }}
             activeProps={{ className: "text-foreground" }}
             inactiveProps={{ className: "text-muted-foreground" }}
-            className="grid place-items-center rounded-lg px-3 py-1.5"
+            className="grid min-h-11 min-w-11 place-items-center rounded-xl px-3 active:bg-sidebar-accent/60"
           >
             <item.icon size={22} strokeWidth={1.5} />
           </Link>
