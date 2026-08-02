@@ -272,6 +272,9 @@ export function SettingsView() {
             <TabsTrigger value="comptes" className="flex-1">
               Comptes Google
             </TabsTrigger>
+            <TabsTrigger value="apparence" className="flex-1">
+              Apparence
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="espace" className="space-y-4 pt-4">
@@ -505,17 +508,26 @@ export function SettingsView() {
               ) : null}
             </div>
           </TabsContent>
+
+          <TabsContent value="apparence" className="space-y-4 pt-4">
+            <div className="flex items-center justify-between rounded-xl border border-border px-3 py-2.5">
+              <div className="min-w-0">
+                <p className="text-sm font-medium">Thème</p>
+                <p className="text-xs text-muted-foreground">
+                  Bascule automatique : clair de 7h à 20h, sombre la nuit. Ton choix manuel reste
+                  actif jusqu'au créneau suivant.
+                </p>
+              </div>
+              <ThemeToggle className="size-9 shrink-0 rounded-full border border-border" />
+            </div>
+          </TabsContent>
         </Tabs>
 
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Fermer
-          </Button>
+        <div className="flex justify-end gap-2 border-t border-border pt-4">
           <Button className="press" onClick={() => save.mutate()} disabled={save.isPending}>
             Enregistrer
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+    </div>
   );
 }
