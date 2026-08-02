@@ -14,14 +14,6 @@ import {
   Settings,
   Users,
 } from "lucide-react";
-import {
-  BudgetIcon,
-  CalendarIcon,
-  ContactIcon,
-  MailIcon,
-  ProjectsIcon,
-  TasksIcon,
-} from "@/components/icons/notion-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
@@ -42,6 +34,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { NotificationBell } from "@/components/app/notification-bell";
 import { SettingsDialog } from "@/components/settings-dialog";
+import { NAV, SidebarNav } from "@/components/app/sidebar-nav";
 
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
@@ -84,16 +77,6 @@ function ControlPill({
     </div>
   );
 }
-
-const NAV = [
-  { to: "/projets", label: "Projets", icon: ProjectsIcon },
-  { to: "/taches", label: "Tâches", icon: TasksIcon },
-  { to: "/calendrier", label: "Calendrier", icon: CalendarIcon },
-  { to: "/mail", label: "Boîte mail", icon: MailIcon },
-  { to: "/crm", label: "CRM", icon: ContactIcon },
-  { to: "/budget", label: "Budget", icon: BudgetIcon },
-  { to: "/equipe", label: "Équipe", icon: Users, aliasOnly: true },
-] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { data: profile } = useQuery(profileQuery());
