@@ -41,7 +41,7 @@ export function MonthGrid({
         {["lun", "mar", "mer", "jeu", "ven", "sam", "dim"].map((d) => (
           <p
             key={d}
-            className="px-1 pb-1.5 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground"
+            className="px-1 pb-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground"
           >
             {d}
           </p>
@@ -68,7 +68,7 @@ export function MonthGrid({
             >
               <span
                 className={cn(
-                  "inline-grid size-6 place-items-center rounded-full text-xs font-bold tabular-nums",
+                  "inline-grid size-7 place-items-center rounded-full text-[0.85rem] font-bold tabular-nums",
                   today ? "bg-destructive text-destructive-foreground" : "text-foreground/85",
                 )}
               >
@@ -83,7 +83,7 @@ export function MonthGrid({
                       e.stopPropagation();
                       onSelectEvent(ev);
                     }}
-                    className="flex w-full items-center gap-1 rounded px-1 text-left text-[0.65rem] font-semibold"
+                    className="flex w-full items-center gap-1 rounded px-1 text-left text-[0.76rem] font-semibold"
                     style={{
                       backgroundColor: ev.allDay ? `${ev.color ?? "#7c7c7c"}33` : undefined,
                     }}
@@ -106,7 +106,7 @@ export function MonthGrid({
                   <p
                     key={m.id}
                     title={m.label}
-                    className="flex items-center gap-1 truncate text-[0.64rem] font-medium text-muted-foreground"
+                    className="flex items-center gap-1 truncate text-[0.75rem] font-medium text-muted-foreground"
                   >
                     <span
                       className="size-1.5 shrink-0 rounded-sm"
@@ -116,7 +116,7 @@ export function MonthGrid({
                   </p>
                 ))}
                 {hidden > 0 ? (
-                  <p className="px-1 text-[0.62rem] font-semibold text-muted-foreground">
+                  <p className="px-1 text-[0.74rem] font-semibold text-muted-foreground">
                     +{hidden}
                   </p>
                 ) : null}
