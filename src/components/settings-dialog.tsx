@@ -144,8 +144,8 @@ export function SettingsDialog({
     avatar_url: "",
     banner_url: "",
     weather_city: "",
-    weather_lat: null as number | null,
-    weather_lon: null as number | null,
+    weather_lat: 43.6047,
+    weather_lon: 1.4442,
   });
   const [cityFocus, setCityFocus] = useState(false);
   const citySuggestions = searchCities(form.weather_city);
@@ -158,8 +158,8 @@ export function SettingsDialog({
       avatar_url: active.avatar_url ?? "",
       banner_url: active.banner_url ?? "",
       weather_city: active.weather_city ?? "",
-      weather_lat: active.weather_lat ?? null,
-      weather_lon: active.weather_lon ?? null,
+      weather_lat: active.weather_lat ?? 43.6047,
+      weather_lon: active.weather_lon ?? 1.4442,
     });
   }, [active?.id]);
 
