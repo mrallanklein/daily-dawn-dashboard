@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
@@ -9,7 +9,6 @@ import { PageHeader } from "@/components/app/page-header";
 import { Panel, EmptyState } from "@/components/app/panel";
 import { teamQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,6 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DatabaseView } from "@/components/views/database-view";
+import { useTeamSource } from "@/components/views/sources/team-source";
 
 export const Route = createFileRoute("/_authenticated/equipe")({
   head: () => ({
@@ -66,26 +67,7 @@ function TeamPage() {
     onError,
   });
 
-  const patch = useMutation({
-    mutationFn: async ({ id, ...rest }: { id: string } & Record<string, unknown>) => {
-      const { error } = await supabase
-        .from("team_members")
-        .update(rest as never)
-        .eq("id", id);
-      if (error) throw new Error(error.message);
-    },
-    onSuccess: invalidate,
-    onError,
-  });
-
-  const remove = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from("team_members").delete().eq("id", id);
-      if (error) throw new Error(error.message);
-    },
-    onSuccess: invalidate,
-    onError,
-  });
+  const source = useTeamSource(team ?? []);
 
   if (workspace !== "alias") {
     return (
