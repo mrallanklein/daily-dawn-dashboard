@@ -47,7 +47,10 @@
 - Météo : tous les appels externes passent par des fonctions serveur
   (`src/lib/weather.functions.ts`), jamais par le navigateur — ce qui évite les
   blocages CORS / iframe :
-  - `fetchWeather({ lat, lon })` → Open-Meteo (température, code, min/max du jour).
+  - `fetchWeather({ lat, lon })` → Open-Meteo (température, code, min/max du
+    jour), avec repli automatique sur MET Norway si Open-Meteo échoue (quota
+    quotidien dépassé, indisponibilité) et cache serveur de 15 min ; le dernier
+    résultat connu est réutilisé plutôt que d'afficher une erreur.
   - `searchPlaces({ query })` → géocodage Open-Meteo pour la saisie de ville.
   - `reverseGeocode({ lat, lon })` → Nominatim (avec `User-Agent`).
   - `locateByIp()` → repli approximatif via l'IP de la requête quand la
