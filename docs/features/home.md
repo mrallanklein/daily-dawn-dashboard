@@ -11,7 +11,10 @@ Route `/`. Résumé de la journée pour l'espace actif.
   ville dans les réglages de l'espace.
 - Voir un état de chargement puis, en cas d'échec, un bouton « Météo
   indisponible — cliquer pour réessayer ».
-- Consulter l'agenda du jour (tous les agendas activés) et ouvrir un événement.
+- Consulter l'agenda du jour (tous les agendas activés), ouvrir un aperçu centré
+  des détails d'un événement puis passer en modification depuis cet aperçu.
+- Créer un événement depuis le bouton « + » circulaire en bas à droite du module
+  Planning.
 - Consulter les tâches à faire et les cocher directement.
 - Consulter les projets de la période avec leur statut et leur échéance.
 - Changer la période affichée : 1 jour, 3 jours, 7 jours, et plus.
@@ -25,6 +28,10 @@ Route `/`. Résumé de la journée pour l'espace actif.
 ## Règles fonctionnelles
 
 - La période choisie s'applique conjointement aux tâches et aux projets.
+- Un événement long en cours est classé sous « Aujourd'hui » et non à sa date de
+  départ.
+- Le module Planning s'adapte à son contenu et ne s'étire pas quand la période
+  contient peu d'événements.
 - Les éléments sans date n'apparaissent pas dans les échéances.
 - La todo libre est indépendante des projets et des tâches
   ([architecture/data-model](../architecture/data-model.md)).
