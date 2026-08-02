@@ -240,14 +240,15 @@ export function AppShell({ children }: { children: ReactNode }) {
               to={item.to}
               title={item.label}
               activeProps={{
-                className: "bg-sidebar-accent text-foreground [&_svg]:opacity-100",
+                className:
+                  "bg-sidebar-accent text-foreground shadow-[var(--shadow-xs)] [&_svg]:opacity-100",
               }}
               inactiveProps={{
                 className:
-                  "text-foreground/85 hover:bg-sidebar-accent/70 hover:text-foreground hover:[&_svg]:opacity-100",
+                  "text-foreground/80 hover:bg-sidebar-accent/60 hover:text-foreground hover:[&_svg]:opacity-100",
               }}
               className={cn(
-                "flex min-h-[34px] items-center gap-2.5 rounded-[6px] px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-colors",
+                "flex min-h-[36px] items-center gap-2.5 rounded-lg px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-[background-color,color,box-shadow] duration-200",
                 !open && "justify-center px-0",
               )}
             >
