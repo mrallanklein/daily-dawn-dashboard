@@ -811,7 +811,7 @@ export function ViewSettingsPanel({
               variant="ghost"
               size="sm"
               className="w-full text-muted-foreground"
-              onClick={() => patch({ groupBy: undefined })}
+              onClick={() => patch({ groupBy: "" })}
             >
               <Trash2 size={14} strokeWidth={1.6} /> Retirer le regroupement
             </Button>
