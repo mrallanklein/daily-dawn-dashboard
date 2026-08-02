@@ -64,7 +64,7 @@ export function WeatherBadge({
     );
   }
   const { Icon, label, color } = describe(weather.code);
-  const url = `https://www.google.com/search?q=${encodeURIComponent("Meteo google")}`;
+  const url = `https://www.google.com/search?q=${encodeURIComponent(`météo ${city}`)}`;
   return (
     <a
       href={url}
