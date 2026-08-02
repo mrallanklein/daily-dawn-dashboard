@@ -16,10 +16,16 @@ export type Space = {
   /** Agendas affichés, au format "accountKey::calendarId" */
   calendar_ids: string[];
   position: number;
+  /** Modules masqués dans la barre latérale (chemins de route). */
+  hidden_modules: string[];
+  /** Ordre des modules dans la barre latérale (chemins de route). */
+  module_order: string[];
+  /** Libellés personnalisés des modules, indexés par chemin de route. */
+  module_labels: Record<string, string>;
 };
 
 const COLUMNS =
-  "id, slug, name, tag, avatar_url, banner_url, weather_city, weather_lat, weather_lon, mail_accounts, calendar_ids, position";
+  "id, slug, name, tag, avatar_url, banner_url, weather_city, weather_lat, weather_lon, mail_accounts, calendar_ids, position, hidden_modules, module_order, module_labels";
 
 export const spacesQuery = () =>
   queryOptions({
@@ -32,7 +38,13 @@ export const spacesQuery = () =>
         .select(COLUMNS)
         .order("position", { ascending: true });
       if (res.error) throw new Error(res.error.message);
-      return (res.data ?? []) as Space[];
+      return (res.data ?? []).map((s) => ({
+        ...(s as unknown as Space),
+        hidden_modules: ((s as { hidden_modules?: string[] }).hidden_modules ?? []) as string[],
+        module_order: ((s as { module_order?: string[] }).module_order ?? []) as string[],
+        module_labels: ((s as { module_labels?: Record<string, string> }).module_labels ??
+          {}) as Record<string, string>,
+      }));
     },
   });
 
@@ -75,8 +87,11 @@ export async function createSpace(name: string, tag: string, position: number) {
   return res.data.slug as string;
 }
 
-export async function updateSpace(id: string, patch: Partial<Space>) {
-  const { error } = await supabase.from("spaces").update(patch).eq("id", id);
+export async function updateSpace(id: string, patch: Record<string, unknown>) {
+  const { error } = await supabase
+    .from("spaces")
+    .update(patch as never)
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 
