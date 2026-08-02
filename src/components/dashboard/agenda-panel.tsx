@@ -6,6 +6,8 @@ import { getCalendarEvents } from "@/lib/agenda.functions";
 import { useWorkspace } from "@/lib/workspace";
 import { EventDialog, type EventDraft } from "@/components/calendar/event-dialog";
 import { RangeToggle } from "@/components/range-toggle";
+import { EmptyState } from "@/components/app/panel";
+import { RowsSkeleton } from "@/components/app/skeletons";
 import { Button } from "@/components/ui/button";
 import { fmtDay, fmtTime, rangeBounds, type RangeDays } from "@/lib/dates";
 
@@ -55,13 +57,26 @@ export function AgendaPanel() {
       </header>
 
       {error ? (
-        <p className="text-sm text-muted-foreground">
-          Agenda Google indisponible. Vérifiez la connexion des comptes.
-        </p>
+        <EmptyState
+          icon={CalendarDays}
+          hint="Connectez vos comptes Google dans les paramètres pour afficher votre planning."
+        >
+          Agenda indisponible
+        </EmptyState>
       ) : isLoading ? (
-        <p className="text-sm text-muted-foreground">Chargement de l'agenda…</p>
+        <RowsSkeleton rows={4} />
       ) : events.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Aucun évènement sur cette période.</p>
+        <EmptyState
+          icon={CalendarDays}
+          hint="Rien de prévu sur cette période."
+          action={
+            <Button size="sm" variant="secondary" onClick={() => setDraft({ date: new Date() })}>
+              <Plus className="mr-1.5 size-4" /> Nouvel évènement
+            </Button>
+          }
+        >
+          Agenda vide
+        </EmptyState>
       ) : (
         <div className="space-y-3">
           {Object.entries(groups).map(([day, list]) => (
