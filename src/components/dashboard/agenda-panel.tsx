@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { CalendarDays, MapPin, Plus } from "lucide-react";
+import { isSameDay, parseISO } from "date-fns";
 import { getCalendarEvents, type CalendarEvent } from "@/lib/agenda.functions";
 import { useWorkspace } from "@/lib/workspace";
 import { EventDialog, type EventDraft } from "@/components/calendar/event-dialog";
@@ -11,6 +12,18 @@ import { EmptyState } from "@/components/app/panel";
 import { RowsSkeleton } from "@/components/app/skeletons";
 import { Button } from "@/components/ui/button";
 import { fmtDay, fmtTime, rangeBounds, todayISO, type RangeDays } from "@/lib/dates";
+
+function isMultiDay(ev: CalendarEvent) {
+  if (!ev.end) return false;
+  return !isSameDay(parseISO(ev.start), parseISO(ev.end));
+}
+
+/** Heure à afficher à côté d'un évènement. Journée entière / multi-jours = pas d'heure. */
+function agendaTimeLabel(ev: CalendarEvent) {
+  if (ev.allDay || isMultiDay(ev)) return null;
+  return fmtTime(ev.start);
+}
+
 
 /**
  * Jour de rattachement d'un évènement : les évènements longs (plusieurs jours)
@@ -97,7 +110,7 @@ export function AgendaPanel() {
                         style={{ backgroundColor: ev.color ?? "var(--brand)" }}
                       />
                       <span className="w-14 shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">
-                        {ev.allDay ? "Journée" : fmtTime(ev.start)}
+                        {agendaTimeLabel(ev) ?? "Journée"}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-medium">{ev.title}</span>
