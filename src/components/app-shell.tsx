@@ -244,7 +244,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className={cn("flex items-center gap-1 px-2 pb-2", !open && "flex-col gap-1.5")}>
           <Link
             to={HOME.to}
-            title={HOME.label}
+            title={`${HOME.label} — H`}
             aria-label={HOME.label}
             activeOptions={{ exact: true }}
             activeProps={{ className: "bg-muted text-foreground" }}
