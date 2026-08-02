@@ -294,11 +294,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div
             className={cn(
               "flex overflow-hidden rounded-full bg-sidebar-accent/70 ring-1 ring-inset ring-[rgba(255,255,255,0.08)] dark:bg-sidebar-accent",
-              open ? "h-7 w-full divide-x" : "h-auto w-7 flex-col divide-y",
+              open ? "h-7 w-full divide-x" : "w-7 flex-col divide-y [&>*]:h-7",
               "divide-[rgba(255,255,255,0.08)]",
             )}
           >
-            <ThemeToggle className="flex-1 rounded-none" />
+            <ThemeToggle className="size-auto flex-1 rounded-none" />
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
