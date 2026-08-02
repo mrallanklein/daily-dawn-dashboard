@@ -27,6 +27,8 @@ import { CalendarSidebar } from "@/components/calendar/calendar-sidebar";
 import { MonthGrid } from "@/components/calendar/month-grid";
 import { TimeGrid } from "@/components/calendar/time-grid";
 import { YearGrid } from "@/components/calendar/year-grid";
+import { InvitationsPopover } from "@/components/calendar/invitations-popover";
+import { MonthYearPicker } from "@/components/calendar/month-year-picker";
 import {
   VIEW_LABELS,
   eventKey,
@@ -155,48 +157,69 @@ export function CalendarWorkspace() {
 
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-      <section className="glass min-w-0 overflow-hidden">
-        <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 px-3 py-2.5">
-          <div className="flex items-center gap-1">
+      <section className="glass min-w-0 overflow-hidden rounded-2xl">
+        <header className="flex flex-wrap items-center justify-between gap-2 px-3 py-3">
+          <div className="flex min-w-0 items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
-              className="press size-8"
+              className="press size-8 rounded-full"
               aria-label="Période précédente"
               onClick={() => setCursor((c) => shiftCursor(view, c, -1))}
             >
               <ChevronLeft className="size-4" />
             </Button>
-            <Button variant="ghost" size="sm" className="press font-semibold" onClick={goToday}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="press rounded-full font-semibold"
+              onClick={goToday}
+            >
               Aujourd'hui
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="press size-8"
+              className="press size-8 rounded-full"
               aria-label="Période suivante"
               onClick={() => setCursor((c) => shiftCursor(view, c, 1))}
             >
               <ChevronRight className="size-4" />
             </Button>
-            <h2 className="ml-2 truncate text-base font-bold capitalize">{title}</h2>
+            <MonthYearPicker
+              cursor={cursor}
+              onChange={setCursor}
+              label={title}
+              monthPicker={view !== "year"}
+            />
           </div>
 
-          <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5">
-            {VIEW_LABELS.map((v) => (
-              <button
-                key={v.value}
-                onClick={() => setView(v.value)}
-                className={cn(
-                  "press rounded-md px-2.5 py-1 text-xs font-semibold transition-colors",
-                  view === v.value
-                    ? "bg-background text-foreground shadow-[var(--shadow-soft)]"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                {v.label}
-              </button>
-            ))}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center rounded-full border border-border bg-muted/40 p-0.5">
+              {VIEW_LABELS.map((v, i) => (
+                <div key={v.value} className="flex items-center">
+                  {i > 0 && view !== v.value && view !== VIEW_LABELS[i - 1]!.value ? (
+                    <span className="h-3.5 w-px bg-border" />
+                  ) : null}
+                  <button
+                    onClick={() => setView(v.value)}
+                    className={cn(
+                      "press rounded-full px-3 py-1 text-[0.8rem] font-semibold transition-colors",
+                      view === v.value
+                        ? "bg-background text-foreground shadow-[var(--shadow-soft)]"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {v.label}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <InvitationsPopover
+              invitations={invitations}
+              onRespond={(ev, response) => respondMutation.mutate({ ev, response })}
+              onSelectEvent={(ev) => setDraft({ date: parseISO(ev.start), event: ev })}
+            />
           </div>
         </header>
 
@@ -245,8 +268,6 @@ export function CalendarWorkspace() {
         sources={visibleSources}
         hidden={hidden}
         extras={extrasFor(selected)}
-        invitations={invitations}
-        onRespond={(ev, response) => respondMutation.mutate({ ev, response })}
         onCursorChange={setCursor}
         onSelectDay={selectDay}
         onToggleSource={(key) =>

@@ -26,7 +26,7 @@ export function TimeGrid({
   }, []);
 
   return (
-    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden rounded-2xl">
       <div
         className="grid w-full border-b border-border/70"
         style={{ gridTemplateColumns: `3rem repeat(${days.length}, minmax(0,1fr))` }}
@@ -131,7 +131,7 @@ export function TimeGrid({
                     <button
                       key={ev.id + ev.calendarId}
                       onClick={() => onSelectEvent(ev)}
-                      className="press absolute z-10 overflow-hidden rounded-lg border-l-[3px] px-1.5 py-1 text-left shadow-[var(--shadow-soft)] backdrop-blur-sm"
+                      className="press absolute z-10 overflow-hidden rounded-xl border-l-[3px] px-1.5 py-1 text-left shadow-[var(--shadow-soft)] backdrop-blur-sm"
                       style={{
                         top: top * HOUR_PX,
                         height: Math.max(20, height * HOUR_PX - 2),
