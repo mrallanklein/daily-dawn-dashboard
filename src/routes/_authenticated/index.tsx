@@ -122,9 +122,8 @@ function Dashboard() {
         <DeadlinesPanel />
       </div>
 
-      <div className="mb-4 grid gap-4 lg:grid-cols-2">
+      <div className="mb-4">
         <TaskList />
-        <div />
       </div>
 
       <CalendarWorkspace />
