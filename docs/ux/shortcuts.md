@@ -10,6 +10,15 @@
 | `←` / `→` | Période précédente / suivante dans le calendrier |
 | `Tab` / `⇧Tab` | Navigation entre contrôles, ordre de focus logique |
 | `Espace` | Cocher l'élément focalisé |
+| `H` | Accueil |
+| `P` | Projets |
+| `T` | Tâches |
+| `C` | Calendrier |
+| `M` | Boîte mail |
+| `R` | CRM |
+| `B` | Budget |
+| `E` | Équipe |
+| `/` | Ouvrir la palette de recherche |
 
 ## Règles
 
@@ -17,5 +26,7 @@
   focus visible.
 - Aucun raccourci ne se déclenche pendant la saisie dans un champ, à l'exception
   de `Échap` et de la palette.
-- La palette permet d'atteindre une page, un projet, une tâche ou un contact et
-  de lancer les actions de création.
+- La palette permet d'atteindre une page, un projet, une tâche, un contact, un
+  évènement ou un mail, et de lancer les actions de création.
+- Les raccourcis de navigation sont rappelés dans l'infobulle de chaque entrée
+  de la barre latérale.
