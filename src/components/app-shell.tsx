@@ -40,7 +40,6 @@ import logoAsset from "@/assets/logo-ak.png.asset.json";
 import portraitAsset from "@/assets/allan-klein.png.asset.json";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
-import { NotificationBell } from "@/components/app/notification-bell";
 import { SettingsDialog } from "@/components/settings-dialog";
 
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
@@ -236,7 +235,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </div>
 
-        {/* Ligne rapide : Accueil (pastille) · Notifications · Boîte de réception · Recherche */}
+        {/* Ligne rapide : Accueil (pastille) · Boîte de réception · Recherche */}
         <div className={cn("flex items-center gap-1 px-2 pb-2", !open && "flex-col gap-1.5")}>
           <Link
             to={HOME.to}
@@ -255,7 +254,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <span className="text-[0.9375rem] font-medium leading-none">{HOME.label}</span>
             ) : null}
           </Link>
-          <NotificationBell size={open ? 21 : 22} />
           <Link
             to="/mail"
             search={{}}
