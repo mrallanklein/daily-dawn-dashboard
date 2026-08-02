@@ -10,6 +10,7 @@ import { TodayFocus } from "@/components/dashboard/today-focus";
 import { DeadlinesPanel } from "@/components/dashboard/deadlines-panel";
 import { MailPreview } from "@/components/dashboard/mail-preview";
 import { TaskList } from "@/components/dashboard/task-list";
+import { InsightsPanel } from "@/components/dashboard/insights-panel";
 import { CalendarWorkspace } from "@/components/calendar/calendar-workspace";
 import { profileQuery, projectsQuery, tasksQuery, weatherQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
@@ -117,8 +118,13 @@ function Dashboard() {
       </div>
 
       <div className="mb-4 grid gap-4 lg:grid-cols-2">
+        <InsightsPanel />
         <DeadlinesPanel />
+      </div>
+
+      <div className="mb-4 grid gap-4 lg:grid-cols-2">
         <TaskList />
+        <div />
       </div>
 
       <CalendarWorkspace />
