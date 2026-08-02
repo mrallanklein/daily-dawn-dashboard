@@ -9,6 +9,8 @@ export type Space = {
   avatar_url: string | null;
   banner_url: string | null;
   weather_city: string;
+  weather_lat: number;
+  weather_lon: number;
   /** Identifiants de boîtes mail Google activées : "primary" | "secondary" */
   mail_accounts: string[];
   /** Agendas affichés, au format "accountKey::calendarId" */
@@ -17,7 +19,7 @@ export type Space = {
 };
 
 const COLUMNS =
-  "id, slug, name, tag, avatar_url, banner_url, weather_city, mail_accounts, calendar_ids, position";
+  "id, slug, name, tag, avatar_url, banner_url, weather_city, weather_lat, weather_lon, mail_accounts, calendar_ids, position";
 
 export const spacesQuery = () =>
   queryOptions({

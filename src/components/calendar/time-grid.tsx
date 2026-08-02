@@ -26,16 +26,16 @@ export function TimeGrid({
   }, []);
 
   return (
-    <div className="flex min-w-0 flex-col">
+    <div className="flex w-full min-w-0 flex-col overflow-x-hidden">
       <div
-        className="grid border-b border-border/70"
-        style={{ gridTemplateColumns: `3.5rem repeat(${days.length}, minmax(0,1fr))` }}
+        className="grid w-full border-b border-border/70"
+        style={{ gridTemplateColumns: `3rem repeat(${days.length}, minmax(0,1fr))` }}
       >
         <div />
         {days.map((day) => {
           const today = isSameDay(day, new Date());
           return (
-            <div key={day.toISOString()} className="px-2 py-2 text-center">
+            <div key={day.toISOString()} className="min-w-0 px-1 py-2 text-center">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                 {format(day, "EEE", { locale: fr })}
               </p>
@@ -54,14 +54,17 @@ export function TimeGrid({
 
       {/* Bandeau journées entières */}
       <div
-        className="grid border-b border-border/70 bg-muted/25"
-        style={{ gridTemplateColumns: `3.5rem repeat(${days.length}, minmax(0,1fr))` }}
+        className="grid w-full border-b border-border/70 bg-muted/25"
+        style={{ gridTemplateColumns: `3rem repeat(${days.length}, minmax(0,1fr))` }}
       >
         <p className="px-2 py-1 text-right text-[0.6rem] uppercase tracking-[0.1em] text-muted-foreground">
           jour
         </p>
         {days.map((day) => (
-          <div key={day.toISOString()} className="space-y-0.5 border-l border-border/50 p-1">
+          <div
+            key={day.toISOString()}
+            className="min-w-0 space-y-0.5 border-l border-border/50 p-1"
+          >
             {eventsOnDay(events, day)
               .filter((ev) => ev.allDay)
               .map((ev) => (
@@ -78,10 +81,10 @@ export function TimeGrid({
         ))}
       </div>
 
-      <div ref={scroller} className="max-h-[32rem] overflow-y-auto">
+      <div ref={scroller} className="max-h-[32rem] w-full overflow-x-hidden overflow-y-auto">
         <div
-          className="relative grid"
-          style={{ gridTemplateColumns: `3.5rem repeat(${days.length}, minmax(0,1fr))` }}
+          className="relative grid w-full"
+          style={{ gridTemplateColumns: `3rem repeat(${days.length}, minmax(0,1fr))` }}
         >
           <div>
             {HOURS.map((h) => (
@@ -102,7 +105,7 @@ export function TimeGrid({
             const today = isSameDay(day, new Date());
             const now = new Date();
             return (
-              <div key={day.toISOString()} className="relative border-l border-border/50">
+              <div key={day.toISOString()} className="relative min-w-0 border-l border-border/50">
                 {HOURS.map((h) => (
                   <button
                     key={h}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   addDays,
@@ -16,6 +16,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   getCalendarEvents,
   listCalendars,
+  respondCalendarEvent,
   type CalendarEvent,
 } from "@/lib/agenda.functions";
 import { projectsQuery, tasksQuery } from "@/lib/data";
@@ -47,6 +48,8 @@ export function CalendarWorkspace() {
   const calendarIds = space?.calendar_ids ?? [];
   const fetchEvents = useServerFn(getCalendarEvents);
   const fetchCalendars = useServerFn(listCalendars);
+  const respond = useServerFn(respondCalendarEvent);
+  const queryClient = useQueryClient();
   const { data: tasks } = useQuery(tasksQuery(workspace));
   const { data: projects } = useQuery(projectsQuery(workspace));
 
@@ -76,6 +79,24 @@ export function CalendarWorkspace() {
   const visibleSources = (sources ?? []).filter(
     (s) => calendarIds.length === 0 || calendarIds.includes(s.calendarId),
   );
+
+  const invitations = useMemo(
+    () => events.filter((ev) => ev.myResponse === "needsAction"),
+    [events],
+  );
+
+  const respondMutation = useMutation({
+    mutationFn: (vars: { ev: CalendarEvent; response: "accepted" | "declined" }) =>
+      respond({
+        data: {
+          accountKey: vars.ev.accountKey,
+          calendarId: vars.ev.calendarId,
+          eventId: vars.ev.id,
+          response: vars.response,
+        },
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calendar"] }),
+  });
 
   const markersFor = (day: Date) => [
     ...(projects ?? [])
@@ -133,7 +154,7 @@ export function CalendarWorkspace() {
   };
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_17rem]">
+    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
       <section className="glass min-w-0 overflow-hidden">
         <header className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 px-3 py-2.5">
           <div className="flex items-center gap-1">
@@ -224,6 +245,8 @@ export function CalendarWorkspace() {
         sources={visibleSources}
         hidden={hidden}
         extras={extrasFor(selected)}
+        invitations={invitations}
+        onRespond={(ev, response) => respondMutation.mutate({ ev, response })}
         onCursorChange={setCursor}
         onSelectDay={selectDay}
         onToggleSource={(key) =>

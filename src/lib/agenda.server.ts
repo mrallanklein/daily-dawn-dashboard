@@ -12,6 +12,9 @@ export type CalendarEvent = {
   accountEmail: string | null;
   color: string | null;
   htmlLink: string | null;
+  organizer: string | null;
+  /** Réponse du propriétaire de l'agenda : needsAction | accepted | declined | tentative */
+  myResponse: string | null;
 };
 
 export type CalendarSource = {
@@ -123,6 +126,8 @@ export async function listEvents(input: {
             description?: string;
             location?: string;
             htmlLink?: string;
+            organizer?: { email?: string; displayName?: string };
+            attendees?: Array<{ email?: string; self?: boolean; responseStatus?: string }>;
             start?: { dateTime?: string; date?: string };
             end?: { dateTime?: string; date?: string };
           }>;
@@ -134,6 +139,7 @@ export async function listEvents(input: {
           .map((item) => {
             const start = item.start?.dateTime ?? item.start?.date ?? null;
             if (!start) return null;
+            const me = (item.attendees ?? []).find((a) => a.self);
             const event: CalendarEvent = {
               id: item.id,
               title: item.summary ?? "(Sans titre)",
@@ -148,6 +154,9 @@ export async function listEvents(input: {
               accountEmail: source.accountEmail,
               color: source.color,
               htmlLink: item.htmlLink ?? null,
+              organizer:
+                item.organizer?.displayName ?? item.organizer?.email ?? source.accountEmail ?? null,
+              myResponse: me?.responseStatus ?? null,
             };
             return event;
           });
@@ -216,6 +225,35 @@ export async function removeEvent(input: {
     const body = await res.text();
     console.error(`Google Calendar delete failed [${res.status}]: ${body}`);
     throw new Error(`Suppression impossible (${res.status})`);
+  }
+  return { ok: true };
+}
+
+/** Accepter / refuser une invitation reçue sur l'un des agendas reliés. */
+export async function respondEvent(input: {
+  accountKey: string;
+  calendarId: string;
+  eventId: string;
+  response: "accepted" | "declined" | "tentative";
+}) {
+  const key = keyFor(input.accountKey);
+  const url = `${GATEWAY}/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}`;
+  const current = await gget<{
+    attendees?: Array<{ email?: string; self?: boolean; responseStatus?: string }>;
+  }>(key, `/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}`);
+  const attendees = (current.attendees ?? []).map((a) =>
+    a.self ? { ...a, responseStatus: input.response } : a,
+  );
+  if (attendees.length === 0) throw new Error("Cet évènement n'a pas d'invités");
+  const res = await fetch(`${url}?sendUpdates=all`, {
+    method: "PATCH",
+    headers: { ...headersFor(key), "Content-Type": "application/json" },
+    body: JSON.stringify({ attendees }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    console.error(`Google Calendar RSVP failed [${res.status}]: ${body}`);
+    throw new Error(`Réponse impossible (${res.status})`);
   }
   return { ok: true };
 }

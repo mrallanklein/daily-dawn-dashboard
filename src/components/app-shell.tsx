@@ -5,20 +5,20 @@ import {
   Banknote,
   Calendar,
   Check,
-  CheckCircle,
+  CheckSquare,
   ChevronsUpDown,
-  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  FolderClosed,
   Home,
   Inbox,
   LogOut,
   Mail,
-  PanelLeftClose,
   Plus,
-  PanelLeftOpen,
   Search,
   Settings,
+  User,
   Users,
-  UsersRound,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/data";
@@ -41,16 +41,16 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
 
-const HOME = { to: "/", label: "Accueil", icon: Home, color: "#3F3F46" } as const;
+const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
 const NAV = [
-  { to: "/projets", label: "Projets", icon: BookOpen, color: "#F97316" },
-  { to: "/taches", label: "Tâches", icon: CheckCircle, color: "#22C55E" },
-  { to: "/calendrier", label: "Calendrier", icon: Calendar, color: "#3B82F6" },
-  { to: "/mail", label: "Boîte mail", icon: Mail, color: "#EF4444" },
-  { to: "/crm", label: "CRM", icon: Users, color: "#A855F7" },
-  { to: "/budget", label: "Budget", icon: Banknote, color: "#EAB308" },
-  { to: "/equipe", label: "Équipe", icon: UsersRound, color: "#0EA5E9", aliasOnly: true },
+  { to: "/projets", label: "Projets", icon: FolderClosed },
+  { to: "/taches", label: "Tâches", icon: CheckSquare },
+  { to: "/calendrier", label: "Calendrier", icon: Calendar },
+  { to: "/mail", label: "Boîte mail", icon: Mail },
+  { to: "/crm", label: "CRM", icon: User },
+  { to: "/budget", label: "Budget", icon: Banknote },
+  { to: "/equipe", label: "Équipe", icon: Users, aliasOnly: true },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -88,9 +88,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const wsName = space?.name ?? profile?.display_name ?? "Espace";
   const wsTag = space?.tag ?? "";
   const wsAvatar = space?.avatar_url ?? (workspace === "allan" ? portraitAsset.url : null);
-  const items = NAV.filter(
-    (n) => !("aliasOnly" in n && n.aliasOnly) || workspace === "alias",
-  );
+  const items = NAV.filter((n) => !("aliasOnly" in n && n.aliasOnly) || workspace === "alias");
 
   const newSpace = async () => {
     try {
@@ -117,27 +115,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
-          open ? "w-60" : "w-[4.25rem]",
+          open ? "w-60" : "w-[68px]",
         )}
       >
-        <button
-          onClick={toggle}
-          aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
-          className={cn(
-            "press absolute top-3 z-10 grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground",
-            open ? "right-2" : "left-1/2 -translate-x-1/2",
-          )}
-        >
-          {open ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
-        </button>
-
-        <div className="p-3">
-          <div className={cn("h-7", open ? "hidden" : "block")} />
+        <div className={cn("p-3", !open && "px-3")}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-lg p-2 pr-9 text-left transition-colors hover:bg-sidebar-accent",
+                  "flex w-full items-center gap-2.5 rounded-md p-1.5 text-left transition-colors hover:bg-sidebar-accent",
                   !open && "justify-center p-1.5",
                 )}
               >
@@ -205,70 +191,60 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </div>
 
-        {/* Accueil mis en avant + actions (boîte de réception / recherche) */}
-        <div className={cn("px-2 pb-2", !open && "px-1")}>
+        {/* Ligne rapide : Accueil · Boîte de réception · Recherche */}
+        <div className={cn("flex items-center gap-1 px-3 pb-2", !open && "flex-col")}>
           <Link
             to={HOME.to}
             title={HOME.label}
+            aria-label={HOME.label}
             activeOptions={{ exact: true }}
             activeProps={{ className: "bg-sidebar-accent text-foreground" }}
-            inactiveProps={{ className: "text-foreground/80 hover:bg-sidebar-accent/70" }}
-            className={cn(
-              "press flex items-center gap-2.5 rounded-full px-3 py-2 text-sm font-semibold transition-colors active:bg-sidebar-accent",
-              !open && "justify-center px-0",
-            )}
+            inactiveProps={{ className: "text-foreground/70 hover:bg-sidebar-accent/70" }}
+            className="press grid size-8 shrink-0 place-items-center rounded-[4px] transition-colors"
           >
-            <HOME.icon
-              className="size-[1.15rem] shrink-0"
-              strokeWidth={2}
-              style={{ color: HOME.color }}
-            />
-            {open ? <span className="truncate">{HOME.label}</span> : null}
+            <HOME.icon size={open ? 20 : 24} strokeWidth={1.5} />
           </Link>
-
-          <div className={cn("mt-1 flex items-center gap-1", !open && "flex-col")}>
-            <Link
-              to="/mail"
-              search={{}}
-              aria-label="Boîte de réception"
-              title="Boîte de réception"
-              className="press grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
-            >
-              <Inbox className="size-[1.05rem]" strokeWidth={1.9} />
-            </Link>
-            <button
-              onClick={() => setPaletteOpen(true)}
-              aria-label="Rechercher (⌘K)"
-              title="Rechercher — ⌘K"
-              className="press grid size-9 place-items-center rounded-full bg-sidebar-accent text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <Search className="size-[1.05rem]" strokeWidth={1.9} />
-            </button>
-          </div>
+          <Link
+            to="/mail"
+            search={{}}
+            aria-label="Boîte de réception"
+            title="Boîte de réception"
+            className="press grid size-8 shrink-0 place-items-center rounded-[4px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
+          >
+            <Inbox size={open ? 20 : 24} strokeWidth={1.5} />
+          </Link>
+          <button
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Rechercher (⌘K)"
+            title="Rechercher — ⌘K"
+            className="press grid size-8 shrink-0 place-items-center rounded-[4px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
+          >
+            <Search size={open ? 20 : 24} strokeWidth={1.5} />
+          </button>
         </div>
 
-        <nav className="flex-1 space-y-0.5 px-2">
+        <nav className={cn("flex-1 space-y-px px-3")}>
           {items.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               title={item.label}
               activeProps={{
-                className: "bg-sidebar-accent text-foreground font-medium",
-                style: { boxShadow: "inset 2px 0 0 var(--brand)" },
+                className: "bg-sidebar-accent text-foreground [&_svg]:opacity-100",
               }}
               inactiveProps={{
-                className: "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+                className:
+                  "text-foreground/85 hover:bg-sidebar-accent/70 hover:text-foreground hover:[&_svg]:opacity-100",
               }}
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors",
+                "flex min-h-[30px] items-center gap-2 rounded-[4px] px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-colors",
                 !open && "justify-center px-0",
               )}
             >
               <item.icon
-                className="size-[1.05rem] shrink-0 text-sidebar"
-                strokeWidth={1.6}
-                style={{ fill: item.color, stroke: "var(--sidebar)" }}
+                className="shrink-0 opacity-70 transition-opacity"
+                size={open ? 20 : 24}
+                strokeWidth={1.5}
               />
               {open ? <span className="truncate">{item.label}</span> : null}
             </Link>
@@ -318,6 +294,23 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
+      {/* Bouton de repli/dépli — à l'extérieur de la sidebar, à mi-hauteur */}
+      <button
+        onClick={toggle}
+        aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
+        title={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
+        className={cn(
+          "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-[var(--shadow-soft)] transition-[left,color] duration-200 ease-out hover:text-foreground md:grid",
+          open ? "left-[calc(15rem+0.5rem)]" : "left-[calc(68px+0.5rem)]",
+        )}
+      >
+        {open ? (
+          <ChevronLeft size={18} strokeWidth={1.5} />
+        ) : (
+          <ChevronRight size={18} strokeWidth={1.5} />
+        )}
+      </button>
+
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/95 px-1 py-1.5 backdrop-blur md:hidden">
         {[HOME, ...items].slice(0, 5).map((item) => (
           <Link
@@ -325,19 +318,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             to={item.to}
             aria-label={item.label}
             activeOptions={{ exact: item.to === "/" }}
-            activeProps={{ className: "text-brand" }}
+            activeProps={{ className: "text-foreground" }}
             inactiveProps={{ className: "text-muted-foreground" }}
             className="grid place-items-center rounded-lg px-3 py-1.5"
           >
-            <item.icon
-              className="size-5 text-sidebar"
-              strokeWidth={1.6}
-              style={
-                item.to === "/"
-                  ? { color: item.color, fill: "none", stroke: item.color }
-                  : { fill: item.color, stroke: "var(--sidebar)" }
-              }
-            />
+            <item.icon size={22} strokeWidth={1.5} />
           </Link>
         ))}
       </nav>
@@ -345,7 +330,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main
         className={cn(
           "min-h-screen px-4 pb-24 pt-6 transition-[margin] duration-200 ease-out sm:px-8 md:pb-10",
-          open ? "md:ml-60" : "md:ml-[4.25rem]",
+          open ? "md:ml-60" : "md:ml-[68px]",
         )}
       >
         <div className="mx-auto max-w-[1400px]">{children}</div>
