@@ -86,7 +86,10 @@ export function CalendarWorkspace() {
   );
 
   const respondMutation = useMutation({
-    mutationFn: (vars: { ev: CalendarEvent; response: "accepted" | "declined" }) =>
+    mutationFn: (vars: {
+      ev: CalendarEvent;
+      response: "accepted" | "declined" | "tentative";
+    }) =>
       respond({
         data: {
           accountKey: vars.ev.accountKey,
