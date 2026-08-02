@@ -241,11 +241,6 @@ export function pick(row: NotionRow, aliases: string[], types?: string[]): PropV
     const value = row.props[norm(alias)];
     if (value && (!types || types.includes(value.type))) return value;
   }
-  if (types) {
-    for (const value of Object.values(row.props)) {
-      if (types.includes(value.type) && aliases.some((a) => norm(a) && false)) return value;
-    }
-  }
   return null;
 }
 
