@@ -44,6 +44,41 @@ import { SettingsDialog } from "@/components/settings-dialog";
 
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
+function ControlPill({
+  vertical = false,
+  onSettings,
+  onSignOut,
+}: {
+  vertical?: boolean;
+  onSettings: () => void;
+  onSignOut: () => void;
+}) {
+  const seg =
+    "grid size-8 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground";
+  return (
+    <div
+      className={cn(
+        "flex overflow-hidden rounded-full border border-border bg-card/70 backdrop-blur-xl",
+        vertical ? "flex-col divide-y divide-border" : "divide-x divide-border",
+      )}
+    >
+      <ThemeToggle className={cn(seg, "rounded-none")} />
+      <button type="button" onClick={onSettings} aria-label="Paramètres" title="Paramètres" className={seg}>
+        <Settings className="size-4" strokeWidth={1.5} />
+      </button>
+      <button
+        type="button"
+        onClick={onSignOut}
+        aria-label="Se déconnecter"
+        title="Se déconnecter"
+        className={seg}
+      >
+        <LogOut className="size-4" strokeWidth={1.5} />
+      </button>
+    </div>
+  );
+}
+
 const NAV = [
   { to: "/projets", label: "Projets", icon: ProjectsIcon },
   { to: "/taches", label: "Tâches", icon: TasksIcon },
@@ -290,32 +325,12 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             ) : null}
           </button>
-          <div
-            className={cn(
-              "flex overflow-hidden rounded-full bg-sidebar-accent/70 ring-1 ring-inset ring-[rgba(255,255,255,0.08)] dark:bg-sidebar-accent",
-              open ? "h-7 w-full divide-x" : "w-7 flex-col divide-y [&>*]:h-7",
-              "divide-[rgba(255,255,255,0.08)]",
-            )}
-          >
-            <ThemeToggle className="size-auto flex-1 rounded-none" />
-            <button
-              type="button"
-              onClick={() => setSettingsOpen(true)}
-              aria-label="Paramètres"
-              title="Paramètres"
-              className="grid flex-1 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
-            >
-              <Settings className="size-4" strokeWidth={1.5} />
-            </button>
-            <button
-              type="button"
-              onClick={signOut}
-              aria-label="Se déconnecter"
-              title="Se déconnecter"
-              className="grid flex-1 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
-            >
-              <LogOut className="size-4" strokeWidth={1.5} />
-            </button>
+          <div className={cn(!open && "flex justify-center pt-1.5")}>
+            <ControlPill
+              vertical={!open}
+              onSettings={() => setSettingsOpen(true)}
+              onSignOut={signOut}
+            />
           </div>
         </div>
       </aside>
@@ -338,6 +353,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       </button>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/85 px-1 py-1.5 backdrop-blur-xl md:hidden">
+        <div className="pointer-events-auto fixed bottom-[4.25rem] right-3 md:hidden">
+          <ControlPill onSettings={() => setSettingsOpen(true)} onSignOut={signOut} />
+        </div>
         {[HOME, ...items].slice(0, 5).map((item) => (
           <Link
             key={item.to}
