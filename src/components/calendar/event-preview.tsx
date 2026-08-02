@@ -19,12 +19,12 @@ function periodLabel(ev: CalendarEvent) {
   // Fin exclusive côté Google pour les journées entières.
   const end = ev.allDay && rawEnd.getTime() > start.getTime() ? addDays(rawEnd, -1) : rawEnd;
   const day = (d: Date) => format(d, "d MMMM yyyy", { locale: fr });
-  if (isSameDay(start, end)) {
-    if (ev.allDay) return day(start);
-    return `${day(start)} · ${format(start, "HH:mm")} – ${format(end, "HH:mm")}`;
+  const multiDay = !isSameDay(start, end);
+  if (multiDay) {
+    return `${day(start)} → ${day(end)}`;
   }
-  if (ev.allDay) return `${day(start)} → ${day(end)}`;
-  return `${day(start)} ${format(start, "HH:mm")} → ${day(end)} ${format(end, "HH:mm")}`;
+  if (ev.allDay) return day(start);
+  return `${day(start)} · ${format(start, "HH:mm")} – ${format(end, "HH:mm")}`;
 }
 
 /** Aperçu centré des détails d'un évènement, avec accès à l'édition. */
