@@ -65,21 +65,31 @@ export function WeatherBadge({
   }
   const { Icon, label, color } = describe(weather.code);
   const url = `https://www.google.com/search?q=${encodeURIComponent(`météo ${city}`)}`;
+  const open = (e: React.MouseEvent) => {
+    // Dans un aperçu en iframe, target="_blank" peut être bloqué : on force l'ouverture.
+    e.preventDefault();
+    const w = window.open(url, "_blank", "noopener,noreferrer");
+    if (!w) window.top?.location.assign(url);
+  };
   return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      title={`Voir la météo de ${city}`}
-      className="press flex items-center gap-3 rounded-lg px-2 py-1 text-left transition-colors hover:bg-muted/60"
-    >
+    <div className="flex items-center gap-3">
       <Icon size={28} strokeWidth={1.75} className="shrink-0" style={{ color }} />
       <div className="leading-tight">
         <p className="text-xl font-display font-bold">{weather.temperature}°</p>
         <p className="text-xs font-medium text-muted-foreground">
           {label} · {city} · {weather.min}° / {weather.max}°
         </p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={open}
+          title={`Voir la météo de ${city} sur Google`}
+          className="press mt-0.5 inline-block text-xs font-medium text-primary underline underline-offset-2 hover:opacity-80"
+        >
+          Consulter la météo sur Google
+        </a>
       </div>
-    </a>
+    </div>
   );
 }
