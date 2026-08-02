@@ -27,7 +27,6 @@ import { profileQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { createSpace, spaceInitials } from "@/lib/spaces";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -291,26 +290,32 @@ export function AppShell({ children }: { children: ReactNode }) {
               </div>
             ) : null}
           </button>
-          <div className={cn("flex items-center gap-1", !open && "flex-col")}>
-            <ThemeToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="press size-9"
+          <div
+            className={cn(
+              "flex overflow-hidden rounded-full bg-sidebar-accent/70 ring-1 ring-inset ring-[rgba(255,255,255,0.08)] dark:bg-sidebar-accent",
+              open ? "h-7 w-full divide-x" : "w-7 flex-col divide-y [&>*]:h-7",
+              "divide-[rgba(255,255,255,0.08)]",
+            )}
+          >
+            <ThemeToggle className="size-auto flex-1 rounded-none" />
+            <button
+              type="button"
               onClick={() => setSettingsOpen(true)}
               aria-label="Paramètres"
+              title="Paramètres"
+              className="grid flex-1 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
-              <Settings className="size-5" strokeWidth={1.5} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="press size-9 text-muted-foreground hover:text-foreground"
+              <Settings className="size-4" strokeWidth={1.5} />
+            </button>
+            <button
+              type="button"
               onClick={signOut}
               aria-label="Se déconnecter"
+              title="Se déconnecter"
+              className="grid flex-1 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
-              <LogOut className="size-5" strokeWidth={1.5} />
-            </Button>
+              <LogOut className="size-4" strokeWidth={1.5} />
+            </button>
           </div>
         </div>
       </aside>
