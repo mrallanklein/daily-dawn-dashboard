@@ -9,8 +9,8 @@ export type Space = {
   avatar_url: string | null;
   banner_url: string | null;
   weather_city: string;
-  weather_lat: number;
-  weather_lon: number;
+  weather_lat: number | null;
+  weather_lon: number | null;
   /** Identifiants de boîtes mail Google activées : "primary" | "secondary" */
   mail_accounts: string[];
   /** Agendas affichés, au format "accountKey::calendarId" */
