@@ -171,6 +171,56 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
     onSuccess: () => invalidate("module_views"),
   });
 
+  const duplicateView = useMutation({
+    mutationFn: async (id: string) => {
+      const uid = await userId();
+      if (!uid) throw new Error("Session expirée");
+      const base = effectiveViews.find((v) => v.id === id);
+      if (!base) return;
+      const res = await supabase.from("module_views").insert({
+        user_id: uid,
+        workspace,
+        module,
+        name: `${base.name} (copie)`,
+        emoji: base.emoji,
+        layout: base.layout,
+        position: effectiveViews.length,
+        config: base.config as unknown as Json,
+      });
+      if (res.error) throw new Error(res.error.message);
+    },
+    onSuccess: () => invalidate("module_views"),
+  });
+
+  /** Réordonne les onglets ; matérialise les vues par défaut au besoin. */
+  const reorderViews = useMutation({
+    mutationFn: async (orderedIds: string[]) => {
+      const uid = await userId();
+      if (!uid) throw new Error("Session expirée");
+      for (const [index, id] of orderedIds.entries()) {
+        const base = effectiveViews.find((v) => v.id === id);
+        if (!base) continue;
+        if (id.startsWith("default:")) {
+          const res = await supabase.from("module_views").insert({
+            user_id: uid,
+            workspace,
+            module,
+            name: base.name,
+            emoji: base.emoji,
+            layout: base.layout,
+            position: index,
+            config: base.config as unknown as Json,
+          });
+          if (res.error) throw new Error(res.error.message);
+          continue;
+        }
+        const res = await supabase.from("module_views").update({ position: index }).eq("id", id);
+        if (res.error) throw new Error(res.error.message);
+      }
+    },
+    onSuccess: () => invalidate("module_views"),
+  });
+
   const deleteView = useMutation({
     mutationFn: async (id: string) => {
       if (id.startsWith("default:")) return;
@@ -245,6 +295,8 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
     isLoading: views.isLoading || customProps.isLoading,
     createView,
     updateView,
+    duplicateView,
+    reorderViews,
     deleteView,
     saveProperty,
     deleteProperty,
