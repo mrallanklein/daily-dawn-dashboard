@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
-import { SettingsDialog } from "@/components/settings-dialog";
+import { Link } from "@tanstack/react-router";
 import { WeatherBadge } from "@/components/weather-badge";
 import { AgendaPanel } from "@/components/dashboard/agenda-panel";
 import { TasksPanel } from "@/components/dashboard/tasks-panel";
