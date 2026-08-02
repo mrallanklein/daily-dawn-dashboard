@@ -62,7 +62,6 @@ function HomePage() {
   const avatar = space?.avatar_url ?? profile?.avatar_url ?? portraitAsset.url;
   const name = space?.name ?? profile?.display_name ?? "Allan Klein";
   const firstName = (profile?.display_name ?? "Allan").split(" ")[0] ?? "Allan";
-  const banner = space?.banner_url ?? profile?.banner_url ?? null;
 
   const active = (projects ?? []).filter((p) => !["termine", "archiver"].includes(p.status));
   const todayTasks = (tasks ?? []).filter(
