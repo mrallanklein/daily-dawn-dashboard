@@ -136,7 +136,13 @@ export function FreeTodo() {
           onChange={(e) => setDraft(e.target.value)}
           placeholder="Écrire librement…"
         />
-        <Button type="submit" size="icon" variant="secondary" className="press" aria-label="Ajouter une ligne">
+        <Button
+          type="submit"
+          size="icon"
+          variant="secondary"
+          className="press"
+          aria-label="Ajouter une ligne"
+        >
           <Plus className="size-4" />
         </Button>
       </form>

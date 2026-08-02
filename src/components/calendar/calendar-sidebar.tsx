@@ -243,7 +243,10 @@ export function CalendarSidebar({
                   {list.map((s) => {
                     const key = `${s.accountKey}::${s.calendarId}`;
                     return (
-                      <li key={key} className="flex items-center gap-2 rounded-lg bg-muted/40 px-2 py-1">
+                      <li
+                        key={key}
+                        className="flex items-center gap-2 rounded-lg bg-muted/40 px-2 py-1"
+                      >
                         <Checkbox
                           id={key}
                           checked={!hidden.includes(key)}

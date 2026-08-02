@@ -42,7 +42,10 @@ export function ListView({
             return (
               <tr key={p.id} className="border-b border-border/60 last:border-0 hover:bg-muted/40">
                 <td className="max-w-[18rem] px-2 py-2">
-                  <button onClick={() => onSelect(p)} className="truncate text-left hover:underline">
+                  <button
+                    onClick={() => onSelect(p)}
+                    className="truncate text-left hover:underline"
+                  >
                     {p.name}
                   </button>
                   {p.category ? (
@@ -76,9 +79,7 @@ export function ListView({
                   <input
                     type="date"
                     value={p.deadline ?? ""}
-                    onChange={(e) =>
-                      patch.mutate({ id: p.id, deadline: e.target.value || null })
-                    }
+                    onChange={(e) => patch.mutate({ id: p.id, deadline: e.target.value || null })}
                     className="bg-transparent text-xs outline-none"
                   />
                 </td>

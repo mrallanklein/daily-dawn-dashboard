@@ -32,13 +32,7 @@ import {
 
 export type EventDraft = { date: Date; event?: CalendarEvent };
 
-export function EventDialog({
-  draft,
-  onClose,
-}: {
-  draft: EventDraft | null;
-  onClose: () => void;
-}) {
+export function EventDialog({ draft, onClose }: { draft: EventDraft | null; onClose: () => void }) {
   const queryClient = useQueryClient();
   const fetchCalendars = useServerFn(listCalendars);
   const save = useServerFn(saveCalendarEvent);
@@ -261,7 +255,10 @@ export function EventDialog({
             <Button variant="ghost" onClick={onClose}>
               Annuler
             </Button>
-            <Button onClick={() => mutation.mutate()} disabled={mutation.isPending || !title.trim()}>
+            <Button
+              onClick={() => mutation.mutate()}
+              disabled={mutation.isPending || !title.trim()}
+            >
               Enregistrer
             </Button>
           </div>

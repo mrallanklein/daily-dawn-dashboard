@@ -81,9 +81,7 @@ function AuthPage() {
     <main className="flex min-h-screen items-center justify-center px-6 py-16">
       <div className="w-full max-w-md rounded-lg border border-border bg-card p-8">
         <img src={logoAsset.url} alt="Logo Allan Klein" className="size-12 rounded-lg" />
-        <p className="mt-5 text-xs text-muted-foreground">
-          Atelier — Allan Klein
-        </p>
+        <p className="mt-5 text-xs text-muted-foreground">Atelier — Allan Klein</p>
         <h1 className="mt-2 text-3xl font-display tracking-tight">
           {mode === "signin" ? "Bon retour" : "Créer votre espace"}
         </h1>

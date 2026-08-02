@@ -56,9 +56,7 @@ export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
     msg: typeof search["msg"] === "string" ? (search["msg"] as string) : undefined,
     account:
-      typeof search["account"] === "string"
-        ? (search["account"] as MailAccountId)
-        : undefined,
+      typeof search["account"] === "string" ? (search["account"] as MailAccountId) : undefined,
   }),
   head: () => ({
     meta: [
@@ -262,7 +260,6 @@ function MailPage() {
                 </button>
               ))}
             </nav>
-
           </aside>
 
           <div className="flex min-w-0 flex-col gap-2">
@@ -277,59 +274,59 @@ function MailPage() {
             </div>
 
             <div className="glass max-h-[68vh] overflow-y-auto">
-            {isFetching && list.length === 0 ? (
-              <p className="p-4 text-sm text-muted-foreground">Chargement des messages…</p>
-            ) : list.length === 0 ? (
-              <p className="p-4 text-sm text-muted-foreground">Aucun message.</p>
-            ) : (
-              Object.entries(groups).map(([label, items]) => (
-                <div key={label}>
-                  <p className="sticky top-0 z-10 bg-card/85 px-3 py-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground backdrop-blur">
-                    {label}
-                  </p>
-                  <ul>
-                    {items.map((m) => (
-                      <li key={m.id}>
-                        <button
-                          onClick={() => setOpenId(m.id)}
-                          className={cn(
-                            "press flex w-full items-start gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/50",
-                            current?.id === m.id && "bg-muted",
-                          )}
-                        >
-                          <span
-                            className="mt-1.5 size-2 shrink-0 rounded-full"
-                            style={{
-                              backgroundColor: colorFor(account),
-                              opacity: m.unread ? 1 : 0.35,
-                            }}
-                          />
-                          <span className="min-w-0 flex-1">
-                            <span className="flex items-baseline justify-between gap-2">
-                              <span
-                                className={cn(
-                                  "min-w-0 truncate text-sm",
-                                  m.unread ? "font-bold" : "font-medium",
-                                )}
-                              >
-                                {m.from.replace(/<.*>/, "").trim() || m.from}
+              {isFetching && list.length === 0 ? (
+                <p className="p-4 text-sm text-muted-foreground">Chargement des messages…</p>
+              ) : list.length === 0 ? (
+                <p className="p-4 text-sm text-muted-foreground">Aucun message.</p>
+              ) : (
+                Object.entries(groups).map(([label, items]) => (
+                  <div key={label}>
+                    <p className="sticky top-0 z-10 bg-card/85 px-3 py-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground backdrop-blur">
+                      {label}
+                    </p>
+                    <ul>
+                      {items.map((m) => (
+                        <li key={m.id}>
+                          <button
+                            onClick={() => setOpenId(m.id)}
+                            className={cn(
+                              "press flex w-full items-start gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/50",
+                              current?.id === m.id && "bg-muted",
+                            )}
+                          >
+                            <span
+                              className="mt-1.5 size-2 shrink-0 rounded-full"
+                              style={{
+                                backgroundColor: colorFor(account),
+                                opacity: m.unread ? 1 : 0.35,
+                              }}
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="flex items-baseline justify-between gap-2">
+                                <span
+                                  className={cn(
+                                    "min-w-0 truncate text-sm",
+                                    m.unread ? "font-bold" : "font-medium",
+                                  )}
+                                >
+                                  {m.from.replace(/<.*>/, "").trim() || m.from}
+                                </span>
+                                <span className="shrink-0 text-[0.68rem] tabular-nums text-muted-foreground">
+                                  {format(parseISO(m.date), "d MMM HH:mm", { locale: fr })}
+                                </span>
                               </span>
-                              <span className="shrink-0 text-[0.68rem] tabular-nums text-muted-foreground">
-                                {format(parseISO(m.date), "d MMM HH:mm", { locale: fr })}
+                              <span className="block truncate text-sm">{m.subject}</span>
+                              <span className="block truncate text-xs text-muted-foreground">
+                                {m.snippet}
                               </span>
                             </span>
-                            <span className="block truncate text-sm">{m.subject}</span>
-                            <span className="block truncate text-xs text-muted-foreground">
-                              {m.snippet}
-                            </span>
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
-            )}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              )}
             </div>
             {list.length >= limit ? (
               <Button
@@ -381,9 +378,7 @@ function MailReader({
           if (!reply.trim()) return;
           onReply({
             to: address,
-            subject: message.subject.startsWith("Re:")
-              ? message.subject
-              : `Re: ${message.subject}`,
+            subject: message.subject.startsWith("Re:") ? message.subject : `Re: ${message.subject}`,
             body: reply,
           });
           setReply("");

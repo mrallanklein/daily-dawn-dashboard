@@ -14,8 +14,7 @@ export function useTheme() {
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ak-theme") as Theme | null;
-    const next: Theme =
-      stored ?? "light";
+    const next: Theme = stored ?? "light";
     setTheme(next);
     apply(next);
   }, []);

@@ -60,8 +60,7 @@ export function MonthCalendar() {
       }),
   });
 
-  const eventsOn = (day: Date) =>
-    (events ?? []).filter((e) => isSameDay(parseISO(e.start), day));
+  const eventsOn = (day: Date) => (events ?? []).filter((e) => isSameDay(parseISO(e.start), day));
   const tasksOn = (day: Date) =>
     (tasks ?? []).filter(
       (t) => !t.parent_task_id && t.scheduled_date && isSameDay(parseISO(t.scheduled_date), day),

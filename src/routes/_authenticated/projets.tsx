@@ -61,7 +61,7 @@ function ProjectsPage() {
   const list = (projects ?? []).filter((p) =>
     (p.name + (p.client ?? "") + (p.category ?? "")).toLowerCase().includes(q.toLowerCase()),
   );
-  const current = selected ? (projects ?? []).find((p) => p.id === selected.id) ?? null : null;
+  const current = selected ? ((projects ?? []).find((p) => p.id === selected.id) ?? null) : null;
 
   return (
     <AppShell>

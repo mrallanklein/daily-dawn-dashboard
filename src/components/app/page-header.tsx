@@ -18,7 +18,7 @@ export function PageHeader({
   banner?: boolean;
 }) {
   const { space } = useWorkspace();
-  const bannerUrl = banner ? space?.banner_url ?? null : null;
+  const bannerUrl = banner ? (space?.banner_url ?? null) : null;
 
   return (
     <header className="mb-8">
@@ -32,7 +32,10 @@ export function PageHeader({
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           {Icon ? (
-            <Icon className="size-9 shrink-0" style={iconColor ? { color: iconColor } : undefined} />
+            <Icon
+              className="size-9 shrink-0"
+              style={iconColor ? { color: iconColor } : undefined}
+            />
           ) : null}
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-display font-bold tracking-tight sm:text-3xl">
