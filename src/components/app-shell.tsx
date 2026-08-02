@@ -44,6 +44,41 @@ import { SettingsDialog } from "@/components/settings-dialog";
 
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
+function ControlPill({
+  vertical = false,
+  onSettings,
+  onSignOut,
+}: {
+  vertical?: boolean;
+  onSettings: () => void;
+  onSignOut: () => void;
+}) {
+  const seg =
+    "grid size-8 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground";
+  return (
+    <div
+      className={cn(
+        "flex overflow-hidden rounded-full border border-border bg-card/70 backdrop-blur-xl",
+        vertical ? "flex-col divide-y divide-border" : "divide-x divide-border",
+      )}
+    >
+      <ThemeToggle className={cn(seg, "rounded-none")} />
+      <button type="button" onClick={onSettings} aria-label="Paramètres" title="Paramètres" className={seg}>
+        <Settings className="size-4" strokeWidth={1.5} />
+      </button>
+      <button
+        type="button"
+        onClick={onSignOut}
+        aria-label="Se déconnecter"
+        title="Se déconnecter"
+        className={seg}
+      >
+        <LogOut className="size-4" strokeWidth={1.5} />
+      </button>
+    </div>
+  );
+}
+
 const NAV = [
   { to: "/projets", label: "Projets", icon: ProjectsIcon },
   { to: "/taches", label: "Tâches", icon: TasksIcon },
