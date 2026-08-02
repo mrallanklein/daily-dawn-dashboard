@@ -117,27 +117,15 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
-          open ? "w-60" : "w-[4.25rem]",
+          open ? "w-60" : "w-[68px]",
         )}
       >
-        <button
-          onClick={toggle}
-          aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
-          className={cn(
-            "press absolute top-3 z-10 grid size-7 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground",
-            open ? "right-2" : "left-1/2 -translate-x-1/2",
-          )}
-        >
-          {open ? <PanelLeftClose className="size-4" /> : <PanelLeftOpen className="size-4" />}
-        </button>
-
-        <div className="p-3">
-          <div className={cn("h-7", open ? "hidden" : "block")} />
+        <div className={cn("p-3", !open && "px-3")}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-lg p-2 pr-9 text-left transition-colors hover:bg-sidebar-accent",
+                  "flex w-full items-center gap-2.5 rounded-md p-1.5 text-left transition-colors hover:bg-sidebar-accent",
                   !open && "justify-center p-1.5",
                 )}
               >
@@ -205,70 +193,60 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </div>
 
-        {/* Accueil mis en avant + actions (boîte de réception / recherche) */}
-        <div className={cn("px-2 pb-2", !open && "px-1")}>
+        {/* Ligne rapide : Accueil · Boîte de réception · Recherche */}
+        <div className={cn("flex items-center gap-1 px-3 pb-2", !open && "flex-col")}>
           <Link
             to={HOME.to}
             title={HOME.label}
+            aria-label={HOME.label}
             activeOptions={{ exact: true }}
             activeProps={{ className: "bg-sidebar-accent text-foreground" }}
-            inactiveProps={{ className: "text-foreground/80 hover:bg-sidebar-accent/70" }}
-            className={cn(
-              "press flex items-center gap-2.5 rounded-full px-3 py-2 text-sm font-semibold transition-colors active:bg-sidebar-accent",
-              !open && "justify-center px-0",
-            )}
+            inactiveProps={{ className: "text-foreground/70 hover:bg-sidebar-accent/70" }}
+            className="press grid size-8 shrink-0 place-items-center rounded-[4px] transition-colors"
           >
-            <HOME.icon
-              className="size-[1.15rem] shrink-0"
-              strokeWidth={2}
-              style={{ color: HOME.color }}
-            />
-            {open ? <span className="truncate">{HOME.label}</span> : null}
+            <HOME.icon size={open ? 20 : 24} strokeWidth={1.5} />
           </Link>
-
-          <div className={cn("mt-1 flex items-center gap-1", !open && "flex-col")}>
-            <Link
-              to="/mail"
-              search={{}}
-              aria-label="Boîte de réception"
-              title="Boîte de réception"
-              className="press grid size-9 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
-            >
-              <Inbox className="size-[1.05rem]" strokeWidth={1.9} />
-            </Link>
-            <button
-              onClick={() => setPaletteOpen(true)}
-              aria-label="Rechercher (⌘K)"
-              title="Rechercher — ⌘K"
-              className="press grid size-9 place-items-center rounded-full bg-sidebar-accent text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <Search className="size-[1.05rem]" strokeWidth={1.9} />
-            </button>
-          </div>
+          <Link
+            to="/mail"
+            search={{}}
+            aria-label="Boîte de réception"
+            title="Boîte de réception"
+            className="press grid size-8 shrink-0 place-items-center rounded-[4px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
+          >
+            <Inbox size={open ? 20 : 24} strokeWidth={1.5} />
+          </Link>
+          <button
+            onClick={() => setPaletteOpen(true)}
+            aria-label="Rechercher (⌘K)"
+            title="Rechercher — ⌘K"
+            className="press grid size-8 shrink-0 place-items-center rounded-[4px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
+          >
+            <Search size={open ? 20 : 24} strokeWidth={1.5} />
+          </button>
         </div>
 
-        <nav className="flex-1 space-y-0.5 px-2">
+        <nav className={cn("flex-1 space-y-px px-3")}>
           {items.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               title={item.label}
               activeProps={{
-                className: "bg-sidebar-accent text-foreground font-medium",
-                style: { boxShadow: "inset 2px 0 0 var(--brand)" },
+                className: "bg-sidebar-accent text-foreground [&_svg]:opacity-100",
               }}
               inactiveProps={{
-                className: "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+                className:
+                  "text-foreground/85 hover:bg-sidebar-accent/70 hover:text-foreground hover:[&_svg]:opacity-100",
               }}
               className={cn(
-                "flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-colors",
+                "flex min-h-[30px] items-center gap-2 rounded-[4px] px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-colors",
                 !open && "justify-center px-0",
               )}
             >
               <item.icon
-                className="size-[1.05rem] shrink-0 text-sidebar"
-                strokeWidth={1.6}
-                style={{ fill: item.color, stroke: "var(--sidebar)" }}
+                className="shrink-0 opacity-70 transition-opacity"
+                size={open ? 20 : 24}
+                strokeWidth={1.5}
               />
               {open ? <span className="truncate">{item.label}</span> : null}
             </Link>
