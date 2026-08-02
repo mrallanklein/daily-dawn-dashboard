@@ -274,7 +274,7 @@
 
   .dark body::before {
     background-image: none;
-    background-color: oklch(0.115 0 0);
+    background-color: oklch(0.085 0 0);
     filter: none;
     opacity: 1;
   }
