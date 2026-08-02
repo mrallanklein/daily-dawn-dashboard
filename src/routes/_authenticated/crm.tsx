@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { ContactIcon } from "@/components/icons/notion-icons";
+import { DatabaseView } from "@/components/views/database-view";
+import { useContactsSource } from "@/components/views/sources/contacts-source";
 
 export const Route = createFileRoute("/_authenticated/crm")({
   head: () => ({
@@ -113,6 +115,7 @@ function CrmPage() {
       .includes(q.toLowerCase()),
   );
   const current = (contacts ?? []).find((c) => c.id === openId) ?? null;
+  const source = useContactsSource(contacts ?? [], { onOpen: setOpenId });
 
   return (
     <AppShell>
@@ -168,89 +171,7 @@ function CrmPage() {
         </form>
       </Panel>
 
-      <Panel eyebrow="Base de contacts" title="Contacts" bodyClassName="p-3">
-        {list.length === 0 ? (
-          <EmptyState>Aucun contact.</EmptyState>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[46rem] text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-[0.7rem] uppercase tracking-[0.12em] text-muted-foreground">
-                  <th className="px-2 py-2 font-normal">Nom</th>
-                  <th className="px-2 py-2 font-normal">Société</th>
-                  <th className="px-2 py-2 font-normal">Statut</th>
-                  <th className="px-2 py-2 font-normal">Tags</th>
-                  <th className="px-2 py-2 font-normal">Contact</th>
-                  <th className="px-2 py-2 font-normal">Dernier échange</th>
-                </tr>
-              </thead>
-              <tbody>
-                {list.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="border-b border-border/60 last:border-0 hover:bg-muted/40"
-                  >
-                    <td className="px-2 py-2">
-                      <button onClick={() => setOpenId(c.id)} className="hover:underline">
-                        {c.full_name}
-                      </button>
-                      {c.role ? (
-                        <span className="ml-1.5 text-xs text-muted-foreground">{c.role}</span>
-                      ) : null}
-                    </td>
-                    <td className="px-2 py-2 text-muted-foreground">{c.company ?? "—"}</td>
-                    <td className="px-2 py-2">
-                      <Select
-                        value={c.status}
-                        onValueChange={(v) => patch.mutate({ id: c.id, status: v })}
-                      >
-                        <SelectTrigger className="h-7 w-36 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {STATUSES.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
-                              {s.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </td>
-                    <td className="px-2 py-2">
-                      <div className="flex flex-wrap gap-1">
-                        {(c.tags ?? []).map((t) => (
-                          <span key={t} className="pill text-muted-foreground">
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-2 py-2">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        {c.email ? (
-                          <a href={`mailto:${c.email}`} aria-label={`Écrire à ${c.full_name}`}>
-                            <Mail className="size-3.5 hover:text-brand" />
-                          </a>
-                        ) : null}
-                        {c.phone ? (
-                          <a href={`tel:${c.phone}`} aria-label={`Appeler ${c.full_name}`}>
-                            <Phone className="size-3.5 hover:text-brand" />
-                          </a>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="px-2 py-2 text-xs tabular-nums text-muted-foreground">
-                      {c.last_contact_date
-                        ? format(parseISO(c.last_contact_date), "d MMM yyyy", { locale: fr })
-                        : "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Panel>
+      <DatabaseView source={source} />
 
       {current ? (
         <ContactSheet
