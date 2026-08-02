@@ -252,7 +252,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               )}
             >
               <item.icon
-                className="shrink-0 opacity-70 transition-opacity"
+                className="shrink-0"
                 size={open ? 21 : 22}
                 strokeWidth={1.5}
               />
@@ -261,44 +261,46 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        <div className="space-y-2 border-t border-sidebar-border p-2">
+        <div className="space-y-1.5 border-t border-sidebar-border p-2">
           <div className={cn("flex items-center gap-2.5", !open && "justify-center")}>
-            <Avatar className="size-9 shrink-0">
+            <Avatar className="size-10 shrink-0">
               <AvatarImage
                 src={profile?.avatar_url ?? portraitAsset.url}
                 alt={profile?.display_name ?? "Allan Klein"}
                 className="object-cover"
               />
-              <AvatarFallback className="bg-secondary text-xs">AK</AvatarFallback>
+              <AvatarFallback className="bg-secondary text-sm">AK</AvatarFallback>
             </Avatar>
             {open ? (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm">{profile?.display_name ?? "Allan Klein"}</p>
-                <p className="truncate text-[0.7rem] text-muted-foreground">
+                <p className="truncate text-[0.9375rem] font-medium leading-tight">
+                  {profile?.display_name ?? "Allan Klein"}
+                </p>
+                <p className="truncate text-[0.75rem] leading-tight text-muted-foreground">
                   mr.allanklein@gmail.com
                 </p>
               </div>
             ) : null}
           </div>
-          <div className={cn("flex gap-1", !open && "flex-col items-center")}>
+          <div className={cn("flex items-center gap-1", !open && "flex-col")}>
             <ThemeToggle />
             <Button
               variant="ghost"
               size="icon"
-              className="press"
+              className="press size-9"
               onClick={() => setSettingsOpen(true)}
               aria-label="Paramètres"
             >
-              <Settings className="size-4" />
+              <Settings className="size-5" strokeWidth={1.5} />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="press text-muted-foreground hover:text-foreground"
+              className="press size-9 text-muted-foreground hover:text-foreground"
               onClick={signOut}
               aria-label="Se déconnecter"
             >
-              <LogOut className="size-4" />
+              <LogOut className="size-5" strokeWidth={1.5} />
             </Button>
           </div>
         </div>
@@ -339,7 +341,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main
         className={cn(
-          "min-h-screen px-4 pb-24 pt-6 transition-[margin,padding] duration-200 ease-out sm:px-8 md:pb-10 md:pl-14 lg:pl-16",
+          "min-h-screen px-4 pb-24 pt-6 transition-[margin,padding] duration-200 ease-out sm:px-6 md:pb-10 md:pl-7 lg:px-8 lg:pl-8",
           open ? "md:ml-56" : "md:ml-[60px]",
         )}
       >
