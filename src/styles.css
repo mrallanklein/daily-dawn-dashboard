@@ -329,13 +329,31 @@
 .dark .glass,
 .dark.glass {
   border-color: color-mix(in oklab, var(--foreground) 9%, transparent);
-  background:
-    var(--sheen),
-    color-mix(in oklab, var(--card) 92%, transparent);
+  background: var(--card);
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
-.dark .glass::after {
-  opacity: 0.1;
+.dark .glass::after,
+.dark .glass-strong::after,
+.dark .topline::before {
+  display: none;
+}
+
+.dark .glass-strong {
+  background: var(--popover);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.dark .elevate:hover,
+.dark .glow:hover {
+  box-shadow: none;
+  background-color: color-mix(in oklab, var(--foreground) 4%, var(--card));
+}
+
+.dark .ambient {
+  background-image: none;
 }
 
 .glass::after {
