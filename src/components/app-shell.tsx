@@ -313,7 +313,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         title={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
         className={cn(
           "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-[var(--shadow-soft)] transition-[left,color] duration-200 ease-out hover:text-foreground md:grid",
-          open ? "left-[calc(14rem+0.75rem)]" : "left-[calc(60px+0.75rem)]",
+          open ? "left-[calc(14rem-1rem)]" : "left-[calc(60px-1rem)]",
         )}
       >
         {open ? (
