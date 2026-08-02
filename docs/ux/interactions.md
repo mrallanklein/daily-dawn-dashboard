@@ -30,6 +30,9 @@
 ## Calendrier
 
 - Clic sur une case vide : création d'événement pré-remplie avec la date.
+- Sélection d'une plage horaire à la souris : création pré-remplie sur la plage.
+- Glisser-déposer d'un évènement : la durée est conservée, seule la date (et
+  l'heure en vue Jour / Semaine) change. La cible est surlignée pendant le survol.
 - Clic sur un événement : ouverture en édition.
 - Clic sur un numéro de jour : ouverture du jour en vue détaillée.
 - Un événement multi-jours est rendu comme une bande continue avec son titre
@@ -41,9 +44,11 @@
 ## États
 
 - **Chargement** : squelettes conservant la mise en page, jamais de saut de
-  contenu.
+  contenu : lignes pour les listes, cartes pour les grilles, grille complète
+  pour le calendrier.
 - **Vide** : phrase courte expliquant l'absence de contenu et action directe
   pour créer le premier élément.
+  Même composant partout : titre court, phrase d'explication, action optionnelle.
 - **Erreur d'intégration externe** : le module concerné indique l'échec et
   propose de réessayer ; le reste de la page reste utilisable.
 - **Hors connexion / non connecté à Google** : le module invite à connecter le

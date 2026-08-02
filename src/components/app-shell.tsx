@@ -41,6 +41,8 @@ import portraitAsset from "@/assets/allan-klein.png.asset.json";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
+import { useAppShortcuts } from "@/hooks/use-app-shortcuts";
+import { useReminders } from "@/hooks/use-reminders";
 
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
@@ -85,13 +87,13 @@ function ControlPill({
 }
 
 const NAV = [
-  { to: "/projets", label: "Projets", icon: ProjectsIcon },
-  { to: "/taches", label: "Tâches", icon: TasksIcon },
-  { to: "/calendrier", label: "Calendrier", icon: CalendarIcon },
-  { to: "/mail", label: "Boîte mail", icon: MailIcon },
-  { to: "/crm", label: "CRM", icon: ContactIcon },
-  { to: "/budget", label: "Budget", icon: BudgetIcon },
-  { to: "/equipe", label: "Équipe", icon: Users, aliasOnly: true },
+  { to: "/projets", label: "Projets", icon: ProjectsIcon, keys: "P" },
+  { to: "/taches", label: "Tâches", icon: TasksIcon, keys: "T" },
+  { to: "/calendrier", label: "Calendrier", icon: CalendarIcon, keys: "C" },
+  { to: "/mail", label: "Boîte mail", icon: MailIcon, keys: "M" },
+  { to: "/crm", label: "CRM", icon: ContactIcon, keys: "R" },
+  { to: "/budget", label: "Budget", icon: BudgetIcon, keys: "B" },
+  { to: "/equipe", label: "Équipe", icon: Users, keys: "E", aliasOnly: true },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -120,6 +122,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  useAppShortcuts({ onPalette: () => setPaletteOpen(true) });
+  useReminders();
 
   const toggle = () =>
     setOpen((prev) => {
@@ -239,7 +244,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className={cn("flex items-center gap-1 px-2 pb-2", !open && "flex-col gap-1.5")}>
           <Link
             to={HOME.to}
-            title={HOME.label}
+            title={`${HOME.label} — H`}
             aria-label={HOME.label}
             activeOptions={{ exact: true }}
             activeProps={{ className: "bg-muted text-foreground" }}
@@ -278,7 +283,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link
               key={item.to}
               to={item.to}
-              title={item.label}
+              title={`${item.label} — ${item.keys}`}
               activeProps={{
                 className:
                   "bg-card text-foreground shadow-[var(--elev-2)] ring-1 ring-border [&_svg]:text-brand",

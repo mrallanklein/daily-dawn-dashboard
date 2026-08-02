@@ -1,14 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import { CalendarClock } from "lucide-react";
 import { projectsQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
+import { EmptyState } from "@/components/app/panel";
+import { RowsSkeleton } from "@/components/app/skeletons";
 import { daysUntil, fmtShortDate } from "@/lib/dates";
 import { statusDot, statusLabel } from "@/lib/project-status";
 import { cn } from "@/lib/utils";
 
 export function DeadlinesPanel() {
   const { workspace } = useWorkspace();
-  const { data: projects } = useQuery(projectsQuery(workspace));
+  const { data: projects, isLoading } = useQuery(projectsQuery(workspace));
 
   const upcoming = (projects ?? [])
     .filter((p) => p.deadline && p.status !== "termine" && p.status !== "archiver")
@@ -26,8 +29,15 @@ export function DeadlinesPanel() {
         </Link>
       </header>
 
-      {upcoming.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Aucune échéance planifiée.</p>
+      {isLoading ? (
+        <RowsSkeleton rows={5} />
+      ) : upcoming.length === 0 ? (
+        <EmptyState
+          icon={CalendarClock}
+          hint="Renseignez une échéance sur un projet pour la voir apparaître ici."
+        >
+          Aucune échéance planifiée
+        </EmptyState>
       ) : (
         <ol className="relative space-y-3 border-l border-border pl-4">
           {upcoming.map((p) => {

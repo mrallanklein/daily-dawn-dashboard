@@ -5,6 +5,8 @@ import { projectsQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { useProjectMutations } from "@/components/projects/use-project-mutations";
 import { RangeToggle } from "@/components/range-toggle";
+import { EmptyState } from "@/components/app/panel";
+import { RowsSkeleton } from "@/components/app/skeletons";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { daysUntil, fmtShortDate, inRange, type RangeDays } from "@/lib/dates";
@@ -15,7 +17,7 @@ import { cn } from "@/lib/utils";
 export function TodayFocus() {
   const [range, setRange] = useState<RangeDays>(1);
   const { workspace } = useWorkspace();
-  const { data: projects } = useQuery(projectsQuery(workspace));
+  const { data: projects, isLoading } = useQuery(projectsQuery(workspace));
   const { patch } = useProjectMutations(workspace);
 
   const visible = (projects ?? [])
@@ -31,10 +33,15 @@ export function TodayFocus() {
         <RangeToggle value={range} onChange={setRange} />
       </header>
 
-      {visible.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Aucun projet planifié. Choisissez une date de travail sur un projet pour l'afficher ici.
-        </p>
+      {isLoading ? (
+        <RowsSkeleton rows={4} />
+      ) : visible.length === 0 ? (
+        <EmptyState
+          icon={CalendarClock}
+          hint="Choisissez une date de travail sur un projet pour le voir apparaître ici."
+        >
+          Aucun projet planifié
+        </EmptyState>
       ) : (
         <ul className="space-y-0.5">
           {visible.map((p) => {

@@ -7,7 +7,25 @@ import type { Workspace } from "@/lib/workspace";
 
 export function useTaskMutations(workspace: Workspace) {
   const queryClient = useQueryClient();
+  const key = ["tasks", workspace] as const;
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["tasks"] });
+
+  /**
+   * Applique immédiatement une transformation sur le cache des tâches et
+   * renvoie l'état précédent pour pouvoir le restaurer en cas d'échec.
+   */
+  const optimistic = async (fn: (tasks: Task[]) => Task[]): Promise<{ previous?: Task[] }> => {
+    await queryClient.cancelQueries({ queryKey: key });
+    const previous = queryClient.getQueryData<Task[]>(key);
+    if (!previous) return {};
+    queryClient.setQueryData<Task[]>(key, fn(previous));
+    return { previous };
+  };
+
+  const rollback = (e: Error, _vars: unknown, ctx?: { previous?: Task[] }) => {
+    if (ctx?.previous) queryClient.setQueryData(key, ctx.previous);
+    toast.error(e.message);
+  };
   const onError = (e: Error) => toast.error(e.message);
 
   const create = useMutation({
@@ -51,8 +69,16 @@ export function useTaskMutations(workspace: Workspace) {
         .eq("id", task.id);
       if (error) throw new Error(error.message);
     },
+    onMutate: (task: Task) =>
+      optimistic((tasks) =>
+        tasks.map((t) =>
+          t.id === task.id
+            ? { ...t, status: t.status === "termine" ? "a_faire" : "termine" }
+            : t,
+        ),
+      ),
     onSuccess: invalidate,
-    onError,
+    onError: rollback,
   });
 
   const patch = useMutation({
@@ -63,8 +89,10 @@ export function useTaskMutations(workspace: Workspace) {
         .eq("id", id);
       if (error) throw new Error(error.message);
     },
+    onMutate: ({ id, ...rest }: { id: string } & Record<string, unknown>) =>
+      optimistic((tasks) => tasks.map((t) => (t.id === id ? ({ ...t, ...rest } as Task) : t))),
     onSuccess: invalidate,
-    onError,
+    onError: rollback,
   });
 
   const remove = useMutation({
@@ -72,8 +100,10 @@ export function useTaskMutations(workspace: Workspace) {
       const { error } = await supabase.from("tasks").delete().eq("id", id);
       if (error) throw new Error(error.message);
     },
+    onMutate: (id: string) =>
+      optimistic((tasks) => tasks.filter((t) => t.id !== id && t.parent_task_id !== id)),
     onSuccess: invalidate,
-    onError,
+    onError: rollback,
   });
 
   /** Réordonne une liste de tâches : la position suit l'ordre des identifiants. */
@@ -91,8 +121,15 @@ export function useTaskMutations(workspace: Workspace) {
         ),
       );
     },
+    onMutate: (ids: string[]) =>
+      optimistic((tasks) =>
+        tasks.map((t) => {
+          const index = ids.indexOf(t.id);
+          return index === -1 ? t : { ...t, position: index };
+        }),
+      ),
     onSuccess: invalidate,
-    onError,
+    onError: rollback,
   });
 
   return { create, toggle, patch, remove, reorder };

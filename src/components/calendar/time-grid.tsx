@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { addDays, format, isSameDay, parseISO, startOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { CalendarEvent } from "@/lib/agenda.functions";
@@ -10,12 +10,21 @@ export function TimeGrid({
   events,
   onSelectEvent,
   onCreateAt,
+  onCreateRange,
+  onMoveEvent,
 }: {
   days: Date[];
   events: CalendarEvent[];
   onSelectEvent: (ev: CalendarEvent) => void;
   onCreateAt: (day: Date, hour: number) => void;
+  /** Sélection d'une plage horaire à la souris (création rapide). */
+  onCreateRange?: (day: Date, startHour: number, endHour: number) => void;
+  /** Glisser-déposer d'un évènement vers un autre jour / une autre heure. */
+  onMoveEvent?: (ev: CalendarEvent, day: Date, hour: number) => void;
 }) {
+  const [dragged, setDragged] = useState<CalendarEvent | null>(null);
+  const [sel, setSel] = useState<{ day: string; from: number; to: number } | null>(null);
+
   // Jour ET Semaine : on n'affiche que les heures utiles pour éviter le scroll.
   const { hours, hourPx, startHour, labelStep } = useMemo(() => {
     const { min, max } = usefulHourRange(events, days);
@@ -28,6 +37,17 @@ export function TimeGrid({
       labelStep: px < 40 ? 2 : 1,
     };
   }, [days.map((d) => d.toISOString()).join(","), events]);
+
+  const commitSelection = () => {
+    if (!sel) return;
+    const day = days.find((d) => d.toISOString() === sel.day);
+    const from = Math.min(sel.from, sel.to);
+    const to = Math.max(sel.from, sel.to) + 1;
+    setSel(null);
+    if (!day) return;
+    if (onCreateRange) onCreateRange(day, from, to);
+    else onCreateAt(day, from);
+  };
 
   return (
     <div className="flex w-full min-w-0 flex-col overflow-x-hidden rounded-2xl">
@@ -86,9 +106,14 @@ export function TimeGrid({
                   <button
                     key={ev.id + ev.calendarId}
                     title={ev.title}
+                    draggable={Boolean(onMoveEvent)}
+                    onDragStart={() => setDragged(ev)}
+                    onDragEnd={() => setDragged(null)}
                     onClick={() => onSelectEvent(ev)}
                     className={cn(
                       "press flex h-[1.3rem] items-center text-left text-[0.78rem] font-semibold leading-none text-foreground",
+                      onMoveEvent && "cursor-grab active:cursor-grabbing",
+                      dragged === ev && "opacity-50",
                       multi
                         ? cn(
                             "-mx-1 w-[calc(100%+0.5rem)] rounded-none px-1.5",
@@ -145,8 +170,27 @@ export function TimeGrid({
                   <button
                     key={h}
                     aria-label={`Créer un évènement à ${h}:00`}
-                    onClick={() => onCreateAt(day, h)}
-                    className="block w-full border-t border-border/40 transition-colors hover:bg-muted/50"
+                    onMouseDown={() => setSel({ day: day.toISOString(), from: h, to: h })}
+                    onMouseEnter={() =>
+                      setSel((s) => (s && s.day === day.toISOString() ? { ...s, to: h } : s))
+                    }
+                    onMouseUp={commitSelection}
+                    onDragOver={(e) => {
+                      if (dragged) e.preventDefault();
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (dragged && onMoveEvent) onMoveEvent(dragged, day, h);
+                      setDragged(null);
+                    }}
+                    className={cn(
+                      "block w-full border-t border-border/40 transition-colors hover:bg-muted/50",
+                      sel &&
+                        sel.day === day.toISOString() &&
+                        h >= Math.min(sel.from, sel.to) &&
+                        h <= Math.max(sel.from, sel.to) &&
+                        "bg-brand/20",
+                    )}
                     style={{ height: hourPx }}
                   />
                 ))}
@@ -169,8 +213,15 @@ export function TimeGrid({
                   return (
                     <button
                       key={ev.id + ev.calendarId}
+                      draggable={Boolean(onMoveEvent)}
+                      onDragStart={() => setDragged(ev)}
+                      onDragEnd={() => setDragged(null)}
                       onClick={() => onSelectEvent(ev)}
-                      className="press absolute z-10 overflow-hidden rounded-xl border-l-[3px] px-1.5 py-1 text-left shadow-[var(--shadow-soft)] backdrop-blur-sm"
+                      className={cn(
+                        "press absolute z-10 overflow-hidden rounded-xl border-l-[3px] px-1.5 py-1 text-left shadow-[var(--shadow-soft)] backdrop-blur-sm",
+                        onMoveEvent && "cursor-grab active:cursor-grabbing",
+                        dragged === ev && "opacity-50",
+                      )}
                       style={{
                         top: (top - startHour) * hourPx,
                         height: Math.max(20, height * hourPx - 2),
