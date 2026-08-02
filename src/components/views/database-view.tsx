@@ -59,6 +59,8 @@ import {
   TimelineLayout,
 } from "./layouts";
 import { PropertyEditor } from "./property-editor";
+import { EntryDetail } from "@/components/detail/entry-detail";
+import { EmptyState, ListSkeleton } from "@/components/app/empty-state";
 import { ColorPanel, FilterPanel, SortPanel, ViewSettingsPanel } from "./view-settings";
 import {
   DEFAULT_CONFIG,
@@ -157,6 +159,7 @@ export function DatabaseView({
   const [dragTab, setDragTab] = useState<string | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const tabs = views.filter((v) => !v.hidden);
   const view = views.find((v) => v.id === activeId) ?? tabs[0] ?? views[0];
@@ -195,7 +198,13 @@ export function DatabaseView({
   const cols = visibleProps(properties, config);
   const LayoutComponent = LAYOUT_COMPONENT[view?.layout ?? "table"];
 
-  const enrichedSource: DataSource = { ...source, properties };
+  const enrichedSource: DataSource = {
+    ...source,
+    properties,
+    onOpen: source.onOpen ?? setDetailId,
+  };
+
+  const detailRow = detailId ? rows.find((r) => r.id === detailId) : null;
 
   return (
     <section
@@ -532,11 +541,24 @@ export function DatabaseView({
 
       {/* Rendu de la disposition */}
       {source.isLoading ? (
-        <div className="h-40 animate-pulse rounded-[16px] border border-border bg-secondary/40" />
+        <ListSkeleton rows={6} />
       ) : shown.length === 0 ? (
-        <p className="rounded-[16px] border border-dashed border-border p-10 text-center text-[0.875rem] text-muted-foreground">
-          Aucun élément ne correspond à cette vue.
-        </p>
+        <EmptyState
+          icon={Filter}
+          title={rows.length === 0 ? `Aucun élément dans ${source.label}` : "Aucun résultat"}
+          description={
+            rows.length === 0
+              ? "Créez votre premier élément pour commencer à remplir cette base."
+              : "Aucun élément ne correspond aux filtres et à la recherche de cette vue."
+          }
+          action={
+            rows.length === 0 && source.onCreate ? (
+              <Button size="sm" onClick={source.onCreate}>
+                <Plus size={14} strokeWidth={1.7} /> Nouvel élément
+              </Button>
+            ) : null
+          }
+        />
       ) : (
         <LayoutComponent
           source={enrichedSource}
