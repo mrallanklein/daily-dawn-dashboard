@@ -18,6 +18,7 @@ export function useTaskMutations(workspace: Workspace) {
       scheduled_date?: string | null;
       due_date?: string | null;
       priority?: string;
+      description?: string | null;
     }) => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) throw new Error("Session expirée");
@@ -30,6 +31,7 @@ export function useTaskMutations(workspace: Workspace) {
         scheduled_date: input.scheduled_date ?? todayISO(),
         due_date: input.due_date ?? null,
         priority: input.priority ?? "moyenne",
+        description: input.description ?? null,
       });
       if (error) throw new Error(error.message);
     },
@@ -74,5 +76,24 @@ export function useTaskMutations(workspace: Workspace) {
     onError,
   });
 
-  return { create, toggle, patch, remove };
+  /** Réordonne une liste de tâches : la position suit l'ordre des identifiants. */
+  const reorder = useMutation({
+    mutationFn: async (ids: string[]) => {
+      await Promise.all(
+        ids.map((id, index) =>
+          supabase
+            .from("tasks")
+            .update({ position: index })
+            .eq("id", id)
+            .then(({ error }) => {
+              if (error) throw new Error(error.message);
+            }),
+        ),
+      );
+    },
+    onSuccess: invalidate,
+    onError,
+  });
+
+  return { create, toggle, patch, remove, reorder };
 }

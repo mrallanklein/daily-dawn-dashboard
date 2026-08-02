@@ -102,11 +102,7 @@ function ProjectsPage() {
       />
 
       {view === "kanban" ? <KanbanView projects={list} onSelect={setSelected} /> : null}
-      {view === "toplan" ? (
-        <div className="glass p-3">
-          <ToPlanView projects={list} onSelect={setSelected} />
-        </div>
-      ) : null}
+      {view === "toplan" ? <ToPlanView projects={list} onSelect={setSelected} /> : null}
       {view === "list" ? (
         <div className="glass p-3">
           <ListView projects={list} onSelect={setSelected} />

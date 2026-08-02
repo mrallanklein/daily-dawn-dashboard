@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Plus, Trash2 } from "lucide-react";
+import { ImagePlus, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -99,6 +99,29 @@ export function ProjectDetail({
           </TabsList>
 
           <TabsContent value="infos" className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>Couverture</Label>
+              {project.cover_url ? (
+                <img
+                  src={project.cover_url}
+                  alt={project.name}
+                  className="aspect-3/2 w-full rounded-xl border border-border object-cover"
+                />
+              ) : (
+                <div className="grid aspect-3/2 w-full place-items-center rounded-xl border border-dashed border-border bg-muted/40 text-sm text-muted-foreground">
+                  <span className="inline-flex items-center gap-2">
+                    <ImagePlus className="size-4" strokeWidth={1.5} /> Ajouter une couverture
+                  </span>
+                </div>
+              )}
+              <Input
+                aria-label="Lien de l'image de couverture"
+                placeholder="https://… (lien de l'image)"
+                defaultValue={project.cover_url ?? ""}
+                onBlur={(e) => patch.mutate({ id: project.id, cover_url: e.target.value || null })}
+              />
+            </div>
+
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <Label>État</Label>
@@ -186,6 +209,31 @@ export function ProjectDetail({
                   patch.mutate({ id: project.id, description: e.target.value || null })
                 }
               />
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="d-onedrive">Lien OneDrive</Label>
+                <Input
+                  id="d-onedrive"
+                  placeholder="https://onedrive.live.com/…"
+                  defaultValue={project.onedrive_url ?? ""}
+                  onBlur={(e) =>
+                    patch.mutate({ id: project.id, onedrive_url: e.target.value || null })
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="d-folder">Dossier local</Label>
+                <Input
+                  id="d-folder"
+                  placeholder="/Users/allan/Projets/…"
+                  defaultValue={project.local_folder ?? ""}
+                  onBlur={(e) =>
+                    patch.mutate({ id: project.id, local_folder: e.target.value || null })
+                  }
+                />
+              </div>
             </div>
 
             <Button

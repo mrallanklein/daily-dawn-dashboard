@@ -1,15 +1,18 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, FolderOpen, Plus, Search } from "lucide-react";
+import { endOfMonth, endOfWeek, format } from "date-fns";
+import { Plus, Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
 import { Panel, EmptyState } from "@/components/app/panel";
 import { projectsQuery, tasksQuery, type Task } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { useTaskMutations } from "@/components/tasks/use-task-mutations";
-import { TaskRow, PRIORITIES } from "@/components/tasks/task-row";
-import { TasksBoardView } from "@/components/tasks/tasks-board-view";
+import { PRIORITIES } from "@/components/tasks/task-row";
+import { TaskItem } from "@/components/tasks/task-item";
+import { TaskPanel } from "@/components/tasks/task-panel";
+import { PlanBoard, UnplanDropZone } from "@/components/tasks/plan-board";
 import { todayISO } from "@/lib/dates";
 import { statusColor } from "@/lib/project-status";
 import { Input } from "@/components/ui/input";
@@ -24,21 +27,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { TasksIcon } from "@/components/icons/notion-icons";
+import { ProjectsIcon, TasksIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/taches")({
   head: () => ({
     meta: [
-      { title: "Tâches — Liste, projets et tableau" },
+      { title: "Tâches — À faire, à planifier, par projet" },
       {
         name: "description",
         content:
-          "Une seule base de tâches en trois vues : liste par échéance, regroupement par projet et tableau à glisser-déposer, avec sous-tâches et priorités.",
+          "Une seule base de tâches en trois vues : tâches datées groupées par période, tâches à planifier et tâches projet à planifier, en glisser-déposer sur le calendrier.",
       },
-      { property: "og:title", content: "Tâches — Liste, projets et tableau" },
+      { property: "og:title", content: "Tâches — À faire, à planifier, par projet" },
       {
         property: "og:description",
-        content: "Vos tâches et sous-tâches par échéance, par projet ou en tableau.",
+        content: "Vos tâches datées, à planifier et à planifier par projet, en glisser-déposer.",
       },
     ],
   }),
@@ -46,18 +49,19 @@ export const Route = createFileRoute("/_authenticated/taches")({
 });
 
 const TABS = [
-  { id: "list", label: "Liste" },
-  { id: "projects", label: "Par projet" },
-  { id: "board", label: "Tableau" },
+  { id: "todo", label: "Tâches à faire" },
+  { id: "plan", label: "Tâches à planifier" },
+  { id: "projects", label: "Tâches projet" },
 ] as const;
 
-const BUCKETS = [
-  { id: "late", label: "En retard" },
+const GROUPS = [
   { id: "today", label: "Aujourd'hui" },
-  { id: "soon", label: "À venir" },
-  { id: "none", label: "Sans date" },
-  { id: "done", label: "Terminées" },
+  { id: "week", label: "Cette semaine" },
+  { id: "month", label: "Ce mois" },
+  { id: "later", label: "Plus tard" },
 ] as const;
+
+type GroupId = (typeof GROUPS)[number]["id"];
 
 function TasksPage() {
   const { workspace } = useWorkspace();
@@ -65,11 +69,12 @@ function TasksPage() {
   const { data: projectsData } = useQuery(projectsQuery(workspace));
   const mutations = useTaskMutations(workspace);
 
-  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("list");
+  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("todo");
   const [search, setSearch] = useState("");
   const [projectFilter, setProjectFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [showDone, setShowDone] = useState(false);
+  const [openTaskId, setOpenTaskId] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [newProject, setNewProject] = useState("none");
@@ -78,6 +83,7 @@ function TasksPage() {
   const projects = projectsData ?? [];
   const all = tasksData ?? [];
   const subtasksOf = (id: string) => all.filter((t) => t.parent_task_id === id);
+  const projectOf = (t: Task) => projects.find((p) => p.id === t.project_id) ?? null;
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -94,16 +100,40 @@ function TasksPage() {
   }, [all, search, projectFilter, priorityFilter, showDone]);
 
   const day = todayISO();
-  const bucketOf = (id: (typeof BUCKETS)[number]["id"], list: Task[]) => {
-    if (id === "done") return list.filter((t) => t.status === "termine");
-    const open = list.filter((t) => t.status !== "termine");
-    const when = (t: Task) => t.scheduled_date ?? t.due_date ?? null;
-    if (id === "late") return open.filter((t) => (when(t) ?? day) < day);
-    if (id === "today") return open.filter((t) => when(t) === day);
-    if (id === "none") return open.filter((t) => !when(t));
-    return open.filter((t) => (when(t) ?? "") > day);
+  const weekEnd = format(endOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd");
+  const monthEnd = format(endOfMonth(new Date()), "yyyy-MM-dd");
+
+  const groupOf = (when: string): GroupId => {
+    if (when <= day) return "today";
+    if (when <= weekEnd) return "week";
+    if (when <= monthEnd) return "month";
+    return "later";
   };
 
+  /** Tâches datées, triées par date croissante puis par ordre manuel. */
+  const dated = useMemo(() => {
+    const when = (t: Task) => t.scheduled_date ?? t.due_date ?? "";
+    return filtered
+      .filter((t) => when(t))
+      .sort((a, b) => when(a).localeCompare(when(b)) || a.position - b.position);
+  }, [filtered]);
+
+  const undated = filtered.filter((t) => !t.scheduled_date && !t.due_date);
+
+  const reorderWithin = (list: Task[]) => (draggedId: string, targetId: string) => {
+    const ids = list.map((t) => t.id);
+    if (!ids.includes(draggedId) || !ids.includes(targetId)) return;
+    const next = ids.filter((id) => id !== draggedId);
+    next.splice(ids.indexOf(targetId), 0, draggedId);
+    mutations.reorder.mutate(next);
+  };
+
+  const assignDate = (id: string, value: string | null) =>
+    mutations.patch.mutate(
+      value ? { id, scheduled_date: value } : { id, scheduled_date: null, due_date: null },
+    );
+
+  const openTask = all.find((t) => t.id === openTaskId) ?? null;
   const openCount = all.filter((t) => !t.parent_task_id && t.status !== "termine").length;
 
   return (
@@ -127,7 +157,7 @@ function TasksPage() {
         }}
         className="glass mb-3 flex flex-wrap items-center gap-2 p-3"
       >
-        <Plus className="size-4 shrink-0 text-muted-foreground" />
+        <Plus className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.5} />
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -222,23 +252,27 @@ function TasksPage() {
         </div>
       </div>
 
-      {tab === "list" ? (
+      {tab === "todo" ? (
         <div className="grid gap-4 xl:grid-cols-2">
-          {BUCKETS.filter((b) => b.id !== "done" || showDone).map((b) => {
-            const list = bucketOf(b.id, filtered);
+          {GROUPS.map((g) => {
+            const list = dated.filter(
+              (t) => groupOf(t.scheduled_date ?? t.due_date ?? day) === g.id,
+            );
             return (
-              <Panel key={b.id} eyebrow={`${list.length} tâche(s)`} title={b.label}>
+              <Panel key={g.id} eyebrow={`${list.length} tâche(s)`} title={g.label}>
                 {list.length === 0 ? (
                   <EmptyState>Rien ici.</EmptyState>
                 ) : (
                   <ul className="space-y-0.5">
                     {list.map((t) => (
-                      <TaskRow
+                      <TaskItem
                         key={t.id}
                         task={t}
                         subtasks={subtasksOf(t.id)}
-                        projects={projects}
+                        project={projectOf(t)}
                         mutations={mutations}
+                        onOpen={(x) => setOpenTaskId(x.id)}
+                        onDropOn={reorderWithin(list)}
                       />
                     ))}
                   </ul>
@@ -247,72 +281,103 @@ function TasksPage() {
             );
           })}
         </div>
-      ) : tab === "projects" ? (
-        <div className="space-y-4">
-          {projects
-            .map((p) => ({ project: p, list: filtered.filter((t) => t.project_id === p.id) }))
-            .filter(({ list }) => list.length > 0)
-            .map(({ project, list }) => (
-              <Panel
-                key={project.id}
-                title={project.name}
-                eyebrow={`${list.length} tâche(s)`}
-                action={
-                  <span
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground"
-                    title="Statut du projet"
-                  >
-                    <span
-                      className="size-2 rounded-full"
-                      style={{ backgroundColor: statusColor(project.status) }}
-                    />
-                    {project.deadline ? `Deadline ${project.deadline}` : "Sans deadline"}
-                  </span>
-                }
-              >
-                <ul className="space-y-0.5">
-                  {list.map((t) => (
-                    <TaskRow
-                      key={t.id}
-                      task={t}
-                      subtasks={subtasksOf(t.id)}
-                      projects={projects}
-                      mutations={mutations}
-                      showProject={false}
-                    />
-                  ))}
-                </ul>
-              </Panel>
-            ))}
+      ) : null}
 
-          <Panel
-            title="Tâches annexes"
-            eyebrow={`${filtered.filter((t) => !t.project_id).length} tâche(s)`}
-            action={<FolderOpen className="size-4 text-muted-foreground" />}
-          >
-            {filtered.filter((t) => !t.project_id).length === 0 ? (
-              <EmptyState>Aucune tâche hors projet.</EmptyState>
-            ) : (
-              <ul className="space-y-0.5">
-                {filtered
-                  .filter((t) => !t.project_id)
-                  .map((t) => (
-                    <TaskRow
-                      key={t.id}
-                      task={t}
-                      subtasks={subtasksOf(t.id)}
-                      projects={projects}
-                      mutations={mutations}
-                      showProject={false}
-                    />
-                  ))}
-              </ul>
-            )}
-          </Panel>
+      {tab === "plan" || tab === "projects" ? (
+        <div className="grid items-start gap-4 xl:grid-cols-2">
+          <PlanBoard
+            items={dated.map((t) => ({
+              id: t.id,
+              title: t.title,
+              date: t.scheduled_date ?? t.due_date,
+              ...(t.project_id ? { color: statusColor(projectOf(t)?.status ?? "") } : {}),
+            }))}
+            onAssign={assignDate}
+            label="Tâches planifiées"
+          />
+
+          {tab === "plan" ? (
+            <UnplanDropZone onUnassign={(id) => assignDate(id, null)}>
+              <Panel
+                title="Tâches sans date"
+                eyebrow={`${undated.filter((t) => !t.project_id).length} tâche(s)`}
+              >
+                {undated.filter((t) => !t.project_id).length === 0 ? (
+                  <EmptyState>
+                    Tout est planifié. Déposez une tâche ici pour retirer sa date.
+                  </EmptyState>
+                ) : (
+                  <ul className="space-y-0.5">
+                    {undated
+                      .filter((t) => !t.project_id)
+                      .map((t) => (
+                        <TaskItem
+                          key={t.id}
+                          task={t}
+                          subtasks={subtasksOf(t.id)}
+                          mutations={mutations}
+                          onOpen={(x) => setOpenTaskId(x.id)}
+                          showProject={false}
+                        />
+                      ))}
+                  </ul>
+                )}
+              </Panel>
+            </UnplanDropZone>
+          ) : (
+            <UnplanDropZone onUnassign={(id) => assignDate(id, null)} className="space-y-4">
+              {projects
+                .map((p) => ({ project: p, list: undated.filter((t) => t.project_id === p.id) }))
+                .filter(({ list }) => list.length > 0)
+                .map(({ project, list }) => (
+                  <Panel
+                    key={project.id}
+                    title={project.name}
+                    eyebrow={`${list.length} tâche(s) à planifier`}
+                    action={
+                      <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+                        <ProjectsIcon className="size-4" />
+                        <span
+                          className="size-2 rounded-full"
+                          style={{ backgroundColor: statusColor(project.status) }}
+                        />
+                      </span>
+                    }
+                  >
+                    <ul className="space-y-0.5">
+                      {list.map((t) => (
+                        <TaskItem
+                          key={t.id}
+                          task={t}
+                          subtasks={subtasksOf(t.id)}
+                          mutations={mutations}
+                          onOpen={(x) => setOpenTaskId(x.id)}
+                          showProject={false}
+                        />
+                      ))}
+                    </ul>
+                  </Panel>
+                ))}
+              {undated.filter((t) => t.project_id).length === 0 ? (
+                <Panel title="Tâches projet à planifier">
+                  <EmptyState>
+                    Toutes les tâches de projet ont une date. Déposez une tâche ici pour la
+                    dé-planifier.
+                  </EmptyState>
+                </Panel>
+              ) : null}
+            </UnplanDropZone>
+          )}
         </div>
-      ) : (
-        <TasksBoardView tasks={filtered} projects={projects} mutations={mutations} />
-      )}
+      ) : null}
+
+      <TaskPanel
+        task={openTask}
+        subtasks={openTask ? subtasksOf(openTask.id) : []}
+        projects={projects}
+        mutations={mutations}
+        onClose={() => setOpenTaskId(null)}
+      />
     </AppShell>
   );
 }

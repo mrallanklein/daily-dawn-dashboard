@@ -51,5 +51,24 @@ export function useProjectMutations(workspace: Workspace) {
     onError,
   });
 
-  return { create, patch, remove };
+  /** Applique un nouvel ordre (colonne kanban) : la position suit l'ordre des identifiants. */
+  const reorder = useMutation({
+    mutationFn: async ({ ids, status }: { ids: string[]; status?: string }) => {
+      await Promise.all(
+        ids.map((id, index) =>
+          supabase
+            .from("projects")
+            .update(status ? { position: index, status } : { position: index })
+            .eq("id", id)
+            .then(({ error }) => {
+              if (error) throw new Error(error.message);
+            }),
+        ),
+      );
+    },
+    onSuccess: invalidate,
+    onError,
+  });
+
+  return { create, patch, remove, reorder };
 }

@@ -1,11 +1,14 @@
 import type { Project } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { useProjectMutations } from "@/components/projects/use-project-mutations";
-import { Input } from "@/components/ui/input";
-import { statusDot, statusLabel } from "@/lib/project-status";
-import { cn } from "@/lib/utils";
+import { PlanBoard, UnplanDropZone, planDragProps } from "@/components/tasks/plan-board";
+import { Panel, EmptyState } from "@/components/app/panel";
+import { statusColor, statusLabel } from "@/lib/project-status";
 
-/** Projets actifs sans date : on leur donne une deadline et/ou une date de travail. */
+/**
+ * Projets à planifier : calendrier / liste à gauche, projets sans date à droite.
+ * Glisser un projet sur un jour lui donne une échéance ; le ramener à droite la retire.
+ */
 export function ToPlanView({
   projects,
   onSelect,
@@ -15,52 +18,56 @@ export function ToPlanView({
 }) {
   const { workspace } = useWorkspace();
   const { patch } = useProjectMutations(workspace);
-  const list = projects.filter(
-    (p) => !["termine", "archiver"].includes(p.status) && (!p.deadline || !p.work_date),
-  );
-
-  if (list.length === 0) {
-    return (
-      <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-        Tous les projets actifs sont planifiés.
-      </p>
-    );
-  }
+  const active = projects.filter((p) => !["termine", "archiver"].includes(p.status));
+  const planned = active.filter((p) => p.deadline || p.work_date);
+  const toPlan = active.filter((p) => !p.deadline && !p.work_date);
 
   return (
-    <ul className="space-y-1">
-      {list.map((p) => (
-        <li key={p.id} className="soft-row flex flex-wrap items-center gap-3 px-2 py-2">
-          <span className={cn("size-2 shrink-0 rounded-full", statusDot(p.status))} />
-          <button
-            onClick={() => onSelect(p)}
-            className="min-w-0 flex-1 text-left text-sm font-semibold hover:underline"
-          >
-            {p.name}
-            <span className="ml-2 text-xs font-normal text-muted-foreground">
-              {statusLabel(p.status)}
-            </span>
-          </button>
-          <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            Travail
-            <Input
-              type="date"
-              value={p.work_date ?? ""}
-              onChange={(e) => patch.mutate({ id: p.id, work_date: e.target.value || null })}
-              className="h-8 w-36"
-            />
-          </label>
-          <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            Deadline
-            <Input
-              type="date"
-              value={p.deadline ?? ""}
-              onChange={(e) => patch.mutate({ id: p.id, deadline: e.target.value || null })}
-              className="h-8 w-36"
-            />
-          </label>
-        </li>
-      ))}
-    </ul>
+    <div className="grid items-start gap-4 xl:grid-cols-2">
+      <PlanBoard
+        items={planned.map((p) => ({
+          id: p.id,
+          title: p.name,
+          date: p.deadline ?? p.work_date,
+          color: statusColor(p.status),
+        }))}
+        onAssign={(id, date) => patch.mutate({ id, deadline: date })}
+        label="Projets planifiés"
+      />
+
+      <UnplanDropZone onUnassign={(id) => patch.mutate({ id, deadline: null, work_date: null })}>
+        <Panel title="Projets sans date" eyebrow={`${toPlan.length} projet(s)`}>
+          {toPlan.length === 0 ? (
+            <EmptyState>
+              Tous les projets actifs sont planifiés. Déposez un projet ici pour retirer ses dates.
+            </EmptyState>
+          ) : (
+            <ul className="space-y-0.5">
+              {toPlan.map((p) => (
+                <li
+                  key={p.id}
+                  {...planDragProps(p.id)}
+                  className="soft-row flex cursor-grab items-center gap-2.5 px-2 py-2 active:cursor-grabbing"
+                >
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: statusColor(p.status) }}
+                  />
+                  <button
+                    onClick={() => onSelect(p)}
+                    className="min-w-0 flex-1 truncate text-left text-sm font-semibold hover:underline"
+                  >
+                    {p.name}
+                  </button>
+                  <span className="pill shrink-0 text-muted-foreground">
+                    {statusLabel(p.status)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+      </UnplanDropZone>
+    </div>
   );
 }
