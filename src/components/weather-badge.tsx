@@ -65,16 +65,11 @@ export function WeatherBadge({
   }
   const { Icon, label, color } = describe(weather.code);
   const url = `https://www.google.com/search?q=${encodeURIComponent(`météo ${city}`)}`;
-  const open = (e: React.MouseEvent) => {
-    // Dans un aperçu en iframe, target="_blank" peut être bloqué : on force l'ouverture.
-    e.preventDefault();
-    const w = window.open(url, "_blank", "noopener,noreferrer");
-    if (!w) window.top?.location.assign(url);
-  };
   return (
-    <button
-      type="button"
-      onClick={open}
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
       title={`Rechercher « météo ${city} » sur Google`}
       className="press flex items-center gap-3 rounded-lg px-2 py-1 text-left transition-colors hover:bg-muted/60"
     >
@@ -85,6 +80,6 @@ export function WeatherBadge({
           {label} · {city} · {weather.min}° / {weather.max}°
         </p>
       </div>
-    </button>
+    </a>
   );
 }
