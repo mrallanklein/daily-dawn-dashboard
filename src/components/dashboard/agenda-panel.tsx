@@ -110,7 +110,7 @@ export function AgendaPanel() {
                         style={{ backgroundColor: ev.color ?? "var(--brand)" }}
                       />
                       <span className="w-14 shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">
-                        {ev.allDay ? "Journée" : fmtTime(ev.start)}
+                        {agendaTimeLabel(ev) ?? "Journée"}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-medium">{ev.title}</span>
