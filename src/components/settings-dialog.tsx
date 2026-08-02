@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check, ImagePlus, Loader2, LocateFixed, Mail, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { locateCity, searchCities } from "@/lib/cities";
+import { locateCity } from "@/lib/cities";
 import { listMailAccounts } from "@/lib/mail.functions";
 import { listCalendars } from "@/lib/agenda.functions";
 import { createSpace, deleteSpace, spaceInitials, updateSpace, type Space } from "@/lib/spaces";
@@ -441,6 +441,41 @@ export function SettingsDialog({
                 <Plus className="mr-1.5 size-4" /> Connecter une autre boîte mail
               </Button>
             </div>
+
+            {mailboxes.length > 0 ? (
+              <div>
+                <p className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
+                  Couleur des pastilles de compte
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {mailboxes.map((m) => (
+                    <li key={`color-${m.id}`} className="flex items-center gap-2">
+                      <span
+                        className="size-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: colorFor(m.id) }}
+                      />
+                      <span className="min-w-0 flex-1 truncate text-sm">{m.email}</span>
+                      <span className="flex shrink-0 items-center gap-1">
+                        {NOTION_DOT_COLORS.map((c) => (
+                          <button
+                            key={c.value}
+                            type="button"
+                            title={c.name}
+                            aria-label={`${c.name} pour ${m.email}`}
+                            onClick={() => setColor(m.id, c.value)}
+                            className={cn(
+                              "size-3.5 shrink-0 rounded-full ring-offset-2 ring-offset-background transition-shadow",
+                              colorFor(m.id) === c.value && "ring-2 ring-foreground/60",
+                            )}
+                            style={{ backgroundColor: c.value }}
+                          />
+                        ))}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
             <div>
               <p className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
