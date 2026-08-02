@@ -2,24 +2,26 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  Banknote,
-  Calendar,
   Check,
-  CheckSquare,
   ChevronsUpDown,
   ChevronLeft,
   ChevronRight,
-  FolderClosed,
   Home,
   Inbox,
   LogOut,
-  Mail,
   Plus,
   Search,
   Settings,
-  User,
   Users,
 } from "lucide-react";
+import {
+  BudgetIcon,
+  CalendarIcon,
+  ContactIcon,
+  MailIcon,
+  ProjectsIcon,
+  TasksIcon,
+} from "@/components/icons/notion-icons";
 import { supabase } from "@/integrations/supabase/client";
 import { profileQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
@@ -44,12 +46,12 @@ import { SettingsDialog } from "@/components/settings-dialog";
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
 const NAV = [
-  { to: "/projets", label: "Projets", icon: FolderClosed },
-  { to: "/taches", label: "Tâches", icon: CheckSquare },
-  { to: "/calendrier", label: "Calendrier", icon: Calendar },
-  { to: "/mail", label: "Boîte mail", icon: Mail },
-  { to: "/crm", label: "CRM", icon: User },
-  { to: "/budget", label: "Budget", icon: Banknote },
+  { to: "/projets", label: "Projets", icon: ProjectsIcon },
+  { to: "/taches", label: "Tâches", icon: TasksIcon },
+  { to: "/calendrier", label: "Calendrier", icon: CalendarIcon },
+  { to: "/mail", label: "Boîte mail", icon: MailIcon },
+  { to: "/crm", label: "CRM", icon: ContactIcon },
+  { to: "/budget", label: "Budget", icon: BudgetIcon },
   { to: "/equipe", label: "Équipe", icon: Users, aliasOnly: true },
 ] as const;
 
@@ -191,18 +193,24 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </div>
 
-        {/* Ligne rapide : Accueil · Boîte de réception · Recherche */}
+        {/* Ligne rapide : Accueil (pastille) · Boîte de réception · Recherche */}
         <div className={cn("flex items-center gap-1 px-3 pb-2", !open && "flex-col")}>
           <Link
             to={HOME.to}
             title={HOME.label}
             aria-label={HOME.label}
             activeOptions={{ exact: true }}
-            activeProps={{ className: "bg-sidebar-accent text-foreground" }}
-            inactiveProps={{ className: "text-foreground/70 hover:bg-sidebar-accent/70" }}
-            className="press grid size-8 shrink-0 place-items-center rounded-[4px] transition-colors"
+            activeProps={{ className: "bg-muted text-foreground" }}
+            inactiveProps={{ className: "bg-muted/60 text-foreground/80 hover:bg-muted" }}
+            className={cn(
+              "press flex h-8 shrink-0 items-center gap-1.5 rounded-full transition-colors",
+              open ? "px-2.5" : "w-8 justify-center",
+            )}
           >
-            <HOME.icon size={open ? 20 : 24} strokeWidth={1.5} />
+            <HOME.icon size={open ? 17 : 22} strokeWidth={1.5} />
+            {open ? (
+              <span className="text-[0.875rem] font-medium leading-none">{HOME.label}</span>
+            ) : null}
           </Link>
           <Link
             to="/mail"
