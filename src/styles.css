@@ -173,25 +173,25 @@
 }
 
 .dark {
-  /* Sombre — noir uni, miroir neutre de la version claire */
-  --background: oklch(0.115 0 0);
-  --foreground: oklch(0.972 0 0);
-  --card: oklch(0.163 0 0);
-  --card-foreground: oklch(0.972 0 0);
-  --popover: oklch(0.185 0 0);
-  --popover-foreground: oklch(0.972 0 0);
-  --primary: oklch(0.972 0 0);
-  --primary-foreground: oklch(0.14 0 0);
-  --secondary: oklch(0.215 0 0);
-  --secondary-foreground: oklch(0.955 0 0);
-  --muted: oklch(0.215 0 0);
-  --muted-foreground: oklch(0.715 0 0);
-  --accent: oklch(0.248 0 0);
-  --accent-foreground: oklch(0.968 0 0);
+  /* Sombre — gris neutre, éclairci uniformément (macOS / Linear) */
+  --background: oklch(0.17 0 0);
+  --foreground: oklch(0.975 0 0);
+  --card: oklch(0.225 0 0);
+  --card-foreground: oklch(0.975 0 0);
+  --popover: oklch(0.25 0 0);
+  --popover-foreground: oklch(0.975 0 0);
+  --primary: oklch(0.975 0 0);
+  --primary-foreground: oklch(0.18 0 0);
+  --secondary: oklch(0.285 0 0);
+  --secondary-foreground: oklch(0.96 0 0);
+  --muted: oklch(0.275 0 0);
+  --muted-foreground: oklch(0.765 0 0);
+  --accent: oklch(0.325 0 0);
+  --accent-foreground: oklch(0.975 0 0);
   --destructive: oklch(0.63 0.19 25);
-  --destructive-foreground: oklch(0.16 0 0);
-  --border: oklch(1 0 0 / 0.1);
-  --input: oklch(1 0 0 / 0.16);
+  --destructive-foreground: oklch(0.18 0 0);
+  --border: oklch(1 0 0 / 0.15);
+  --input: oklch(1 0 0 / 0.24);
 
   --teal: oklch(0.68 0.1 190);
   --gold: oklch(0.78 0.15 58);
@@ -215,13 +215,13 @@
   --chart-4: oklch(0.7 0.1 158);
   --chart-5: oklch(0.5 0 0);
 
-  --sidebar: oklch(0.145 0 0);
-  --sidebar-foreground: oklch(0.935 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.945 0 0);
   --sidebar-primary: oklch(0.97 0 0);
-  --sidebar-primary-foreground: oklch(0.17 0 0);
-  --sidebar-accent: oklch(0.235 0 0);
+  --sidebar-primary-foreground: oklch(0.2 0 0);
+  --sidebar-accent: oklch(0.305 0 0);
   --sidebar-accent-foreground: oklch(0.97 0 0);
-  --sidebar-border: oklch(1 0 0 / 0.09);
+  --sidebar-border: oklch(1 0 0 / 0.13);
 
   /* Sombre : à plat, aucun effet de lumière */
   --elev-1: none;
@@ -274,7 +274,7 @@
 
   .dark body::before {
     background-image: none;
-    background-color: oklch(0.115 0 0);
+    background-color: oklch(0.17 0 0);
     filter: none;
     opacity: 1;
   }
