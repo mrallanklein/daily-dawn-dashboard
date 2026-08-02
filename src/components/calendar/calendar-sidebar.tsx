@@ -10,7 +10,17 @@ import {
   startOfWeek,
 } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CalendarPlus, Check, ChevronLeft, ChevronRight, Clock, MapPin, X } from "lucide-react";
+import {
+  CalendarPlus,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  HelpCircle,
+  MapPin,
+  X,
+} from "lucide-react";
+import { MailIcon } from "@/components/icons/notion-icons";
 import type { CalendarEvent, CalendarSource } from "@/lib/agenda.functions";
 import { eventsOnDay } from "./calendar-utils";
 import { Button } from "@/components/ui/button";
@@ -44,7 +54,7 @@ export function CalendarSidebar({
   onToggleSource: (key: string) => void;
   onCreate: () => void;
   onSelectEvent: (ev: CalendarEvent) => void;
-  onRespond: (ev: CalendarEvent, response: "accepted" | "declined") => void;
+  onRespond: (ev: CalendarEvent, response: "accepted" | "declined" | "tentative") => void;
 }) {
   const miniDays = eachDayOfInterval({
     start: startOfWeek(startOfMonth(cursor), { weekStartsOn: 1 }),
@@ -66,8 +76,11 @@ export function CalendarSidebar({
 
       {invitations.length > 0 ? (
         <section className="glass p-3">
-          <p className="mb-2 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Invitations · {invitations.length}
+          <p className="mb-2 flex items-center gap-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Invitations
+            <span className="grid size-4 place-items-center rounded-full bg-destructive text-[0.6rem] font-bold text-destructive-foreground">
+              {invitations.length}
+            </span>
           </p>
           <div className="space-y-2">
             {invitations.map((ev) => (
@@ -90,6 +103,14 @@ export function CalendarSidebar({
                     onClick={() => onRespond(ev, "accepted")}
                   >
                     <Check size={14} strokeWidth={1.8} className="mr-1" /> Accepter
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="press h-7 flex-1 text-xs"
+                    onClick={() => onRespond(ev, "tentative")}
+                  >
+                    <HelpCircle size={14} strokeWidth={1.8} className="mr-1" /> Peut-être
                   </Button>
                   <Button
                     size="sm"
@@ -213,14 +234,16 @@ export function CalendarSidebar({
           <div className="space-y-3">
             {Object.entries(grouped).map(([account, list]) => (
               <div key={account}>
-                <p className="mb-1 truncate text-[0.68rem] font-semibold text-muted-foreground">
-                  {account}
+                <p className="mb-1 flex items-center gap-1.5 text-[0.68rem] font-semibold text-muted-foreground">
+                  <MailIcon size={12} />
+                  <span className="min-w-0 flex-1 truncate">{account}</span>
+                  <span className="pill shrink-0">{list.length}</span>
                 </p>
                 <ul className="space-y-1">
                   {list.map((s) => {
                     const key = `${s.accountKey}::${s.calendarId}`;
                     return (
-                      <li key={key} className="flex items-center gap-2">
+                      <li key={key} className="flex items-center gap-2 rounded-lg bg-muted/40 px-2 py-1">
                         <Checkbox
                           id={key}
                           checked={!hidden.includes(key)}
@@ -237,6 +260,9 @@ export function CalendarSidebar({
                           />
                           <span className="truncate">{s.name}</span>
                         </label>
+                        {s.writable ? null : (
+                          <span className="pill shrink-0 text-muted-foreground">lecture</span>
+                        )}
                       </li>
                     );
                   })}
