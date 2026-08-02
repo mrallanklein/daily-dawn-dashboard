@@ -5,6 +5,7 @@ import { tasksQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { Panel, EmptyState } from "@/components/app/panel";
 import { RangeToggle } from "@/components/range-toggle";
+import { RowsSkeleton } from "@/components/app/skeletons";
 import { fmtDay, inRange, type RangeDays } from "@/lib/dates";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -16,7 +17,7 @@ export function TasksPanel() {
   const [range, setRange] = useState<RangeDays>(1);
   const [title, setTitle] = useState("");
   const { workspace } = useWorkspace();
-  const { data: tasks } = useQuery(tasksQuery(workspace));
+  const { data: tasks, isLoading } = useQuery(tasksQuery(workspace));
   const { create, toggle } = useTaskMutations(workspace);
 
   const visible = (tasks ?? []).filter(
@@ -48,8 +49,12 @@ export function TasksPanel() {
         </Button>
       </form>
 
-      {visible.length === 0 ? (
-        <EmptyState>Rien de prévu sur cette période.</EmptyState>
+      {isLoading ? (
+        <RowsSkeleton rows={4} />
+      ) : visible.length === 0 ? (
+        <EmptyState hint="Ajoutez une tâche ci-dessus pour démarrer votre journée.">
+          Rien de prévu sur cette période
+        </EmptyState>
       ) : (
         <ul className="space-y-1">
           {visible.map((task) => (
