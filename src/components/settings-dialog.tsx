@@ -10,14 +10,6 @@ import { listCalendars } from "@/lib/agenda.functions";
 import { createSpace, deleteSpace, spaceInitials, updateSpace, type Space } from "@/lib/spaces";
 import { useWorkspace } from "@/lib/workspace";
 import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -107,13 +99,7 @@ function ImageField({
   );
 }
 
-export function SettingsDialog({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-}) {
+export function SettingsView() {
   const queryClient = useQueryClient();
   const { workspace, setWorkspace, spaces, space } = useWorkspace();
   const [editing, setEditing] = useState<string | null>(null);
@@ -124,19 +110,17 @@ export function SettingsDialog({
   const active = spaces.find((s) => s.id === editing) ?? space ?? spaces[0] ?? null;
 
   useEffect(() => {
-    if (open) setEditing(space?.id ?? null);
-  }, [open, space?.id]);
+    setEditing(space?.id ?? null);
+  }, [space?.id]);
 
   const { data: mailAccounts } = useQuery({
     queryKey: ["mail-accounts"],
     retry: false,
-    enabled: open,
     queryFn: () => fetchAccounts(),
   });
   const { data: calendars } = useQuery({
     queryKey: ["calendar-sources"],
     retry: false,
-    enabled: open,
     queryFn: () => fetchCalendars(),
   });
 
