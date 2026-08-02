@@ -45,6 +45,9 @@ export type SelectOption = { id: string; label: string; color: OptionColor };
 
 export type NumberFormat = "plain" | "eur" | "usd" | "gbp" | "percent";
 
+/** Sous-mode d'une propriété date : jour seul, période, ou date + heure. */
+export type DateMode = "date" | "range" | "datetime";
+
 export type PropertyDef = {
   id: string;
   name: string;
@@ -54,6 +57,7 @@ export type PropertyDef = {
   custom?: boolean;
   options?: SelectOption[];
   format?: NumberFormat;
+  dateMode?: DateMode;
   formula?: string;
   relationModule?: string;
   rollup?: { property: string; fn: "sum" | "count" | "min" | "max" };
