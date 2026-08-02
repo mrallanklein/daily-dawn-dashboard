@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -46,8 +46,7 @@ export function CalendarWorkspace() {
   const [draft, setDraft] = useState<EventDraft | null>(null);
   const [hidden, setHidden] = useState<string[]>([]);
 
-  const { workspace, space } = useWorkspace();
-  const calendarIds = space?.calendar_ids ?? [];
+  const { workspace } = useWorkspace();
   const fetchEvents = useServerFn(getCalendarEvents);
   const fetchCalendars = useServerFn(listCalendars);
   const respond = useServerFn(respondCalendarEvent);
