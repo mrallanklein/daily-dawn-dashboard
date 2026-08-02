@@ -13,10 +13,12 @@ import {
 } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 import {
   getCalendarEvents,
   listCalendars,
   respondCalendarEvent,
+  saveCalendarEvent,
   type CalendarEvent,
 } from "@/lib/agenda.functions";
 import { projectsQuery, tasksQuery } from "@/lib/data";
@@ -29,6 +31,8 @@ import { TimeGrid } from "@/components/calendar/time-grid";
 import { YearGrid } from "@/components/calendar/year-grid";
 import { InvitationsPopover } from "@/components/calendar/invitations-popover";
 import { MonthYearPicker } from "@/components/calendar/month-year-picker";
+import { CalendarGridSkeleton } from "@/components/app/skeletons";
+import { EmptyState } from "@/components/app/panel";
 import {
   VIEW_LABELS,
   eventKey,
@@ -51,6 +55,7 @@ export function CalendarWorkspace() {
   const fetchEvents = useServerFn(getCalendarEvents);
   const fetchCalendars = useServerFn(listCalendars);
   const respond = useServerFn(respondCalendarEvent);
+  const save = useServerFn(saveCalendarEvent);
   const queryClient = useQueryClient();
   const { data: tasks } = useQuery(tasksQuery(workspace));
   const { data: projects } = useQuery(projectsQuery(workspace));
@@ -149,14 +154,62 @@ export function CalendarWorkspace() {
       }),
     [cursor],
   );
+  const workWeekDays = useMemo(() => weekDays.slice(0, 5), [weekDays]);
+
+  /** Déplacement d'un évènement : la durée est conservée, seule la date bouge. */
+  const moveMutation = useMutation({
+    mutationFn: async (vars: { ev: CalendarEvent; day: Date; hour?: number }) => {
+      const { ev, day, hour } = vars;
+      const start = parseISO(ev.start);
+      const end = ev.end ? parseISO(ev.end) : new Date(start.getTime() + 3600000);
+      const duration = Math.max(0, end.getTime() - start.getTime());
+      if (ev.allDay) {
+        const nextStart = format(day, "yyyy-MM-dd");
+        const spanDays = Math.max(1, Math.round(duration / 86400000));
+        return save({
+          data: {
+            accountKey: ev.accountKey,
+            calendarId: ev.calendarId,
+            eventId: ev.id,
+            title: ev.title,
+            description: ev.description ?? "",
+            location: ev.location ?? "",
+            allDay: true,
+            start: nextStart,
+            end: format(addDays(day, spanDays), "yyyy-MM-dd"),
+          },
+        });
+      }
+      const nextStart = new Date(day);
+      nextStart.setHours(hour ?? start.getHours(), hour === undefined ? start.getMinutes() : 0, 0, 0);
+      return save({
+        data: {
+          accountKey: ev.accountKey,
+          calendarId: ev.calendarId,
+          eventId: ev.id,
+          title: ev.title,
+          description: ev.description ?? "",
+          location: ev.location ?? "",
+          allDay: false,
+          start: nextStart.toISOString(),
+          end: new Date(nextStart.getTime() + (duration || 3600000)).toISOString(),
+        },
+      });
+    },
+    onSuccess: () => {
+      toast.success("Évènement déplacé");
+      queryClient.invalidateQueries({ queryKey: ["calendar"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const title =
     view === "year"
       ? format(cursor, "yyyy")
       : view === "day"
         ? format(cursor, "EEEE d MMMM yyyy", { locale: fr })
-        : view === "week"
-          ? `${format(weekDays[0]!, "d MMM", { locale: fr })} – ${format(weekDays[6]!, "d MMM yyyy", { locale: fr })}`
+        : view === "week" || view === "workweek"
+          ? `${format(weekDays[0]!, "d MMM", { locale: fr })} – ${format((view === "week" ? weekDays[6] : workWeekDays[4])!, "d MMM yyyy", { locale: fr })}`
           : format(cursor, "MMMM yyyy", { locale: fr });
 
   const goToday = () => {
@@ -238,11 +291,13 @@ export function CalendarWorkspace() {
         </header>
 
         {error ? (
-          <p className="p-4 text-sm text-muted-foreground">
-            Agenda Google indisponible. Vérifiez la connexion des comptes dans les paramètres.
-          </p>
+          <div className="p-4">
+            <EmptyState hint="Vérifiez la connexion des comptes Google dans les paramètres, puis réessayez.">
+              Agenda indisponible
+            </EmptyState>
+          </div>
         ) : isLoading ? (
-          <p className="p-4 text-sm text-muted-foreground">Chargement de l'agenda…</p>
+          <CalendarGridSkeleton />
         ) : view === "year" ? (
           <YearGrid
             cursor={cursor}
@@ -261,16 +316,22 @@ export function CalendarWorkspace() {
             onSelectDay={setSelected}
             onCreateDay={(d) => setDraft({ date: d })}
             onSelectEvent={(ev) => setDraft({ date: parseISO(ev.start), event: ev })}
+            onMoveEvent={(ev, day) => moveMutation.mutate({ ev, day })}
           />
         ) : (
           <TimeGrid
-            days={view === "day" ? [cursor] : weekDays}
+            days={view === "day" ? [cursor] : view === "workweek" ? workWeekDays : weekDays}
             events={events}
             onSelectEvent={(ev) => setDraft({ date: parseISO(ev.start), event: ev })}
             onCreateAt={(day, hour) => {
               setSelected(day);
               setDraft({ date: setHours(day, hour) });
             }}
+            onCreateRange={(day, startHour) => {
+              setSelected(day);
+              setDraft({ date: setHours(day, startHour) });
+            }}
+            onMoveEvent={(ev, day, hour) => moveMutation.mutate({ ev, day, hour })}
           />
         )}
       </section>
