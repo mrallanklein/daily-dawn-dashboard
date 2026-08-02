@@ -9,6 +9,7 @@ import { listMailAccounts } from "@/lib/mail.functions";
 import { listCalendars } from "@/lib/agenda.functions";
 import { createSpace, deleteSpace, spaceInitials, updateSpace, type Space } from "@/lib/spaces";
 import { useWorkspace } from "@/lib/workspace";
+import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
 import {
   Dialog,
   DialogContent,
@@ -118,6 +119,7 @@ export function SettingsDialog({
   const [editing, setEditing] = useState<string | null>(null);
   const fetchAccounts = useServerFn(listMailAccounts);
   const fetchCalendars = useServerFn(listCalendars);
+  const { colorFor, setColor } = useMailColors();
 
   const active = spaces.find((s) => s.id === editing) ?? space ?? spaces[0] ?? null;
 
@@ -147,9 +149,6 @@ export function SettingsDialog({
     weather_lat: 43.6047,
     weather_lon: 1.4442,
   });
-  const [cityFocus, setCityFocus] = useState(false);
-  const citySuggestions = searchCities(form.weather_city);
-
   useEffect(() => {
     if (!active) return;
     setForm({
@@ -335,41 +334,11 @@ export function SettingsDialog({
                   onUploaded={(url) => set({ banner_url: url })}
                 />
                 <div className="space-y-1.5">
-                  <Label htmlFor="s-city">Ville pour la météo</Label>
-                  <div className="flex gap-1.5">
-                    <div className="relative min-w-0 flex-1">
-                      <Input
-                        id="s-city"
-                        autoComplete="off"
-                        placeholder="Toulouse"
-                        value={form.weather_city}
-                        onFocus={() => setCityFocus(true)}
-                        onBlur={() => window.setTimeout(() => setCityFocus(false), 120)}
-                        onChange={(e) => set({ weather_city: e.target.value })}
-                      />
-                      {cityFocus && citySuggestions.length > 0 ? (
-                        <ul className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-[var(--shadow-pop)]">
-                          {citySuggestions.map((c) => (
-                            <li key={c.name}>
-                              <button
-                                type="button"
-                                className="w-full px-2.5 py-1.5 text-left text-sm hover:bg-muted"
-                                onClick={() => {
-                                  set({
-                                    weather_city: c.name,
-                                    weather_lat: c.lat,
-                                    weather_lon: c.lon,
-                                  });
-                                  setCityFocus(false);
-                                }}
-                              >
-                                {c.name}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
+                  <Label>Météo</Label>
+                  <div className="flex items-center gap-3 rounded-lg border border-border px-3 py-2">
+                    <span className="min-w-0 flex-1 truncate text-sm">
+                      {form.weather_city || "Position non définie"}
+                    </span>
                     <Button
                       type="button"
                       variant="secondary"
