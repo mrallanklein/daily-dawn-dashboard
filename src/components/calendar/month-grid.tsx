@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   eachDayOfInterval,
   endOfMonth,
@@ -24,6 +25,7 @@ export function MonthGrid({
   onSelectDay,
   onCreateDay,
   onSelectEvent,
+  onMoveEvent,
 }: {
   cursor: Date;
   selected: Date;
@@ -32,7 +34,11 @@ export function MonthGrid({
   onSelectDay: (day: Date) => void;
   onCreateDay: (day: Date) => void;
   onSelectEvent: (ev: CalendarEvent) => void;
+  /** Glisser-déposer : l'évènement est déplacé vers le jour cible. */
+  onMoveEvent?: (ev: CalendarEvent, day: Date) => void;
 }) {
+  const [dragged, setDragged] = useState<CalendarEvent | null>(null);
+  const [over, setOver] = useState<string | null>(null);
   const days = eachDayOfInterval({
     start: startOfWeek(startOfMonth(cursor), { weekStartsOn: 1 }),
     end: endOfWeek(endOfMonth(cursor), { weekStartsOn: 1 }),
@@ -63,10 +69,25 @@ export function MonthGrid({
               key={day.toISOString()}
               onClick={() => onSelectDay(day)}
               onDoubleClick={() => onCreateDay(day)}
+              onDragOver={(e) => {
+                if (!dragged) return;
+                e.preventDefault();
+                setOver(day.toISOString());
+              }}
+              onDragLeave={() => setOver((k) => (k === day.toISOString() ? null : k))}
+              onDrop={(e) => {
+                e.preventDefault();
+                setOver(null);
+                if (dragged && onMoveEvent && !isSameDay(parseISO(dragged.start), day)) {
+                  onMoveEvent(dragged, day);
+                }
+                setDragged(null);
+              }}
               className={cn(
                 "min-h-[6.5rem] cursor-pointer rounded-xl border border-transparent p-1.5 transition-colors hover:bg-muted/60",
                 !isSameMonth(day, cursor) && "opacity-40",
                 isSelected && "border-border bg-muted/70 shadow-[var(--shadow-soft)]",
+                over === day.toISOString() && "border-brand bg-brand/10",
               )}
             >
               <span
@@ -97,12 +118,23 @@ export function MonthGrid({
                     <button
                       key={ev.id + ev.calendarId}
                       title={ev.title}
+                      draggable={Boolean(onMoveEvent)}
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        setDragged(ev);
+                      }}
+                      onDragEnd={() => {
+                        setDragged(null);
+                        setOver(null);
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
                         onSelectEvent(ev);
                       }}
                       className={cn(
                         "flex h-[1.15rem] items-center gap-1 px-1 text-left text-[0.76rem] font-semibold leading-none",
+                        onMoveEvent && "cursor-grab active:cursor-grabbing",
+                        dragged === ev && "opacity-50",
                         band
                           ? cn(
                               "-mx-1.5 w-[calc(100%+0.75rem)] rounded-none px-1.5",
