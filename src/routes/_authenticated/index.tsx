@@ -74,7 +74,7 @@ function Dashboard() {
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <section className="glass mb-8">
         <div
-          className="h-32 w-full bg-cover bg-center sm:h-44"
+          className="h-40 w-full bg-cover bg-center sm:h-52"
           style={
             (space?.banner_url ?? profile?.banner_url)
               ? { backgroundImage: `url(${space?.banner_url ?? profile?.banner_url})` }
@@ -84,8 +84,8 @@ function Dashboard() {
                 }
           }
         />
-        <div className="flex flex-wrap items-end justify-between gap-4 px-4 pb-6">
-          <div className="-mt-8 flex min-w-0 items-end gap-3">
+        <div className="flex flex-wrap items-end justify-between gap-4 px-4 pb-8 pt-5">
+          <div className="-mt-10 flex min-w-0 items-end gap-3">
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
@@ -96,7 +96,7 @@ function Dashboard() {
               <img
                 src={avatar}
                 alt={name}
-                className="size-20 rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)] transition-transform hover:scale-[1.03]"
+                className="size-[5.5rem] rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)] transition-transform hover:scale-[1.03] sm:size-24"
               />
             </button>
             <div className="min-w-0 pb-1">
