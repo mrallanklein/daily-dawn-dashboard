@@ -23,13 +23,7 @@ function describe(code: number) {
   return { Icon: CloudLightning, label: "Orage" };
 }
 
-export function WeatherBadge({
-  weather,
-  city,
-}: {
-  weather?: Weather | undefined;
-  city: string;
-}) {
+export function WeatherBadge({ weather, city }: { weather?: Weather | undefined; city: string }) {
   if (!weather) {
     return <div className="text-sm text-muted-foreground">Météo en cours de chargement…</div>;
   }

@@ -221,10 +221,7 @@ export function SettingsDialog({
     return { id: a.id, email: a.email, calendars: cals };
   });
   const orphanCalendars = (calendars ?? []).filter(
-    (c) =>
-      !mailboxes.some(
-        (m) => (c.accountEmail ?? "").toLowerCase() === m.email.toLowerCase(),
-      ),
+    (c) => !mailboxes.some((m) => (c.accountEmail ?? "").toLowerCase() === m.email.toLowerCase()),
   );
   const [mailbox, setMailbox] = useState<string | null>(null);
   const selectedMailbox = mailboxes.find((m) => m.id === mailbox) ?? mailboxes[0] ?? null;
@@ -245,9 +242,7 @@ export function SettingsDialog({
   };
   const toggleMail = (id: string, on: boolean) => {
     const current = enabledMails.length === 0 ? allMailIds : enabledMails;
-    const next = on
-      ? Array.from(new Set([...current, id]))
-      : current.filter((k) => k !== id);
+    const next = on ? Array.from(new Set([...current, id])) : current.filter((k) => k !== id);
     patchGoogle.mutate({ mail_accounts: next });
   };
 
@@ -360,7 +355,11 @@ export function SettingsDialog({
                                 type="button"
                                 className="w-full px-2.5 py-1.5 text-left text-sm hover:bg-muted"
                                 onClick={() => {
-                                  set({ weather_city: c.name, weather_lat: c.lat, weather_lon: c.lon });
+                                  set({
+                                    weather_city: c.name,
+                                    weather_lat: c.lat,
+                                    weather_lon: c.lon,
+                                  });
                                   setCityFocus(false);
                                 }}
                               >
@@ -499,7 +498,9 @@ export function SettingsDialog({
                         <span
                           className={cn(
                             "grid size-4 shrink-0 place-items-center rounded border",
-                            on ? "border-foreground bg-foreground text-background" : "border-border",
+                            on
+                              ? "border-foreground bg-foreground text-background"
+                              : "border-border",
                           )}
                         >
                           {on ? <Check className="size-3" /> : null}

@@ -88,9 +88,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const wsName = space?.name ?? profile?.display_name ?? "Espace";
   const wsTag = space?.tag ?? "";
   const wsAvatar = space?.avatar_url ?? (workspace === "allan" ? portraitAsset.url : null);
-  const items = NAV.filter(
-    (n) => !("aliasOnly" in n && n.aliasOnly) || workspace === "alias",
-  );
+  const items = NAV.filter((n) => !("aliasOnly" in n && n.aliasOnly) || workspace === "alias");
 
   const newSpace = async () => {
     try {
@@ -306,7 +304,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           open ? "left-[calc(15rem+0.5rem)]" : "left-[calc(68px+0.5rem)]",
         )}
       >
-        {open ? <ChevronLeft size={18} strokeWidth={1.5} /> : <ChevronRight size={18} strokeWidth={1.5} />}
+        {open ? (
+          <ChevronLeft size={18} strokeWidth={1.5} />
+        ) : (
+          <ChevronRight size={18} strokeWidth={1.5} />
+        )}
       </button>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/95 px-1 py-1.5 backdrop-blur md:hidden">

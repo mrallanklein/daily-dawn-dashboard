@@ -61,7 +61,10 @@ export function TimeGrid({
           jour
         </p>
         {days.map((day) => (
-          <div key={day.toISOString()} className="min-w-0 space-y-0.5 border-l border-border/50 p-1">
+          <div
+            key={day.toISOString()}
+            className="min-w-0 space-y-0.5 border-l border-border/50 p-1"
+          >
             {eventsOnDay(events, day)
               .filter((ev) => ev.allDay)
               .map((ev) => (
