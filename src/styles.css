@@ -223,22 +223,15 @@
   --sidebar-accent-foreground: oklch(0.97 0 0);
   --sidebar-border: oklch(1 0 0 / 0.09);
 
-  --elev-1: 0 1px 1px oklch(0 0 0 / 0.35), 0 1px 3px oklch(0 0 0 / 0.3);
-  --elev-2: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px -16px oklch(0 0 0 / 0.5);
-  --elev-3:
-    0 1px 2px oklch(0 0 0 / 0.4), 0 6px 16px -8px oklch(0 0 0 / 0.45),
-    0 20px 44px -24px oklch(0 0 0 / 0.55);
-  --elev-4:
-    0 2px 8px oklch(0 0 0 / 0.4), 0 16px 36px -16px oklch(0 0 0 / 0.5),
-    0 48px 88px -44px oklch(0 0 0 / 0.7);
+  /* Sombre : à plat, aucun effet de lumière */
+  --elev-1: none;
+  --elev-2: none;
+  --elev-3: none;
+  --elev-4: none;
   --shadow-soft: var(--elev-2);
   --shadow-pop: var(--elev-4);
 
-  --sheen: linear-gradient(
-    180deg,
-    color-mix(in oklab, white 4%, transparent),
-    color-mix(in oklab, white 0%, transparent) 60%
-  );
+  --sheen: none;
   --ambient: none;
 }
 
@@ -336,13 +329,31 @@
 .dark .glass,
 .dark.glass {
   border-color: color-mix(in oklab, var(--foreground) 9%, transparent);
-  background:
-    var(--sheen),
-    color-mix(in oklab, var(--card) 92%, transparent);
+  background: var(--card);
+  backdrop-filter: none;
+  box-shadow: none;
 }
 
-.dark .glass::after {
-  opacity: 0.1;
+.dark .glass::after,
+.dark .glass-strong::after,
+.dark .topline::before {
+  display: none;
+}
+
+.dark .glass-strong {
+  background: var(--popover);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.dark .elevate:hover,
+.dark .glow:hover {
+  box-shadow: none;
+  background-color: color-mix(in oklab, var(--foreground) 4%, var(--card));
+}
+
+.dark .ambient {
+  background-image: none;
 }
 
 .glass::after {
