@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { format, isSameDay, parseISO } from "date-fns";
+import { addDays, format, isSameDay, parseISO, startOfDay } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { CalendarEvent } from "@/lib/agenda.functions";
 import { eventSpan, eventsOnDay, isDayBand, usefulHourRange } from "./calendar-utils";
@@ -64,29 +64,54 @@ export function TimeGrid({
         <p className="px-2 py-1 text-right text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">
           jour
         </p>
-        {days.map((day) => (
+        {days.map((day, dayIndex) => (
           <div
             key={day.toISOString()}
-            className="min-w-0 space-y-0.5 border-l border-border/50 p-1"
+            className="min-w-0 space-y-[3px] border-l border-border/50 p-1"
           >
             {eventsOnDay(events, day)
               .filter((ev) => isDayBand(ev, day))
-              .map((ev) => (
-                <button
-                  key={ev.id + ev.calendarId}
-                  onClick={() => onSelectEvent(ev)}
-                  className="press block w-full truncate rounded-md px-1.5 py-0.5 text-left text-[0.78rem] font-semibold text-foreground"
-                  style={{ backgroundColor: `${ev.color ?? "#7c7c7c"}33` }}
-                >
-                  {ev.title}
-                  {!ev.allDay ? (
-                    <span className="ml-1 font-medium text-muted-foreground">
-                      {format(parseISO(ev.start), "d MMM", { locale: fr })} →{" "}
-                      {ev.end ? format(parseISO(ev.end), "d MMM", { locale: fr }) : ""}
+              .map((ev) => {
+                const start = startOfDay(parseISO(ev.start));
+                const rawEnd = ev.end ? parseISO(ev.end) : parseISO(ev.start);
+                const end = startOfDay(
+                  ev.allDay && rawEnd.getTime() > start.getTime() ? addDays(rawEnd, -1) : rawEnd,
+                );
+                const multi = end.getTime() > start.getTime();
+                const isStart = isSameDay(start, day);
+                const isEnd = isSameDay(end, day);
+                // Titre au début de l'évènement ou à la première colonne visible.
+                const showTitle = !multi || isStart || dayIndex === 0;
+                return (
+                  <button
+                    key={ev.id + ev.calendarId}
+                    title={ev.title}
+                    onClick={() => onSelectEvent(ev)}
+                    className={cn(
+                      "press flex h-[1.3rem] items-center text-left text-[0.78rem] font-semibold leading-none text-foreground",
+                      multi
+                        ? cn(
+                            "-mx-1 w-[calc(100%+0.5rem)] rounded-none px-1.5",
+                            isStart && "ml-0 w-[calc(100%+0.25rem)] rounded-l-full",
+                            isEnd && "mr-0 w-[calc(100%+0.25rem)] rounded-r-full",
+                            isStart && isEnd && "w-full rounded-full",
+                          )
+                        : "w-full rounded-full px-1.5",
+                    )}
+                    style={{ backgroundColor: `${ev.color ?? "#7c7c7c"}33` }}
+                  >
+                    <span className={cn("truncate", multi && !showTitle && "opacity-0")}>
+                      {showTitle ? ev.title : "\u00A0"}
+                      {showTitle && !ev.allDay ? (
+                        <span className="ml-1 font-medium text-muted-foreground">
+                          {format(parseISO(ev.start), "d MMM", { locale: fr })} →{" "}
+                          {ev.end ? format(parseISO(ev.end), "d MMM", { locale: fr }) : ""}
+                        </span>
+                      ) : null}
                     </span>
-                  ) : null}
-                </button>
-              ))}
+                  </button>
+                );
+              })}
           </div>
         ))}
       </div>

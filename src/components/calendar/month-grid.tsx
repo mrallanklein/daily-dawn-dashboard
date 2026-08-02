@@ -64,7 +64,7 @@ export function MonthGrid({
               onClick={() => onSelectDay(day)}
               onDoubleClick={() => onCreateDay(day)}
               className={cn(
-                "min-h-[6.5rem] cursor-pointer overflow-hidden rounded-xl border border-transparent p-1.5 transition-colors hover:bg-muted/60",
+                "min-h-[6.5rem] cursor-pointer rounded-xl border border-transparent p-1.5 transition-colors hover:bg-muted/60",
                 !isSameMonth(day, cursor) && "opacity-40",
                 isSelected && "border-border bg-muted/70 shadow-[var(--shadow-soft)]",
               )}
