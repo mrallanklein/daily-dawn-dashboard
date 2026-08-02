@@ -4,6 +4,7 @@ import {
   listEvents,
   listSources,
   removeEvent,
+  respondEvent,
   upsertEvent,
   type CalendarEvent,
   type CalendarSource,
@@ -40,3 +41,19 @@ export const deleteCalendarEvent = createServerFn({ method: "POST" })
     return input;
   })
   .handler(async ({ data }) => removeEvent(data));
+
+export const respondCalendarEvent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(
+    (input: {
+      accountKey: string;
+      calendarId: string;
+      eventId: string;
+      response: "accepted" | "declined" | "tentative";
+    }) => {
+      if (!input?.eventId) throw new Error("Évènement introuvable");
+      if (!input.response) throw new Error("Réponse manquante");
+      return input;
+    },
+  )
+  .handler(async ({ data }) => respondEvent(data));
