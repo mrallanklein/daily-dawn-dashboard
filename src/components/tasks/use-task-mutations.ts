@@ -14,10 +14,11 @@ export function useTaskMutations(workspace: Workspace) {
    * Applique immédiatement une transformation sur le cache des tâches et
    * renvoie l'état précédent pour pouvoir le restaurer en cas d'échec.
    */
-  const optimistic = async (fn: (tasks: Task[]) => Task[]) => {
+  const optimistic = async (fn: (tasks: Task[]) => Task[]): Promise<{ previous?: Task[] }> => {
     await queryClient.cancelQueries({ queryKey: key });
     const previous = queryClient.getQueryData<Task[]>(key);
-    if (previous) queryClient.setQueryData<Task[]>(key, fn(previous));
+    if (!previous) return {};
+    queryClient.setQueryData<Task[]>(key, fn(previous));
     return { previous };
   };
 
