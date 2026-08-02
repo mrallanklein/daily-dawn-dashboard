@@ -49,7 +49,7 @@ import {
 import { useWorkspace } from "@/lib/workspace";
 import { cn } from "@/lib/utils";
 import { MailBody } from "@/components/mail/mail-body";
-import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
+import { useMailColors } from "@/lib/mail-colors";
 import { MailIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/mail")({
@@ -100,7 +100,7 @@ function MailPage() {
   const fetchMessages = useServerFn(listMessages);
   const send = useServerFn(sendMessage);
   const { space } = useWorkspace();
-  const { colorFor, setColor } = useMailColors();
+  const { colorFor } = useMailColors();
   const [view, setView] = useState<(typeof VIEWS)[number]["id"]>("inbox");
   const [search, setSearch] = useState("");
   const [openId, setOpenId] = useState<string | null>(params.msg ?? null);
@@ -241,34 +241,6 @@ function MailPage() {
                 ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            {accounts.length > 0 ? (
-              <div className="mt-2 space-y-1.5 rounded-lg bg-muted/40 p-2">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  Couleurs des comptes
-                </p>
-                {accounts.map((a) => (
-                  <div key={a.id} className="flex items-center gap-1.5">
-                    <span className="min-w-0 flex-1 truncate text-[0.7rem] text-muted-foreground">
-                      {a.email.split("@")[0]}
-                    </span>
-                    {NOTION_DOT_COLORS.map((c) => (
-                      <button
-                        key={c.value}
-                        title={c.name}
-                        aria-label={`${c.name} pour ${a.email}`}
-                        onClick={() => setColor(a.id, c.value)}
-                        className={cn(
-                          "size-3 shrink-0 rounded-full ring-offset-1 ring-offset-background transition-shadow",
-                          colorFor(a.id) === c.value && "ring-2 ring-foreground/60",
-                        )}
-                        style={{ backgroundColor: c.value }}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ) : null}
 
             <nav className="mt-2 space-y-0.5">
               {VIEWS.map((v) => (
