@@ -886,7 +886,7 @@ export function DatabaseView({
           >
             <SelectTrigger
               aria-label="Éléments par page"
-              className="h-8 w-[5.75rem] rounded-full text-[0.8125rem]"
+              className="h-8 w-[6.5rem] rounded-full text-[0.8125rem]"
             >
               <SelectValue />
             </SelectTrigger>
