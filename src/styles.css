@@ -307,11 +307,13 @@
 /* Liquid glass : fond translucide, flou et grain fin */
 @utility glass {
   position: relative;
-  border: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
-  border-radius: var(--radius);
-  background: color-mix(in oklab, var(--card) 72%, transparent);
-  backdrop-filter: blur(18px) saturate(140%);
-  box-shadow: var(--shadow-soft);
+  border: 1px solid color-mix(in oklab, var(--foreground) 7%, transparent);
+  border-radius: calc(var(--radius) + 4px);
+  background:
+    var(--sheen),
+    color-mix(in oklab, var(--card) 78%, transparent);
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: var(--elev-2);
   overflow: hidden;
 }
 
