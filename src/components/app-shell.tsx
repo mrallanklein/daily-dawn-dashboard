@@ -116,7 +116,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <aside
         className={cn(
-          "fixed inset-y-3 left-3 z-40 hidden flex-col overflow-hidden rounded-[22px] border border-border bg-background/85 shadow-[var(--elev-3)] backdrop-blur-2xl transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
+          "fixed inset-y-3 left-3 z-40 hidden flex-col overflow-hidden rounded-[22px] border border-sidebar-border bg-sidebar/65 shadow-[var(--elev-3)] backdrop-blur-2xl transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
           open ? "w-[15rem]" : "w-[64px]",
         )}
       >
@@ -332,7 +332,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
       </button>
 
-      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-background/85 px-1 py-1.5 backdrop-blur-xl md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border bg-sidebar/85 px-1 py-1.5 backdrop-blur-xl md:hidden">
         {[HOME, ...items].slice(0, 5).map((item) => (
           <Link
             key={item.to}
