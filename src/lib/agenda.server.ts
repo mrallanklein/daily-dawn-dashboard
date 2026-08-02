@@ -257,21 +257,3 @@ export async function respondEvent(input: {
   }
   return { ok: true };
 }
-
-async function legacyRemove(input: {
-  accountKey: string;
-  calendarId: string;
-  eventId: string;
-}) {
-  const key = keyFor(input.accountKey);
-  const res = await fetch(
-    `${GATEWAY}/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}`,
-    { method: "DELETE", headers: headersFor(key) },
-  );
-  if (!res.ok && res.status !== 410) {
-    const body = await res.text();
-    console.error(`Google Calendar delete failed [${res.status}]: ${body}`);
-    throw new Error(`Suppression impossible (${res.status})`);
-  }
-  return { ok: true };
-}
