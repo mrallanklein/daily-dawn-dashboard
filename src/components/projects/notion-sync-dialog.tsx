@@ -20,7 +20,7 @@ import {
   listNotionSyncRuns,
   syncNotionDatabase,
 } from "@/lib/notion-sync.functions";
-import { formatDayLabel } from "@/lib/dates";
+
 
 const TARGETS = [
   { id: "projects", label: "Projets" },
@@ -170,7 +170,7 @@ export function NotionSyncDialog() {
                     {r.database_title} → {r.target}
                   </span>
                   <span className="shrink-0">
-                    +{r.created_count} / ~{r.updated_count} · {formatDayLabel(new Date(r.created_at))}
+                    +{r.created_count} / ~{r.updated_count} · {new Date(r.created_at).toLocaleDateString("fr-FR")}
                   </span>
                 </li>
               ))}

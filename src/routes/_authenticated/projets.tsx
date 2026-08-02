@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/app/page-header";
 import { milestonesQuery, projectsQuery, tasksQuery, type Project } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { ProjectDialog } from "@/components/projects/project-dialog";
+import { NotionSyncDialog } from "@/components/projects/notion-sync-dialog";
 import { KanbanView } from "@/components/projects/kanban-view";
 import { ListView } from "@/components/projects/list-view";
 import { GanttView } from "@/components/projects/gantt-view";
@@ -98,6 +99,7 @@ function ProjectsPage() {
                 </button>
               ))}
             </div>
+            <NotionSyncDialog />
             <ProjectDialog />
           </>
         }
