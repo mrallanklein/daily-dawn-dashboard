@@ -258,34 +258,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <nav className={cn("flex-1 space-y-1 px-2.5 pt-1")}>
-          {items.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              title={item.label}
-              activeProps={{
-                className:
-                  "bg-card text-foreground shadow-[var(--elev-2)] ring-1 ring-border [&_svg]:text-brand",
-              }}
-              inactiveProps={{
-                className:
-                  "text-foreground/75 hover:bg-sidebar-accent/70 hover:text-foreground",
-              }}
-              className={cn(
-                "press flex min-h-[38px] items-center gap-2.5 rounded-[14px] px-2.5 py-1 text-[0.9375rem] font-medium leading-tight transition-[background-color,color,box-shadow,transform] duration-200",
-                !open && "justify-center px-0",
-              )}
-            >
-              <item.icon
-                className="shrink-0"
-                size={open ? 21 : 22}
-                strokeWidth={1.5}
-              />
-              {open ? <span className="truncate">{item.label}</span> : null}
-            </Link>
-          ))}
-        </nav>
+        <SidebarNav open={open} />
 
         <div className="space-y-1.5 border-t border-sidebar-border p-2.5">
           <button
