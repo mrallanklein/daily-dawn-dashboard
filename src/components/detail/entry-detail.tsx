@@ -22,7 +22,7 @@ import { MentionInput } from "./mention-input";
 import { entryContentQuery, saveEntryContent, type EntryComment } from "@/lib/entry-content";
 import { entryHistoryQuery, recordHistory } from "@/lib/entry-history";
 import { profileQuery } from "@/lib/data";
-import { formatValue } from "@/components/views/engine";
+import { displayValue } from "@/components/views/engine";
 import type { PropertyDef } from "@/components/views/types";
 
 type Presentation = "panel" | "modal" | "page";
@@ -182,7 +182,7 @@ export function EntryDetail({
                   {p.name}
                 </span>
                 <span className="min-w-0 flex-1 text-[0.875rem]">
-                  {formatValue(values[p.id], p)}
+                  {displayValue(p, { id: entryId, values })}
                 </span>
               </div>
             ))
