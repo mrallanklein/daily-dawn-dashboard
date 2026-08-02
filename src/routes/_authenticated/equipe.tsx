@@ -68,7 +68,10 @@ function TeamPage() {
 
   const patch = useMutation({
     mutationFn: async ({ id, ...rest }: { id: string } & Record<string, unknown>) => {
-      const { error } = await supabase.from("team_members").update(rest as never).eq("id", id);
+      const { error } = await supabase
+        .from("team_members")
+        .update(rest as never)
+        .eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,
@@ -89,7 +92,8 @@ function TeamPage() {
       <AppShell>
         <PageHeader title="Équipe" subtitle="Disponible sur le profil ALIAS" />
         <EmptyState>
-          La gestion d'équipe est réservée au profil ALIAS. Basculez de profil dans la barre latérale.
+          La gestion d'équipe est réservée au profil ALIAS. Basculez de profil dans la barre
+          latérale.
         </EmptyState>
       </AppShell>
     );
@@ -187,9 +191,7 @@ function TeamPage() {
             </div>
           </div>
         ))}
-        {(team ?? []).length === 0 ? (
-          <EmptyState>Aucun membre pour l'instant.</EmptyState>
-        ) : null}
+        {(team ?? []).length === 0 ? <EmptyState>Aucun membre pour l'instant.</EmptyState> : null}
       </div>
     </AppShell>
   );

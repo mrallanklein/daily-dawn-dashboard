@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { BudgetIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/budget")({
   head: () => ({
@@ -103,7 +104,9 @@ function BudgetPage() {
 
   const list = transactions ?? [];
   const revenue = list.filter((t) => t.kind === "revenu").reduce((s, t) => s + Number(t.amount), 0);
-  const expense = list.filter((t) => t.kind === "depense").reduce((s, t) => s + Number(t.amount), 0);
+  const expense = list
+    .filter((t) => t.kind === "depense")
+    .reduce((s, t) => s + Number(t.amount), 0);
   const pending = list.filter((t) => t.status !== "paye").reduce((s, t) => s + Number(t.amount), 0);
 
   const projectName = (id: string | null) =>
@@ -123,7 +126,9 @@ function BudgetPage() {
         String(t.amount),
       ]),
     ];
-    const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n");
+    const csv = rows
+      .map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";"))
+      .join("\n");
     const url = URL.createObjectURL(new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8" }));
     const a = document.createElement("a");
     a.href = url;
@@ -136,8 +141,7 @@ function BudgetPage() {
     <AppShell>
       <PageHeader
         title="Budget & Finances"
-        icon={Banknote}
-        iconColor="#EAB308"
+        icon={BudgetIcon}
         subtitle="Revenus, dépenses et factures par projet"
         actions={
           <Button variant="secondary" size="sm" onClick={exportCsv} className="gap-1.5">
@@ -277,7 +281,11 @@ function BudgetPage() {
                           t.status === "paye" ? "text-success" : "text-warning",
                         )}
                       >
-                        {t.status === "paye" ? "Payé" : t.status === "en_attente" ? "En attente" : "Brouillon"}
+                        {t.status === "paye"
+                          ? "Payé"
+                          : t.status === "en_attente"
+                            ? "En attente"
+                            : "Brouillon"}
                       </span>
                     </td>
                     <td

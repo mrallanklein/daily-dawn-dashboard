@@ -1,42 +1,74 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { formatDistanceToNowStrict } from "date-fns";
+import { Link } from "@tanstack/react-router";
+import { format, formatDistanceToNowStrict, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Mail, Search, X } from "lucide-react";
-import { listMessages, type MailAccountId } from "@/lib/mail.functions";
+import { ChevronDown, ChevronUp, Search, X } from "lucide-react";
+import { MailIcon } from "@/components/icons/notion-icons";
+import {
+  listMailAccounts,
+  listMessages,
+  type MailAccountId,
+  type MailMessage,
+} from "@/lib/mail.functions";
 import { useWorkspace } from "@/lib/workspace";
 import { useMailColors } from "@/lib/mail-colors";
+import { MailBody } from "@/components/mail/mail-body";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+const PAGE = 5;
+
+type Tagged = MailMessage & { account: MailAccountId };
+
 export function MailPreview() {
+  const fetchAccounts = useServerFn(listMailAccounts);
   const fetchMessages = useServerFn(listMessages);
-  const navigate = useNavigate();
   const { space } = useWorkspace();
   const { colorFor } = useMailColors();
-  const account = (space?.mail_accounts?.[0] ?? "primary") as MailAccountId;
   const [searchOpen, setSearchOpen] = useState(false);
   const [q, setQ] = useState("");
-  const [limit, setLimit] = useState(5);
+  const [page, setPage] = useState(0);
+  const [openMail, setOpenMail] = useState<Tagged | null>(null);
 
-  const query = q.trim() ? `in:inbox ${q.trim()}` : "in:inbox";
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["mail-preview", account, query, limit],
-    staleTime: 3 * 60 * 1000,
+  const { data: accountList } = useQuery({
+    queryKey: ["mail-accounts"],
+    staleTime: 30 * 60 * 1000,
     retry: false,
-    queryFn: () => fetchMessages({ data: { maxResults: limit, query, account } }),
+    queryFn: () => fetchAccounts(),
   });
 
-  const messages = data ?? [];
+  const allowed = space?.mail_accounts ?? [];
+  const accounts = (accountList ?? [])
+    .filter((a) => allowed.length === 0 || allowed.includes(a.id))
+    .map((a) => a.id);
+
+  const query = q.trim() ? `in:inbox ${q.trim()}` : "in:inbox";
+  const results = useQueries({
+    queries: accounts.map((account) => ({
+      queryKey: ["mail-preview", account, query],
+      staleTime: 3 * 60 * 1000,
+      retry: false,
+      queryFn: () => fetchMessages({ data: { maxResults: 30, query, account } }),
+    })),
+  });
+
+  const isLoading = accounts.length === 0 || results.some((r) => r.isLoading);
+  const error = results.some((r) => r.error);
+  const messages: Tagged[] = results
+    .flatMap((r, i) => (r.data ?? []).map((m) => ({ ...m, account: accounts[i]! })))
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+
+  const slice = messages.slice(page * PAGE, page * PAGE + PAGE);
+  const hasNext = messages.length > (page + 1) * PAGE;
 
   return (
     <section className="glass flex min-w-0 flex-col p-3">
       <header className="mb-2 flex items-center justify-between gap-2">
         <p className="flex items-center gap-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          <Mail className="size-3.5" /> Derniers mails
+          <MailIcon size={14} /> Derniers mails
         </p>
         <div className="flex shrink-0 items-center gap-1">
           <button
@@ -46,7 +78,11 @@ export function MailPreview() {
           >
             {searchOpen ? <X className="size-3.5" /> : <Search className="size-3.5" />}
           </button>
-          <Link to="/mail" search={{}} className="text-xs font-medium underline-offset-4 hover:underline">
+          <Link
+            to="/mail"
+            search={{}}
+            className="text-xs font-medium underline-offset-4 hover:underline"
+          >
             Ouvrir
           </Link>
         </div>
@@ -56,7 +92,10 @@ export function MailPreview() {
         <Input
           autoFocus
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setPage(0);
+          }}
           placeholder="Rechercher…"
           className="mb-2 h-8 text-sm"
         />
@@ -66,22 +105,20 @@ export function MailPreview() {
         <p className="text-sm text-muted-foreground">Boîte mail indisponible.</p>
       ) : isLoading ? (
         <p className="text-sm text-muted-foreground">Chargement…</p>
-      ) : messages.length === 0 ? (
+      ) : slice.length === 0 ? (
         <p className="text-sm text-muted-foreground">Aucun message.</p>
       ) : (
         <>
           <ul className="space-y-0.5">
-            {messages.map((m) => (
-              <li key={m.id}>
+            {slice.map((m) => (
+              <li key={`${m.account}-${m.id}`}>
                 <button
-                  onClick={() =>
-                    navigate({ to: "/mail", search: { msg: m.id, account } })
-                  }
+                  onClick={() => setOpenMail(m)}
                   className="soft-row flex w-full items-start gap-2 px-2 py-1.5 text-left"
                 >
                   <span
                     className="mt-1.5 size-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: colorFor(account), opacity: m.unread ? 1 : 0.35 }}
+                    style={{ backgroundColor: colorFor(m.account), opacity: m.unread ? 1 : 0.4 }}
                   />
                   <span className="min-w-0 flex-1">
                     <span className="flex items-baseline justify-between gap-2">
@@ -105,18 +142,63 @@ export function MailPreview() {
               </li>
             ))}
           </ul>
-          {limit < 45 ? (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mt-2 self-start text-xs"
-              onClick={() => setLimit((v) => v + 10)}
-            >
-              Charger plus
-            </Button>
-          ) : null}
+
+          <div className="mt-2 flex items-center gap-1">
+            {page > 0 ? (
+              <button
+                onClick={() => setPage((p) => p - 1)}
+                aria-label="5 mails plus récents"
+                title="5 mails plus récents"
+                className="press grid size-7 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronUp size={16} strokeWidth={1.5} />
+              </button>
+            ) : null}
+            {hasNext ? (
+              <button
+                onClick={() => setPage((p) => p + 1)}
+                aria-label="5 mails antérieurs"
+                title="5 mails antérieurs"
+                className="press grid size-7 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronDown size={16} strokeWidth={1.5} />
+              </button>
+            ) : null}
+          </div>
         </>
       )}
+
+      <Dialog open={Boolean(openMail)} onOpenChange={(o) => !o && setOpenMail(null)}>
+        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-start gap-2 pr-6 text-left text-base">
+              {openMail ? (
+                <span
+                  className="mt-1.5 size-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: colorFor(openMail.account) }}
+                />
+              ) : null}
+              <span className="min-w-0">{openMail?.subject}</span>
+            </DialogTitle>
+          </DialogHeader>
+          {openMail ? (
+            <>
+              <p className="text-xs text-muted-foreground">
+                {openMail.from} ·{" "}
+                {format(parseISO(openMail.date), "d MMMM yyyy 'à' HH:mm", { locale: fr })}
+              </p>
+              <MailBody html={openMail.bodyHtml} text={openMail.body || openMail.snippet} />
+              <Link
+                to="/mail"
+                search={{ msg: openMail.id, account: openMail.account }}
+                className="text-xs font-medium underline underline-offset-4"
+              >
+                Ouvrir dans la boîte mail
+              </Link>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }

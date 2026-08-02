@@ -90,14 +90,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Atelier — Tâches, projets & planning" },
       {
         property: "og:description",
-        content: "Poste de commandement personnel : planning du jour, tâches, projets, deadlines et CRM réunis dans une seule interface.",
+        content:
+          "Poste de commandement personnel : planning du jour, tâches, projets, deadlines et CRM réunis dans une seule interface.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Atelier — Tâches, projets & planning" },
-      { name: "twitter:description", content: "Poste de commandement personnel : planning du jour, tâches, projets, deadlines et CRM réunis dans une seule interface." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c6570ad-c6c2-414b-b439-e9fdd3487c8d/id-preview-37d39e30--760dcc50-1089-4817-8f3d-0b70df4ef552.lovable.app-1785598602114.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c6570ad-c6c2-414b-b439-e9fdd3487c8d/id-preview-37d39e30--760dcc50-1089-4817-8f3d-0b70df4ef552.lovable.app-1785598602114.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Poste de commandement personnel : planning du jour, tâches, projets, deadlines et CRM réunis dans une seule interface.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c6570ad-c6c2-414b-b439-e9fdd3487c8d/id-preview-37d39e30--760dcc50-1089-4817-8f3d-0b70df4ef552.lovable.app-1785598602114.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/6c6570ad-c6c2-414b-b439-e9fdd3487c8d/id-preview-37d39e30--760dcc50-1089-4817-8f3d-0b70df4ef552.lovable.app-1785598602114.png",
+      },
     ],
     links: [
       {

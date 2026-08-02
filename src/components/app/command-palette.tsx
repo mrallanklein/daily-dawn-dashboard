@@ -1,15 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { FileText, Users } from "lucide-react";
 import {
-  Banknote,
-  Calendar,
-  CheckSquare,
-  FileText,
-  FolderClosed,
-  Mail,
-  User,
-  Users,
-} from "lucide-react";
+  BudgetIcon,
+  CalendarIcon,
+  ContactIcon,
+  MailIcon,
+  ProjectsIcon,
+  TasksIcon,
+} from "@/components/icons/notion-icons";
 import {
   CommandDialog,
   CommandEmpty,
@@ -23,16 +22,16 @@ import { useWorkspace } from "@/lib/workspace";
 
 const PAGES = [
   { to: "/", label: "Tableau de bord", icon: FileText },
-  { to: "/projets", label: "Projets", icon: FolderClosed },
-  { to: "/taches", label: "Tâches", icon: CheckSquare },
-  { to: "/calendrier", label: "Calendrier", icon: Calendar },
-  { to: "/mail", label: "Boîte mail", icon: Mail },
-  { to: "/crm", label: "CRM", icon: User },
-  { to: "/budget", label: "Budget", icon: Banknote },
+  { to: "/projets", label: "Projets", icon: ProjectsIcon },
+  { to: "/taches", label: "Tâches", icon: TasksIcon },
+  { to: "/calendrier", label: "Calendrier", icon: CalendarIcon },
+  { to: "/mail", label: "Boîte mail", icon: MailIcon },
+  { to: "/crm", label: "CRM", icon: ContactIcon },
+  { to: "/budget", label: "Budget", icon: BudgetIcon },
   { to: "/equipe", label: "Équipe", icon: Users },
 ] as const;
 
-const ICON = { size: 18, strokeWidth: 1.5, className: "text-foreground/80" } as const;
+const ICON = { size: 18, strokeWidth: 1.5, className: "shrink-0 text-foreground/80" } as const;
 
 export function CommandPalette({
   open,
@@ -67,21 +66,21 @@ export function CommandPalette({
         <CommandGroup heading="Projets">
           {(projects ?? []).slice(0, 8).map((p) => (
             <CommandItem key={p.id} value={`projet ${p.name}`} onSelect={() => go("/projets")}>
-              <FolderClosed {...ICON} /> {p.name}
+              <ProjectsIcon {...ICON} /> {p.name}
             </CommandItem>
           ))}
         </CommandGroup>
         <CommandGroup heading="Tâches">
           {(tasks ?? []).slice(0, 8).map((t) => (
             <CommandItem key={t.id} value={`tache ${t.title}`} onSelect={() => go("/taches")}>
-              <CheckSquare {...ICON} /> {t.title}
+              <TasksIcon {...ICON} /> {t.title}
             </CommandItem>
           ))}
         </CommandGroup>
         <CommandGroup heading="Contacts">
           {(contacts ?? []).slice(0, 8).map((c) => (
             <CommandItem key={c.id} value={`contact ${c.full_name}`} onSelect={() => go("/crm")}>
-              <User {...ICON} /> {c.full_name}
+              <ContactIcon {...ICON} /> {c.full_name}
             </CommandItem>
           ))}
         </CommandGroup>

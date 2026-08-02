@@ -49,15 +49,14 @@ import {
 import { useWorkspace } from "@/lib/workspace";
 import { cn } from "@/lib/utils";
 import { MailBody } from "@/components/mail/mail-body";
-import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
+import { useMailColors } from "@/lib/mail-colors";
+import { MailIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
     msg: typeof search["msg"] === "string" ? (search["msg"] as string) : undefined,
     account:
-      typeof search["account"] === "string"
-        ? (search["account"] as MailAccountId)
-        : undefined,
+      typeof search["account"] === "string" ? (search["account"] as MailAccountId) : undefined,
   }),
   head: () => ({
     meta: [
@@ -99,7 +98,7 @@ function MailPage() {
   const fetchMessages = useServerFn(listMessages);
   const send = useServerFn(sendMessage);
   const { space } = useWorkspace();
-  const { colorFor, setColor } = useMailColors();
+  const { colorFor } = useMailColors();
   const [view, setView] = useState<(typeof VIEWS)[number]["id"]>("inbox");
   const [search, setSearch] = useState("");
   const [openId, setOpenId] = useState<string | null>(params.msg ?? null);
@@ -167,8 +166,7 @@ function MailPage() {
     <AppShell>
       <PageHeader
         title="Boîte Mail"
-        icon={Mail}
-        iconColor="#EF4444"
+        icon={MailIcon}
         subtitle={activeEmail}
         actions={<ComposeDialog onSend={(v) => compose.mutate(v)} />}
       />
@@ -242,34 +240,6 @@ function MailPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {accounts.length > 0 ? (
-              <div className="mt-2 space-y-1.5 rounded-lg bg-muted/40 p-2">
-                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                  Couleurs des comptes
-                </p>
-                {accounts.map((a) => (
-                  <div key={a.id} className="flex items-center gap-1.5">
-                    <span className="min-w-0 flex-1 truncate text-[0.7rem] text-muted-foreground">
-                      {a.email.split("@")[0]}
-                    </span>
-                    {NOTION_DOT_COLORS.map((c) => (
-                      <button
-                        key={c.value}
-                        title={c.name}
-                        aria-label={`${c.name} pour ${a.email}`}
-                        onClick={() => setColor(a.id, c.value)}
-                        className={cn(
-                          "size-3 shrink-0 rounded-full ring-offset-1 ring-offset-background transition-shadow",
-                          colorFor(a.id) === c.value && "ring-2 ring-foreground/60",
-                        )}
-                        style={{ backgroundColor: c.value }}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
-            ) : null}
-
             <nav className="mt-2 space-y-0.5">
               {VIEWS.map((v) => (
                 <button
@@ -290,7 +260,6 @@ function MailPage() {
                 </button>
               ))}
             </nav>
-
           </aside>
 
           <div className="flex min-w-0 flex-col gap-2">
@@ -305,59 +274,59 @@ function MailPage() {
             </div>
 
             <div className="glass max-h-[68vh] overflow-y-auto">
-            {isFetching && list.length === 0 ? (
-              <p className="p-4 text-sm text-muted-foreground">Chargement des messages…</p>
-            ) : list.length === 0 ? (
-              <p className="p-4 text-sm text-muted-foreground">Aucun message.</p>
-            ) : (
-              Object.entries(groups).map(([label, items]) => (
-                <div key={label}>
-                  <p className="sticky top-0 z-10 bg-card/85 px-3 py-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground backdrop-blur">
-                    {label}
-                  </p>
-                  <ul>
-                    {items.map((m) => (
-                      <li key={m.id}>
-                        <button
-                          onClick={() => setOpenId(m.id)}
-                          className={cn(
-                            "press flex w-full items-start gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/50",
-                            current?.id === m.id && "bg-muted",
-                          )}
-                        >
-                          <span
-                            className="mt-1.5 size-2 shrink-0 rounded-full"
-                            style={{
-                              backgroundColor: colorFor(account),
-                              opacity: m.unread ? 1 : 0.35,
-                            }}
-                          />
-                          <span className="min-w-0 flex-1">
-                            <span className="flex items-baseline justify-between gap-2">
-                              <span
-                                className={cn(
-                                  "min-w-0 truncate text-sm",
-                                  m.unread ? "font-bold" : "font-medium",
-                                )}
-                              >
-                                {m.from.replace(/<.*>/, "").trim() || m.from}
+              {isFetching && list.length === 0 ? (
+                <p className="p-4 text-sm text-muted-foreground">Chargement des messages…</p>
+              ) : list.length === 0 ? (
+                <p className="p-4 text-sm text-muted-foreground">Aucun message.</p>
+              ) : (
+                Object.entries(groups).map(([label, items]) => (
+                  <div key={label}>
+                    <p className="sticky top-0 z-10 bg-card/85 px-3 py-1.5 text-[0.66rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground backdrop-blur">
+                      {label}
+                    </p>
+                    <ul>
+                      {items.map((m) => (
+                        <li key={m.id}>
+                          <button
+                            onClick={() => setOpenId(m.id)}
+                            className={cn(
+                              "press flex w-full items-start gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/50",
+                              current?.id === m.id && "bg-muted",
+                            )}
+                          >
+                            <span
+                              className="mt-1.5 size-2 shrink-0 rounded-full"
+                              style={{
+                                backgroundColor: colorFor(account),
+                                opacity: m.unread ? 1 : 0.35,
+                              }}
+                            />
+                            <span className="min-w-0 flex-1">
+                              <span className="flex items-baseline justify-between gap-2">
+                                <span
+                                  className={cn(
+                                    "min-w-0 truncate text-sm",
+                                    m.unread ? "font-bold" : "font-medium",
+                                  )}
+                                >
+                                  {m.from.replace(/<.*>/, "").trim() || m.from}
+                                </span>
+                                <span className="shrink-0 text-[0.68rem] tabular-nums text-muted-foreground">
+                                  {format(parseISO(m.date), "d MMM HH:mm", { locale: fr })}
+                                </span>
                               </span>
-                              <span className="shrink-0 text-[0.68rem] tabular-nums text-muted-foreground">
-                                {format(parseISO(m.date), "d MMM HH:mm", { locale: fr })}
+                              <span className="block truncate text-sm">{m.subject}</span>
+                              <span className="block truncate text-xs text-muted-foreground">
+                                {m.snippet}
                               </span>
                             </span>
-                            <span className="block truncate text-sm">{m.subject}</span>
-                            <span className="block truncate text-xs text-muted-foreground">
-                              {m.snippet}
-                            </span>
-                          </span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))
-            )}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              )}
             </div>
             {list.length >= limit ? (
               <Button
@@ -409,9 +378,7 @@ function MailReader({
           if (!reply.trim()) return;
           onReply({
             to: address,
-            subject: message.subject.startsWith("Re:")
-              ? message.subject
-              : `Re: ${message.subject}`,
+            subject: message.subject.startsWith("Re:") ? message.subject : `Re: ${message.subject}`,
             body: reply,
           });
           setReply("");

@@ -110,9 +110,7 @@ export function TasksBoardView({
                 );
               })}
               {list.length === 0 ? (
-                <p className="px-1 py-3 text-xs text-muted-foreground">
-                  Glissez une tâche ici.
-                </p>
+                <p className="px-1 py-3 text-xs text-muted-foreground">Glissez une tâche ici.</p>
               ) : null}
             </div>
           </div>

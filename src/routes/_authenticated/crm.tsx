@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { ContactIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/crm")({
   head: () => ({
@@ -84,7 +85,10 @@ function CrmPage() {
 
   const patch = useMutation({
     mutationFn: async ({ id, ...rest }: { id: string } & Record<string, unknown>) => {
-      const { error } = await supabase.from("contacts").update(rest as never).eq("id", id);
+      const { error } = await supabase
+        .from("contacts")
+        .update(rest as never)
+        .eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,
@@ -114,8 +118,7 @@ function CrmPage() {
     <AppShell>
       <PageHeader
         title="CRM — Contacts"
-        icon={Users}
-        iconColor="#A855F7"
+        icon={ContactIcon}
         subtitle={`${list.length} contact(s) sur ce profil`}
         actions={
           <div className="relative">
@@ -183,7 +186,10 @@ function CrmPage() {
               </thead>
               <tbody>
                 {list.map((c) => (
-                  <tr key={c.id} className="border-b border-border/60 last:border-0 hover:bg-muted/40">
+                  <tr
+                    key={c.id}
+                    className="border-b border-border/60 last:border-0 hover:bg-muted/40"
+                  >
                     <td className="px-2 py-2">
                       <button onClick={() => setOpenId(c.id)} className="hover:underline">
                         {c.full_name}

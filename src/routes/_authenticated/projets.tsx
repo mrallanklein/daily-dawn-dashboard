@@ -21,6 +21,7 @@ import { ToPlanView } from "@/components/projects/to-plan-view";
 import { ProjectDetail } from "@/components/projects/project-detail";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { ProjectsIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/projets")({
   head: () => ({
@@ -60,14 +61,13 @@ function ProjectsPage() {
   const list = (projects ?? []).filter((p) =>
     (p.name + (p.client ?? "") + (p.category ?? "")).toLowerCase().includes(q.toLowerCase()),
   );
-  const current = selected ? (projects ?? []).find((p) => p.id === selected.id) ?? null : null;
+  const current = selected ? ((projects ?? []).find((p) => p.id === selected.id) ?? null) : null;
 
   return (
     <AppShell>
       <PageHeader
         title="Projets"
-        icon={BookOpen}
-        iconColor="#F97316"
+        icon={ProjectsIcon}
         subtitle={`${list.length} projet(s) sur ce profil`}
         actions={
           <>

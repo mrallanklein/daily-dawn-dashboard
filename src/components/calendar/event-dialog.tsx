@@ -32,13 +32,7 @@ import {
 
 export type EventDraft = { date: Date; event?: CalendarEvent };
 
-export function EventDialog({
-  draft,
-  onClose,
-}: {
-  draft: EventDraft | null;
-  onClose: () => void;
-}) {
+export function EventDialog({ draft, onClose }: { draft: EventDraft | null; onClose: () => void }) {
   const queryClient = useQueryClient();
   const fetchCalendars = useServerFn(listCalendars);
   const save = useServerFn(saveCalendarEvent);
@@ -136,7 +130,7 @@ export function EventDialog({
 
   return (
     <Dialog open={Boolean(draft)} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{draft?.event ? "Modifier l'évènement" : "Nouvel évènement"}</DialogTitle>
         </DialogHeader>
@@ -159,47 +153,53 @@ export function EventDialog({
             <Switch id="ev-allday" checked={allDay} onCheckedChange={setAllDay} />
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-day">Début</Label>
-              <Input
-                id="ev-day"
-                type="date"
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ev-endday">Fin</Label>
-              <Input
-                id="ev-endday"
-                type="date"
-                min={day}
-                value={endDay}
-                onChange={(e) => setEndDay(e.target.value)}
-              />
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="ev-day">Date de début</Label>
+                <Input
+                  id="ev-day"
+                  type="date"
+                  className="w-full min-w-0"
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="ev-endday">Date de fin</Label>
+                <Input
+                  id="ev-endday"
+                  type="date"
+                  className="w-full min-w-0"
+                  min={day}
+                  value={endDay}
+                  onChange={(e) => setEndDay(e.target.value)}
+                />
+              </div>
             </div>
             {!allDay ? (
-              <>
+              <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <Label htmlFor="ev-start">Heure début</Label>
+                  <Label htmlFor="ev-start">Heure de début</Label>
                   <Input
                     id="ev-start"
                     type="time"
+                    className="w-full min-w-0"
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label htmlFor="ev-end">Heure fin</Label>
+                  <Label htmlFor="ev-end">Heure de fin</Label>
                   <Input
                     id="ev-end"
                     type="time"
+                    className="w-full min-w-0"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
                   />
                 </div>
-              </>
+              </div>
             ) : null}
           </div>
 
@@ -255,7 +255,10 @@ export function EventDialog({
             <Button variant="ghost" onClick={onClose}>
               Annuler
             </Button>
-            <Button onClick={() => mutation.mutate()} disabled={mutation.isPending || !title.trim()}>
+            <Button
+              onClick={() => mutation.mutate()}
+              disabled={mutation.isPending || !title.trim()}
+            >
               Enregistrer
             </Button>
           </div>

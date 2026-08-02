@@ -1,4 +1,13 @@
-import { eachDayOfInterval, endOfMonth, endOfWeek, format, isSameDay, isSameMonth, startOfMonth, startOfWeek } from "date-fns";
+import {
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
 import { fr } from "date-fns/locale";
 import type { CalendarEvent } from "@/lib/agenda.functions";
 import { eventsOnDay } from "./calendar-utils";
@@ -75,7 +84,9 @@ export function MonthGrid({
                       onSelectEvent(ev);
                     }}
                     className="flex w-full items-center gap-1 rounded px-1 text-left text-[0.65rem] font-semibold"
-                    style={{ backgroundColor: ev.allDay ? `${ev.color ?? "#7c7c7c"}33` : undefined }}
+                    style={{
+                      backgroundColor: ev.allDay ? `${ev.color ?? "#7c7c7c"}33` : undefined,
+                    }}
                   >
                     {!ev.allDay ? (
                       <span

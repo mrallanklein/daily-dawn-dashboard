@@ -29,7 +29,10 @@ export function useProjectMutations(workspace: Workspace) {
 
   const patch = useMutation({
     mutationFn: async ({ id, ...rest }: { id: string } & Record<string, unknown>) => {
-      const { error } = await supabase.from("projects").update(rest as never).eq("id", id);
+      const { error } = await supabase
+        .from("projects")
+        .update(rest as never)
+        .eq("id", id);
       if (error) throw new Error(error.message);
     },
     onSuccess: invalidate,

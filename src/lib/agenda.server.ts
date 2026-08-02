@@ -82,17 +82,15 @@ export async function listSources(): Promise<CalendarSource[]> {
       const json = await gget<{ items?: ApiCalendar[] }>(key, "/users/me/calendarList");
       const items = json.items ?? [];
       const primaryEmail = items.find((c) => c.primary)?.id ?? null;
-      return items.map(
-        (c): CalendarSource => ({
-          accountKey,
-          accountEmail: primaryEmail,
-          calendarId: c.id,
-          name: c.summaryOverride ?? c.summary ?? c.id,
-          color: c.backgroundColor ?? null,
-          primary: Boolean(c.primary),
-          writable: c.accessRole === "owner" || c.accessRole === "writer",
-        }),
-      );
+      return items.map((c): CalendarSource => ({
+        accountKey,
+        accountEmail: primaryEmail,
+        calendarId: c.id,
+        name: c.summaryOverride ?? c.summary ?? c.id,
+        color: c.backgroundColor ?? null,
+        primary: Boolean(c.primary),
+        writable: c.accessRole === "owner" || c.accessRole === "writer",
+      }));
     }),
   );
   return perAccount.flat();
@@ -135,31 +133,30 @@ export async function listEvents(input: {
           keyFor(source.accountKey),
           `/calendars/${encodeURIComponent(source.calendarId)}/events?${params.toString()}`,
         );
-        const mapped = (json.items ?? [])
-          .map((item) => {
-            const start = item.start?.dateTime ?? item.start?.date ?? null;
-            if (!start) return null;
-            const me = (item.attendees ?? []).find((a) => a.self);
-            const event: CalendarEvent = {
-              id: item.id,
-              title: item.summary ?? "(Sans titre)",
-              description: item.description ?? null,
-              start,
-              end: item.end?.dateTime ?? item.end?.date ?? null,
-              allDay: !item.start?.dateTime,
-              location: item.location ?? null,
-              calendarId: source.calendarId,
-              calendarName: source.name,
-              accountKey: source.accountKey,
-              accountEmail: source.accountEmail,
-              color: source.color,
-              htmlLink: item.htmlLink ?? null,
-              organizer:
-                item.organizer?.displayName ?? item.organizer?.email ?? source.accountEmail ?? null,
-              myResponse: me?.responseStatus ?? null,
-            };
-            return event;
-          });
+        const mapped = (json.items ?? []).map((item) => {
+          const start = item.start?.dateTime ?? item.start?.date ?? null;
+          if (!start) return null;
+          const me = (item.attendees ?? []).find((a) => a.self);
+          const event: CalendarEvent = {
+            id: item.id,
+            title: item.summary ?? "(Sans titre)",
+            description: item.description ?? null,
+            start,
+            end: item.end?.dateTime ?? item.end?.date ?? null,
+            allDay: !item.start?.dateTime,
+            location: item.location ?? null,
+            calendarId: source.calendarId,
+            calendarName: source.name,
+            accountKey: source.accountKey,
+            accountEmail: source.accountEmail,
+            color: source.color,
+            htmlLink: item.htmlLink ?? null,
+            organizer:
+              item.organizer?.displayName ?? item.organizer?.email ?? source.accountEmail ?? null,
+            myResponse: me?.responseStatus ?? null,
+          };
+          return event;
+        });
         return mapped.filter((e): e is CalendarEvent => e !== null);
       } catch (error) {
         console.error(`Agenda ${source.calendarId} indisponible: ${String(error)}`);
@@ -240,7 +237,10 @@ export async function respondEvent(input: {
   const url = `${GATEWAY}/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}`;
   const current = await gget<{
     attendees?: Array<{ email?: string; self?: boolean; responseStatus?: string }>;
-  }>(key, `/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}`);
+  }>(
+    key,
+    `/calendars/${encodeURIComponent(input.calendarId)}/events/${encodeURIComponent(input.eventId)}`,
+  );
   const attendees = (current.attendees ?? []).map((a) =>
     a.self ? { ...a, responseStatus: input.response } : a,
   );

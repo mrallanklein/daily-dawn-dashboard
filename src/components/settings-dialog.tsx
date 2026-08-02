@@ -4,11 +4,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check, ImagePlus, Loader2, LocateFixed, Mail, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { locateCity, searchCities } from "@/lib/cities";
+import { locateCity } from "@/lib/cities";
 import { listMailAccounts } from "@/lib/mail.functions";
 import { listCalendars } from "@/lib/agenda.functions";
 import { createSpace, deleteSpace, spaceInitials, updateSpace, type Space } from "@/lib/spaces";
 import { useWorkspace } from "@/lib/workspace";
+import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
 import {
   Dialog,
   DialogContent,
@@ -118,6 +119,7 @@ export function SettingsDialog({
   const [editing, setEditing] = useState<string | null>(null);
   const fetchAccounts = useServerFn(listMailAccounts);
   const fetchCalendars = useServerFn(listCalendars);
+  const { colorFor, setColor } = useMailColors();
 
   const active = spaces.find((s) => s.id === editing) ?? space ?? spaces[0] ?? null;
 
@@ -147,9 +149,6 @@ export function SettingsDialog({
     weather_lat: 43.6047,
     weather_lon: 1.4442,
   });
-  const [cityFocus, setCityFocus] = useState(false);
-  const citySuggestions = searchCities(form.weather_city);
-
   useEffect(() => {
     if (!active) return;
     setForm({
@@ -335,41 +334,11 @@ export function SettingsDialog({
                   onUploaded={(url) => set({ banner_url: url })}
                 />
                 <div className="space-y-1.5">
-                  <Label htmlFor="s-city">Ville pour la météo</Label>
-                  <div className="flex gap-1.5">
-                    <div className="relative min-w-0 flex-1">
-                      <Input
-                        id="s-city"
-                        autoComplete="off"
-                        placeholder="Toulouse"
-                        value={form.weather_city}
-                        onFocus={() => setCityFocus(true)}
-                        onBlur={() => window.setTimeout(() => setCityFocus(false), 120)}
-                        onChange={(e) => set({ weather_city: e.target.value })}
-                      />
-                      {cityFocus && citySuggestions.length > 0 ? (
-                        <ul className="absolute z-50 mt-1 w-full overflow-hidden rounded-lg border border-border bg-popover shadow-[var(--shadow-pop)]">
-                          {citySuggestions.map((c) => (
-                            <li key={c.name}>
-                              <button
-                                type="button"
-                                className="w-full px-2.5 py-1.5 text-left text-sm hover:bg-muted"
-                                onClick={() => {
-                                  set({
-                                    weather_city: c.name,
-                                    weather_lat: c.lat,
-                                    weather_lon: c.lon,
-                                  });
-                                  setCityFocus(false);
-                                }}
-                              >
-                                {c.name}
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
+                  <Label>Météo</Label>
+                  <div className="flex items-center gap-3 rounded-lg border border-border px-3 py-2">
+                    <span className="min-w-0 flex-1 truncate text-sm">
+                      {form.weather_city || "Position non définie"}
+                    </span>
                     <Button
                       type="button"
                       variant="secondary"
@@ -472,6 +441,41 @@ export function SettingsDialog({
                 <Plus className="mr-1.5 size-4" /> Connecter une autre boîte mail
               </Button>
             </div>
+
+            {mailboxes.length > 0 ? (
+              <div>
+                <p className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">
+                  Couleur des pastilles de compte
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {mailboxes.map((m) => (
+                    <li key={`color-${m.id}`} className="flex items-center gap-2">
+                      <span
+                        className="size-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: colorFor(m.id) }}
+                      />
+                      <span className="min-w-0 flex-1 truncate text-sm">{m.email}</span>
+                      <span className="flex shrink-0 items-center gap-1">
+                        {NOTION_DOT_COLORS.map((c) => (
+                          <button
+                            key={c.value}
+                            type="button"
+                            title={c.name}
+                            aria-label={`${c.name} pour ${m.email}`}
+                            onClick={() => setColor(m.id, c.value)}
+                            className={cn(
+                              "size-3.5 shrink-0 rounded-full ring-offset-2 ring-offset-background transition-shadow",
+                              colorFor(m.id) === c.value && "ring-2 ring-foreground/60",
+                            )}
+                            style={{ backgroundColor: c.value }}
+                          />
+                        ))}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
 
             <div>
               <p className="text-[0.68rem] uppercase tracking-[0.14em] text-muted-foreground">

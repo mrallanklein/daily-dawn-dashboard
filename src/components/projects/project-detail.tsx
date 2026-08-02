@@ -182,7 +182,9 @@ export function ProjectDetail({
                 id="d-desc"
                 rows={4}
                 defaultValue={project.description ?? ""}
-                onBlur={(e) => patch.mutate({ id: project.id, description: e.target.value || null })}
+                onBlur={(e) =>
+                  patch.mutate({ id: project.id, description: e.target.value || null })
+                }
               />
             </div>
 
@@ -283,7 +285,10 @@ export function ProjectDetail({
               {(transactions ?? [])
                 .filter((t) => t.project_id === project.id)
                 .map((t) => (
-                  <li key={t.id} className="flex items-center justify-between gap-3 px-1 py-1 text-sm">
+                  <li
+                    key={t.id}
+                    className="flex items-center justify-between gap-3 px-1 py-1 text-sm"
+                  >
                     <span className="min-w-0 truncate">
                       {t.description}
                       <span className="ml-1.5 text-xs text-muted-foreground">
