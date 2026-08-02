@@ -40,8 +40,6 @@ import logoAsset from "@/assets/logo-ak.png.asset.json";
 import portraitAsset from "@/assets/allan-klein.png.asset.json";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
-import { SettingsDialog } from "@/components/settings-dialog";
-
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
 const NAV = [
@@ -61,7 +59,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ak-sidebar");
@@ -96,7 +93,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       const slug = await createSpace("Nouvel espace", "Espace", spaces.length);
       await queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setWorkspace(slug);
-      setSettingsOpen(true);
+      navigate({ to: "/parametres" });
     } catch {
       /* l'erreur est visible dans les paramètres */
     }
@@ -111,7 +108,6 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="ambient relative min-h-screen bg-background">
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
       <aside
         className={cn(
@@ -187,7 +183,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <DropdownMenuItem onClick={newSpace}>
                 <Plus className="size-3.5" /> Nouvel espace de travail
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+              <DropdownMenuItem onClick={() => navigate({ to: "/parametres" })}>
                 <Settings className="size-3.5" /> Paramètres de l'espace
               </DropdownMenuItem>
             </DropdownMenuContent>
