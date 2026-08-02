@@ -282,8 +282,10 @@ export type Database = {
           deadline: string | null
           description: string | null
           id: string
+          local_folder: string | null
           name: string
           next_step: string | null
+          onedrive_url: string | null
           position: number
           priority: string
           progress: number
@@ -307,8 +309,10 @@ export type Database = {
           deadline?: string | null
           description?: string | null
           id?: string
+          local_folder?: string | null
           name: string
           next_step?: string | null
+          onedrive_url?: string | null
           position?: number
           priority?: string
           progress?: number
@@ -332,8 +336,10 @@ export type Database = {
           deadline?: string | null
           description?: string | null
           id?: string
+          local_folder?: string | null
           name?: string
           next_step?: string | null
+          onedrive_url?: string | null
           position?: number
           priority?: string
           progress?: number
@@ -414,11 +420,13 @@ export type Database = {
           assignee_id: string | null
           completed_at: string | null
           created_at: string
+          description: string | null
           due_date: string | null
           duration_minutes: number | null
           id: string
           notes: string | null
           parent_task_id: string | null
+          position: number
           priority: string
           project_id: string | null
           scheduled_date: string | null
@@ -433,11 +441,13 @@ export type Database = {
           assignee_id?: string | null
           completed_at?: string | null
           created_at?: string
+          description?: string | null
           due_date?: string | null
           duration_minutes?: number | null
           id?: string
           notes?: string | null
           parent_task_id?: string | null
+          position?: number
           priority?: string
           project_id?: string | null
           scheduled_date?: string | null
@@ -452,11 +462,13 @@ export type Database = {
           assignee_id?: string | null
           completed_at?: string | null
           created_at?: string
+          description?: string | null
           due_date?: string | null
           duration_minutes?: number | null
           id?: string
           notes?: string | null
           parent_task_id?: string | null
+          position?: number
           priority?: string
           project_id?: string | null
           scheduled_date?: string | null

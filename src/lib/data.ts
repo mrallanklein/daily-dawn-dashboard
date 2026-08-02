@@ -33,6 +33,9 @@ export type Project = {
   next_step: string | null;
   position: number;
   workspace: string;
+  tags: string[];
+  onedrive_url: string | null;
+  local_folder: string | null;
 };
 
 export type Task = {
@@ -41,6 +44,8 @@ export type Task = {
   parent_task_id: string | null;
   title: string;
   notes: string | null;
+  description: string | null;
+  position: number;
   status: string;
   priority: string;
   scheduled_date: string | null;
@@ -115,6 +120,12 @@ export type ProjectComment = {
   created_at: string;
 };
 
+export type ProjectMember = {
+  id: string;
+  project_id: string;
+  member_id: string;
+};
+
 function unwrap<T>(res: { data: T | null; error: { message: string } | null }): T {
   if (res.error) throw new Error(res.error.message);
   return (res.data ?? []) as T;
@@ -162,7 +173,17 @@ export const tasksQuery = (ws: Workspace) =>
           .select("*")
           .eq("workspace", ws)
           .order("scheduled_date", { ascending: true, nullsFirst: false })
+          .order("position", { ascending: true })
           .order("start_time", { ascending: true, nullsFirst: false }),
+      ),
+  });
+
+export const projectMembersQuery = () =>
+  queryOptions({
+    queryKey: ["project_members"],
+    queryFn: async () =>
+      unwrap<ProjectMember[]>(
+        await supabase.from("project_members").select("id, project_id, member_id"),
       ),
   });
 
