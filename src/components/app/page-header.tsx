@@ -1,5 +1,4 @@
 import type { ComponentType, ReactNode } from "react";
-import { useWorkspace } from "@/lib/workspace";
 
 export function PageHeader({
   title,
@@ -7,34 +6,17 @@ export function PageHeader({
   actions,
   icon: Icon,
   iconColor,
-  banner = true,
 }: {
   title: string;
   subtitle?: string;
   actions?: ReactNode;
   icon?: ComponentType<{ className?: string; style?: React.CSSProperties | undefined }>;
   iconColor?: string;
-  /** Affiche la bannière de l'espace au-dessus du titre. */
+  /** Obsolète : les bannières ont été supprimées. */
   banner?: boolean;
 }) {
-  const { space } = useWorkspace();
-  const bannerUrl = banner ? (space?.banner_url ?? null) : null;
-
   return (
     <header className="rise mb-8">
-      {bannerUrl ? (
-        <div className="relative mb-8 h-[152px] w-full overflow-hidden rounded-2xl border border-border bg-muted shadow-[var(--shadow-soft)]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${bannerUrl})` }}
-            role="presentation"
-          />
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-linear-to-t from-background/45 via-background/5 to-transparent"
-          />
-        </div>
-      ) : null}
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
         <div className="flex min-w-0 items-center gap-4">
           {Icon ? (
