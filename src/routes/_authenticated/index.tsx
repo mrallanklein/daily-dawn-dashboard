@@ -10,7 +10,7 @@ import { TodayFocus } from "@/components/dashboard/today-focus";
 import { DeadlinesPanel } from "@/components/dashboard/deadlines-panel";
 import { MailPreview } from "@/components/dashboard/mail-preview";
 import { FreeTodo } from "@/components/dashboard/free-todo";
-import { MonthCalendar } from "@/components/dashboard/month-calendar";
+import { CalendarWorkspace } from "@/components/calendar/calendar-workspace";
 import { profileQuery, projectsQuery, tasksQuery, weatherQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { todayISO } from "@/lib/dates";
@@ -132,7 +132,7 @@ function Dashboard() {
         <FreeTodo />
       </div>
 
-      <MonthCalendar />
+      <CalendarWorkspace />
     </AppShell>
   );
 }
