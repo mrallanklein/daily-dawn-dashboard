@@ -10,7 +10,8 @@ import {
   startOfWeek,
 } from "date-fns";
 import { fr } from "date-fns/locale";
-import { CalendarPlus, ChevronLeft, ChevronRight, Clock, MapPin } from "lucide-react";
+import { useState } from "react";
+import { CalendarPlus, ChevronDown, ChevronLeft, ChevronRight, Clock, MapPin } from "lucide-react";
 import { MailIcon } from "@/components/icons/notion-icons";
 import type { CalendarEvent, CalendarSource } from "@/lib/agenda.functions";
 import { eventsOnDay } from "./calendar-utils";
@@ -49,6 +50,7 @@ export function CalendarSidebar({
     end: endOfWeek(endOfMonth(cursor), { weekStartsOn: 1 }),
   });
   const dayEvents = eventsOnDay(events, selected);
+  const [agendasOpen, setAgendasOpen] = useState(false);
 
   const grouped = sources.reduce<Record<string, CalendarSource[]>>((acc, s) => {
     const label = s.accountEmail ?? s.accountKey;
@@ -162,9 +164,30 @@ export function CalendarSidebar({
       </section>
 
       <section className="glass rounded-2xl p-3">
-        <p className="mb-2 text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Mes agendas
-        </p>
+        <button
+          type="button"
+          onClick={() => setAgendasOpen((v) => !v)}
+          aria-expanded={agendasOpen}
+          className="press flex w-full items-center justify-between rounded-lg px-1 py-1 text-left"
+        >
+          <span className="text-[0.66rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Mes agendas
+          </span>
+          <span className="flex items-center gap-1.5 text-[0.7rem] font-medium text-muted-foreground">
+            {agendasOpen ? "Masquer" : "Afficher"}
+            <ChevronDown
+              className={cn("size-3.5 transition-transform duration-300", agendasOpen && "rotate-180")}
+            />
+          </span>
+        </button>
+
+        <div
+          className={cn(
+            "grid transition-all duration-300 ease-out",
+            agendasOpen ? "mt-2 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+          )}
+        >
+          <div className="min-h-0 overflow-hidden">
         {sources.length === 0 ? (
           <p className="text-sm text-muted-foreground">Aucun agenda Google relié.</p>
         ) : (
@@ -211,6 +234,8 @@ export function CalendarSidebar({
             ))}
           </div>
         )}
+          </div>
+        </div>
       </section>
     </aside>
   );
