@@ -663,6 +663,21 @@ export function DatabaseView({
         onSave={(input) => saveProperty.mutate(input)}
         onDelete={(id) => deleteProperty.mutate(id)}
       />
+
+      <EntryDetail
+        open={Boolean(detailRow)}
+        onClose={() => setDetailId(null)}
+        module={source.module}
+        moduleLabel={source.label}
+        entryId={detailRow?.id ?? null}
+        title={String(detailRow?.values[source.titleProp] ?? "Sans titre")}
+        properties={properties}
+        values={detailRow?.values ?? {}}
+        crumbs={[
+          { label: source.label },
+          { label: String(detailRow?.values[source.titleProp] ?? "Sans titre") },
+        ]}
+      />
     </section>
   );
 }
