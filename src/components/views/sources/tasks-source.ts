@@ -29,7 +29,7 @@ export function taskProperties(projects: Project[]): PropertyDef[] {
       options: projects.map((p, i) => ({
         id: p.id,
         label: p.name,
-        color: (["blue", "green", "orange", "purple", "pink", "yellow", "brown"] as const)[i % 7],
+        color: (["blue", "green", "orange", "purple", "pink", "yellow", "brown"] as const)[i % 7]!,
       })),
     },
     { id: "scheduled_date", name: "Planifiée le", type: "date" },
