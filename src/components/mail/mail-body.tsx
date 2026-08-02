@@ -3,17 +3,16 @@ import DOMPurify from "dompurify";
 import { ImageOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-/** Rend le corps d'un mail : HTML assaini, images distantes bloquées par défaut. */
+/** Rend le corps d'un mail : HTML assaini, images et mise en forme chargées. */
 export function MailBody({ html, text }: { html: string; text: string }) {
-  const [showImages, setShowImages] = useState(false);
+  const [showImages, setShowImages] = useState(true);
 
   const { markup, hasImages } = useMemo(() => {
     if (!html.trim()) return { markup: "", hasImages: false };
     if (typeof window === "undefined") return { markup: "", hasImages: false };
 
     const clean = DOMPurify.sanitize(html, {
-      FORBID_TAGS: ["style", "script", "iframe", "form", "input"],
-      FORBID_ATTR: ["srcset"],
+      FORBID_TAGS: ["script", "iframe", "form", "input"],
     });
     const doc = new DOMParser().parseFromString(clean, "text/html");
     const images = Array.from(doc.querySelectorAll("img"));
@@ -47,7 +46,7 @@ export function MailBody({ html, text }: { html: string; text: string }) {
 
   return (
     <div className="mt-4">
-      {hasImages ? (
+      {hasImages && !showImages ? (
         <div className="mb-3 flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
           <ImageOff className="size-3.5 shrink-0" />
           <span className="min-w-0 flex-1">Images bloquées pour votre sécurité.</span>
@@ -57,7 +56,7 @@ export function MailBody({ html, text }: { html: string; text: string }) {
         </div>
       ) : null}
       <div
-        className="mail-html max-h-[42vh] overflow-y-auto break-words text-sm [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-2 [&_table]:max-w-full"
+        className="mail-html max-h-[58vh] overflow-y-auto break-words text-sm [&_a]:text-brand [&_a]:underline [&_a]:underline-offset-2 [&_img]:h-auto [&_img]:max-w-full [&_table]:max-w-full"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: markup }}
       />
