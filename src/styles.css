@@ -173,25 +173,25 @@
 }
 
 .dark {
-  /* Sombre — nuit profonde, presque noire, ponctuée de halos orange/violets */
-  --background: oklch(0.055 0.007 265);
-  --foreground: oklch(0.975 0.003 265);
-  --card: oklch(0.115 0.009 265);
-  --card-foreground: oklch(0.975 0.003 265);
-  --popover: oklch(0.135 0.01 265);
-  --popover-foreground: oklch(0.975 0.003 265);
-  --primary: oklch(0.975 0.003 265);
-  --primary-foreground: oklch(0.1 0.01 265);
-  --secondary: oklch(0.165 0.011 265);
-  --secondary-foreground: oklch(0.96 0.003 265);
-  --muted: oklch(0.165 0.011 265);
-  --muted-foreground: oklch(0.705 0.014 265);
-  --accent: oklch(0.2 0.014 265);
-  --accent-foreground: oklch(0.97 0.003 265);
+  /* Sombre — noir uni, miroir neutre de la version claire */
+  --background: oklch(0.115 0 0);
+  --foreground: oklch(0.972 0 0);
+  --card: oklch(0.163 0 0);
+  --card-foreground: oklch(0.972 0 0);
+  --popover: oklch(0.185 0 0);
+  --popover-foreground: oklch(0.972 0 0);
+  --primary: oklch(0.972 0 0);
+  --primary-foreground: oklch(0.14 0 0);
+  --secondary: oklch(0.215 0 0);
+  --secondary-foreground: oklch(0.955 0 0);
+  --muted: oklch(0.215 0 0);
+  --muted-foreground: oklch(0.715 0 0);
+  --accent: oklch(0.248 0 0);
+  --accent-foreground: oklch(0.968 0 0);
   --destructive: oklch(0.63 0.19 25);
-  --destructive-foreground: oklch(0.16 0.006 265);
-  --border: oklch(1 0 0 / 0.08);
-  --input: oklch(1 0 0 / 0.14);
+  --destructive-foreground: oklch(0.16 0 0);
+  --border: oklch(1 0 0 / 0.1);
+  --input: oklch(1 0 0 / 0.16);
 
   --teal: oklch(0.68 0.1 190);
   --gold: oklch(0.78 0.15 58);
@@ -203,7 +203,7 @@
   --warning: oklch(0.8 0.13 84);
   --info: oklch(0.72 0.11 235);
 
-  --status-gray: oklch(0.68 0.01 265);
+  --status-gray: oklch(0.68 0 0);
   --status-gold: oklch(0.82 0.13 86);
   --status-red: oklch(0.68 0.18 25);
   --status-purple: oklch(0.72 0.15 300);
@@ -211,17 +211,17 @@
   --status-green: oklch(0.74 0.13 155);
   --chart-1: var(--teal);
   --chart-2: var(--gold);
-  --chart-3: oklch(0.82 0.01 265);
+  --chart-3: oklch(0.82 0 0);
   --chart-4: oklch(0.7 0.1 158);
-  --chart-5: oklch(0.5 0.02 265);
+  --chart-5: oklch(0.5 0 0);
 
-  --sidebar: oklch(0.085 0.008 265);
-  --sidebar-foreground: oklch(0.93 0.004 265);
-  --sidebar-primary: oklch(0.97 0.003 265);
-  --sidebar-primary-foreground: oklch(0.17 0.006 265);
-  --sidebar-accent: oklch(0.19 0.013 265);
-  --sidebar-accent-foreground: oklch(0.97 0.003 265);
-  --sidebar-border: oklch(1 0 0 / 0.07);
+  --sidebar: oklch(0.145 0 0);
+  --sidebar-foreground: oklch(0.935 0 0);
+  --sidebar-primary: oklch(0.97 0 0);
+  --sidebar-primary-foreground: oklch(0.17 0 0);
+  --sidebar-accent: oklch(0.235 0 0);
+  --sidebar-accent-foreground: oklch(0.97 0 0);
+  --sidebar-border: oklch(1 0 0 / 0.09);
 
   --elev-1: 0 1px 1px oklch(0 0 0 / 0.35), 0 1px 3px oklch(0 0 0 / 0.3);
   --elev-2: 0 1px 2px oklch(0 0 0 / 0.3), 0 8px 24px -16px oklch(0 0 0 / 0.5);
@@ -236,17 +236,10 @@
 
   --sheen: linear-gradient(
     180deg,
-    color-mix(in oklab, white 6%, transparent),
+    color-mix(in oklab, white 4%, transparent),
     color-mix(in oklab, white 0%, transparent) 60%
   );
-  --ambient:
-    radial-gradient(
-      38% 34% at 4% 16%,
-      oklch(0.6 0.23 262 / 0.34),
-      transparent 70%
-    ),
-    radial-gradient(30% 28% at 66% 94%, oklch(0.72 0.2 52 / 0.34), transparent 70%),
-    radial-gradient(28% 30% at 101% 74%, oklch(0.56 0.25 305 / 0.36), transparent 70%);
+  --ambient: none;
 }
 
 .dark.ws-alias {
@@ -287,9 +280,10 @@
   }
 
   .dark body::before {
-    background-image: url("/__l5e/assets-v1/f02283b1-31af-4b0f-b0a9-878176e90b0f/blurry-background-night.png");
-    filter: blur(140px) saturate(180%) brightness(0.55);
-    opacity: 0.42;
+    background-image: none;
+    background-color: oklch(0.115 0 0);
+    filter: none;
+    opacity: 1;
   }
 
   body {
@@ -341,14 +335,14 @@
 
 .dark .glass,
 .dark.glass {
-  border-color: color-mix(in oklab, var(--foreground) 10%, transparent);
+  border-color: color-mix(in oklab, var(--foreground) 9%, transparent);
   background:
     var(--sheen),
-    color-mix(in oklab, var(--card) 62%, transparent);
+    color-mix(in oklab, var(--card) 92%, transparent);
 }
 
 .dark .glass::after {
-  opacity: 0.18;
+  opacity: 0.1;
 }
 
 .glass::after {
