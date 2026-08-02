@@ -4,7 +4,7 @@ Route `/calendrier`. Agrégation des agendas Google des comptes activés.
 
 ## Ce que l'utilisateur peut faire
 
-- Choisir la vue : Jour, Semaine, Mois, Année.
+- Choisir la vue : Jour, Lun–Ven (semaine de travail), Semaine, Mois, Année.
 - Naviguer période précédente / suivante, revenir à aujourd'hui, choisir un mois
   et une année.
 - Cliquer un jour pour l'ouvrir en détail.
@@ -14,6 +14,11 @@ Route `/calendrier`. Agrégation des agendas Google des comptes activés.
 - Accepter, refuser ou marquer comme peut-être une invitation.
 - Afficher ou masquer la liste de ses agendas et cocher ceux à afficher.
 - Voir les invitations en attente et les traiter.
+- Déplacer un évènement vers un autre jour (et une autre heure en vue Jour /
+  Semaine) par glisser-déposer.
+- Créer un évènement en sélectionnant une plage horaire à la souris.
+- Recevoir des rappels : deadlines de projets, tâches du jour, évènements à
+  30 minutes.
 
 ## Règles fonctionnelles
 
