@@ -3,12 +3,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Mail, Phone, Plus, Search, Trash2, Users } from "lucide-react";
+import { Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
-import { Panel, EmptyState } from "@/components/app/panel";
+import { Panel } from "@/components/app/panel";
 import { contactsQuery, interactionsQuery, type Contact } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { todayISO } from "@/lib/dates";
@@ -44,14 +44,6 @@ export const Route = createFileRoute("/_authenticated/crm")({
   }),
   component: CrmPage,
 });
-
-const STATUSES = [
-  { id: "prospect", label: "Prospect" },
-  { id: "en_discussion", label: "En discussion" },
-  { id: "client", label: "Client" },
-  { id: "partenaire", label: "Partenaire" },
-  { id: "inactif", label: "Inactif" },
-];
 
 function CrmPage() {
   const { workspace } = useWorkspace();
