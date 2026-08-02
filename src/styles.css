@@ -288,8 +288,8 @@
 
   .dark body::before {
     background-image: url("/__l5e/assets-v1/f02283b1-31af-4b0f-b0a9-878176e90b0f/blurry-background-night.png");
-    filter: blur(120px) saturate(110%);
-    opacity: 0.75;
+    filter: blur(140px) saturate(180%) brightness(0.55);
+    opacity: 0.42;
   }
 
   body {
