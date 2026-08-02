@@ -1,3 +1,4 @@
+import { fetchWeather } from "./weather.functions";
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Workspace } from "@/lib/workspace";
@@ -300,21 +301,8 @@ export const weatherQuery = (lat: number, lon: number) =>
   queryOptions({
     queryKey: ["weather", lat, lon],
     staleTime: 15 * 60 * 1000,
-    queryFn: async (): Promise<Weather> => {
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=1`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Météo indisponible");
-      const json = (await res.json()) as {
-        current: { temperature_2m: number; weather_code: number };
-        daily: { temperature_2m_max: number[]; temperature_2m_min: number[] };
-      };
-      return {
-        temperature: Math.round(json.current.temperature_2m),
-        code: json.current.weather_code,
-        max: Math.round(json.daily.temperature_2m_max[0] ?? 0),
-        min: Math.round(json.daily.temperature_2m_min[0] ?? 0),
-      };
-    },
+    retry: 1,
+    queryFn: (): Promise<Weather> => fetchWeather({ data: { lat, lon } }),
   });
 
 export function fmtEUR(value: number) {
