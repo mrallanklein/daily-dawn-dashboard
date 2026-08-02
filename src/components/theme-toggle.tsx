@@ -9,20 +9,53 @@ function apply(theme: Theme) {
   document.documentElement.style.colorScheme = theme;
 }
 
+/** Nuit : 20h → 7h. Jour : 7h → 20h. */
+function themeForNow(date = new Date()): Theme {
+  const h = date.getHours();
+  return h >= 20 || h < 7 ? "dark" : "light";
+}
+
+/** Clé du choix manuel : { theme, day } — réinitialisé au changement de journée. */
+type Override = { theme: Theme; day: string };
+
+function readOverride(): Override | null {
+  try {
+    const raw = window.localStorage.getItem("ak-theme-override");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Override;
+    return parsed?.theme ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function slot(date = new Date()) {
+  // Une plage = une demi-journée (jour ou nuit) : le choix manuel ne dure que le créneau courant.
+  return `${date.toDateString()}-${themeForNow(date)}`;
+}
+
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
-    const stored = window.localStorage.getItem("ak-theme") as Theme | null;
-    const next: Theme = stored ?? "light";
-    setTheme(next);
-    apply(next);
+    const resolve = () => {
+      const override = readOverride();
+      const next: Theme = override && override.day === slot() ? override.theme : themeForNow();
+      setTheme(next);
+      apply(next);
+    };
+    resolve();
+    const id = window.setInterval(resolve, 60_000);
+    return () => window.clearInterval(id);
   }, []);
 
   const toggle = () => {
     setTheme((prev) => {
       const next: Theme = prev === "dark" ? "light" : "dark";
-      window.localStorage.setItem("ak-theme", next);
+      window.localStorage.setItem(
+        "ak-theme-override",
+        JSON.stringify({ theme: next, day: slot() } satisfies Override),
+      );
       apply(next);
       return next;
     });
