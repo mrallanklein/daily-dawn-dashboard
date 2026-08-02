@@ -24,7 +24,7 @@ export function PageHeader({
     <header className="mb-8">
       {bannerUrl ? (
         <div
-          className="mb-4 h-[140px] w-full rounded-xl border border-border bg-muted bg-cover bg-center"
+          className="mb-8 h-[140px] w-full rounded-xl border border-border bg-muted bg-cover bg-center"
           style={{ backgroundImage: `url(${bannerUrl})` }}
           role="presentation"
         />
