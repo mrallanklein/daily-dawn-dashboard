@@ -422,7 +422,9 @@ export function DatabaseView({
                     disabled={index === 0}
                     onClick={() => {
                       const next = [...config.sorts];
-                      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+                      const prev = next[index - 1]!;
+                      next[index - 1] = next[index]!;
+                      next[index] = prev;
                       patch({ sorts: next });
                     }}
                     className="press grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-40"

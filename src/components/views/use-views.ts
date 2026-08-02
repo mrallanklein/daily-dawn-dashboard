@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useWorkspace } from "@/lib/workspace";
 import {
   DEFAULT_CONFIG,
@@ -129,7 +130,7 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
         emoji: input.emoji,
         layout: input.layout,
         position: effectiveViews.length,
-        config: DEFAULT_CONFIG,
+        config: DEFAULT_CONFIG as unknown as Json,
       });
       if (res.error) throw new Error(res.error.message);
     },
@@ -137,7 +138,11 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
   });
 
   const updateView = useMutation({
-    mutationFn: async (input: { id: string; patch: Record<string, unknown> }) => {
+    mutationFn: async (input: {
+      id: string;
+      patch: Record<string, unknown>;
+      base?: ModuleView | undefined;
+    }) => {
       if (input.id.startsWith("default:")) {
         // Matérialise la vue par défaut avant de l'éditer.
         const uid = await userId();
@@ -151,13 +156,16 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
           emoji: base?.emoji ?? "",
           layout: base?.layout ?? "table",
           position: base?.position ?? 0,
-          config: base?.config ?? DEFAULT_CONFIG,
+          config: (base?.config ?? DEFAULT_CONFIG) as unknown as Json,
           ...input.patch,
-        });
+        } as never);
         if (res.error) throw new Error(res.error.message);
         return;
       }
-      const res = await supabase.from("module_views").update(input.patch).eq("id", input.id);
+      const res = await supabase
+        .from("module_views")
+        .update(input.patch as never)
+        .eq("id", input.id);
       if (res.error) throw new Error(res.error.message);
     },
     onSuccess: () => invalidate("module_views"),
@@ -182,7 +190,7 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
           .update({
             name: input.name,
             type: input.type,
-            config: input.config,
+            config: input.config as unknown as Json,
             hidden: input.hidden ?? false,
           })
           .eq("id", input.id);
@@ -195,7 +203,7 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
         module,
         name: input.name,
         type: input.type,
-        config: input.config,
+        config: input.config as unknown as Json,
         position: (customProps.data ?? []).length,
       });
       if (res.error) throw new Error(res.error.message);
@@ -221,7 +229,7 @@ export function useModuleViews(module: string, fallbackLayouts: Layout[] = ["tab
           user_id: uid,
           module,
           entry_id: input.entryId,
-          values: { ...current, [input.propertyId]: input.value },
+          values: { ...current, [input.propertyId]: input.value } as unknown as Json,
         },
         { onConflict: "user_id,module,entry_id" },
       );

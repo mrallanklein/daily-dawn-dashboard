@@ -248,7 +248,7 @@ export function PropertyEditor({
             type="button"
             onClick={() => {
               onSave({
-                id: property?.custom ? property.id : undefined,
+                ...(property?.custom ? { id: property.id } : {}),
                 name: name.trim() || "Propriété",
                 type,
                 config: {

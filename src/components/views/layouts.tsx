@@ -31,7 +31,7 @@ function tint(color: OptionColor | null) {
   return { backgroundColor: c.bg, color: c.fg };
 }
 
-function Chip({ label, color }: { label: string; color?: OptionColor }) {
+function Chip({ label, color }: { label: string; color?: OptionColor | undefined }) {
   const c = colorTokens(color ?? "gray");
   return (
     <span
