@@ -330,6 +330,51 @@ export type Database = {
         }
         Relationships: []
       }
+      notion_sync_runs: {
+        Row: {
+          created_at: string
+          created_count: number
+          database_id: string
+          database_title: string
+          id: string
+          message: string | null
+          skipped_count: number
+          status: string
+          target: string
+          updated_count: number
+          user_id: string
+          workspace: string
+        }
+        Insert: {
+          created_at?: string
+          created_count?: number
+          database_id: string
+          database_title: string
+          id?: string
+          message?: string | null
+          skipped_count?: number
+          status?: string
+          target: string
+          updated_count?: number
+          user_id: string
+          workspace: string
+        }
+        Update: {
+          created_at?: string
+          created_count?: number
+          database_id?: string
+          database_title?: string
+          id?: string
+          message?: string | null
+          skipped_count?: number
+          status?: string
+          target?: string
+          updated_count?: number
+          user_id?: string
+          workspace?: string
+        }
+        Relationships: []
+      }
       page_entries: {
         Row: {
           created_at: string
@@ -495,6 +540,7 @@ export type Database = {
           created_at: string
           due_date: string
           id: string
+          notion_page_id: string | null
           position: number
           project_id: string
           reached: boolean
@@ -506,6 +552,7 @@ export type Database = {
           created_at?: string
           due_date: string
           id?: string
+          notion_page_id?: string | null
           position?: number
           project_id: string
           reached?: boolean
@@ -517,6 +564,7 @@ export type Database = {
           created_at?: string
           due_date?: string
           id?: string
+          notion_page_id?: string | null
           position?: number
           project_id?: string
           reached?: boolean
@@ -551,6 +599,7 @@ export type Database = {
           local_folder: string | null
           name: string
           next_step: string | null
+          notion_page_id: string | null
           onedrive_url: string | null
           position: number
           priority: string
@@ -579,6 +628,7 @@ export type Database = {
           local_folder?: string | null
           name: string
           next_step?: string | null
+          notion_page_id?: string | null
           onedrive_url?: string | null
           position?: number
           priority?: string
@@ -607,6 +657,7 @@ export type Database = {
           local_folder?: string | null
           name?: string
           next_step?: string | null
+          notion_page_id?: string | null
           onedrive_url?: string | null
           position?: number
           priority?: string
@@ -727,6 +778,7 @@ export type Database = {
           duration_minutes: number | null
           id: string
           notes: string | null
+          notion_page_id: string | null
           parent_task_id: string | null
           position: number
           priority: string
@@ -748,6 +800,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           notes?: string | null
+          notion_page_id?: string | null
           parent_task_id?: string | null
           position?: number
           priority?: string
@@ -769,6 +822,7 @@ export type Database = {
           duration_minutes?: number | null
           id?: string
           notes?: string | null
+          notion_page_id?: string | null
           parent_task_id?: string | null
           position?: number
           priority?: string
