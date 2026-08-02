@@ -117,10 +117,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-out md:flex",
-          open ? "w-60" : "w-[68px]",
+          open ? "w-64" : "w-[68px]",
         )}
       >
-        <div className={cn("p-3", !open && "px-3")}>
+        <div className={cn("p-2", !open && "px-3")}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -194,7 +194,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
 
         {/* Ligne rapide : Accueil (pastille) · Boîte de réception · Recherche */}
-        <div className={cn("flex items-center gap-1 px-3 pb-2", !open && "flex-col")}>
+        <div className={cn("flex items-center gap-1 px-2 pb-2", !open && "flex-col")}>
           <Link
             to={HOME.to}
             title={HOME.label}
@@ -231,7 +231,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <nav className={cn("flex-1 space-y-px px-3")}>
+        <nav className={cn("flex-1 space-y-px px-2")}>
           {items.map((item) => (
             <Link
               key={item.to}
@@ -259,7 +259,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        <div className="space-y-2 border-t border-sidebar-border p-3">
+        <div className="space-y-2 border-t border-sidebar-border p-2">
           <div className={cn("flex items-center gap-2.5", !open && "justify-center")}>
             <Avatar className="size-8 shrink-0">
               <AvatarImage
@@ -309,7 +309,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         title={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
         className={cn(
           "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card text-muted-foreground shadow-[var(--shadow-soft)] transition-[left,color] duration-200 ease-out hover:text-foreground md:grid",
-          open ? "left-[calc(15rem+0.5rem)]" : "left-[calc(68px+0.5rem)]",
+          open ? "left-[calc(16rem+0.75rem)]" : "left-[calc(68px+0.75rem)]",
         )}
       >
         {open ? (
@@ -337,8 +337,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main
         className={cn(
-          "min-h-screen px-4 pb-24 pt-6 transition-[margin] duration-200 ease-out sm:px-8 md:pb-10",
-          open ? "md:ml-60" : "md:ml-[68px]",
+          "min-h-screen px-4 pb-24 pt-6 transition-[margin,padding] duration-200 ease-out sm:px-8 md:pb-10 md:pl-14 lg:pl-16",
+          open ? "md:ml-64" : "md:ml-[68px]",
         )}
       >
         <div className="mx-auto max-w-[1400px]">{children}</div>
