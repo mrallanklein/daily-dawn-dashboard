@@ -64,12 +64,12 @@ export function CalendarWorkspace() {
 
   const { from, to } = viewBounds(view, cursor);
   const { data, error, isLoading } = useQuery({
-    queryKey: ["calendar", view, from.toISOString(), to.toISOString(), calendarIds.join(",")],
+    queryKey: ["calendar", view, from.toISOString(), to.toISOString()],
     staleTime: 2 * 60 * 1000,
     retry: false,
     queryFn: () =>
       fetchEvents({
-        data: { timeMin: from.toISOString(), timeMax: to.toISOString(), calendarIds },
+        data: { timeMin: from.toISOString(), timeMax: to.toISOString(), calendarIds: [] },
       }),
   });
 
