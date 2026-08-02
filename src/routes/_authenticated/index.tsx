@@ -73,19 +73,8 @@ function Dashboard() {
     <AppShell>
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <section className="glass mb-8">
-        <div
-          className="h-40 w-full bg-cover bg-center sm:h-52"
-          style={
-            (space?.banner_url ?? profile?.banner_url)
-              ? { backgroundImage: `url(${space?.banner_url ?? profile?.banner_url})` }
-              : {
-                  backgroundImage:
-                    "linear-gradient(120deg, color-mix(in oklab, var(--foreground) 12%, transparent), color-mix(in oklab, var(--muted) 90%, transparent))",
-                }
-          }
-        />
-        <div className="flex flex-wrap items-end justify-between gap-4 px-4 pb-8 pt-5">
-          <div className="-mt-10 flex min-w-0 items-end gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-8 pt-8">
+          <div className="flex min-w-0 items-center gap-4">
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
@@ -99,7 +88,7 @@ function Dashboard() {
                 className="size-[5.5rem] rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)] transition-transform hover:scale-[1.03] sm:size-24"
               />
             </button>
-            <div className="min-w-0 pb-1">
+            <div className="min-w-0">
               <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
                 {greeting()} {firstName}
               </h1>
@@ -108,7 +97,7 @@ function Dashboard() {
               </p>
             </div>
           </div>
-          <div className="pb-1">
+          <div>
             <WeatherBadge
               weather={weather}
               city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
