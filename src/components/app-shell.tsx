@@ -262,7 +262,15 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="space-y-1.5 border-t border-sidebar-border p-2">
-          <div className={cn("flex items-center gap-2.5", !open && "justify-center")}>
+          <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Ouvrir les paramètres"
+            className={cn(
+              "press flex w-full items-center gap-2.5 rounded-[8px] p-1 text-left transition-colors hover:bg-sidebar-accent",
+              !open && "justify-center",
+            )}
+          >
             <Avatar className="size-10 shrink-0">
               <AvatarImage
                 src={profile?.avatar_url ?? portraitAsset.url}
@@ -281,7 +289,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </p>
               </div>
             ) : null}
-          </div>
+          </button>
           <div className={cn("flex items-center gap-1", !open && "flex-col")}>
             <ThemeToggle />
             <Button
