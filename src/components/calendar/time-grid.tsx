@@ -16,8 +16,6 @@ export function TimeGrid({
   onSelectEvent: (ev: CalendarEvent) => void;
   onCreateAt: (day: Date, hour: number) => void;
 }) {
-  const singleDay = days.length === 1;
-
   // Jour ET Semaine : on n'affiche que les heures utiles pour éviter le scroll.
   const { hours, hourPx, startHour, labelStep } = useMemo(() => {
     const { min, max } = usefulHourRange(events, days);
