@@ -74,8 +74,8 @@ function HomePage() {
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
       {/* Hero card : profil, salutation, stats et météo dans un seul bandeau */}
-      <section className="mb-8">
-        <div className="flex items-center gap-5 rounded-[22px] border border-border bg-card p-5 shadow-sm">
+      <section className="mb-8 @container">
+        <div className="flex flex-col items-start gap-4 rounded-[22px] border border-border bg-card p-5 shadow-sm @min-[520px]:flex-row @min-[520px]:items-center @min-[520px]:gap-5">
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
@@ -86,12 +86,12 @@ function HomePage() {
             <img
               src={avatar}
               alt={name}
-              className="size-16 rounded-[1.15rem] border-2 border-border object-cover shadow-sm transition-transform hover:scale-[1.03] sm:size-20"
+              className="size-14 rounded-[1rem] border-2 border-border object-cover shadow-sm transition-transform hover:scale-[1.03] @min-[520px]:size-16 @min-[680px]:size-20 @min-[520px]:rounded-[1.15rem]"
             />
           </button>
 
           <div className="min-w-0 flex-1">
-            <h1 className="text-2xl font-display font-bold tracking-tight sm:text-3xl">
+            <h1 className="text-xl font-display font-bold tracking-tight @min-[520px]:text-2xl @min-[680px]:text-3xl">
               {greeting()} {firstName}
             </h1>
             <p className="mt-1 text-sm font-medium text-muted-foreground">
@@ -99,19 +99,12 @@ function HomePage() {
             </p>
           </div>
 
-          <div className="hidden shrink-0 sm:block">
+          <div className="w-full @min-[520px]:w-auto @min-[520px]:shrink-0">
             <WeatherBadge
               weather={weather}
               city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
             />
           </div>
-        </div>
-
-        <div className="mt-3 sm:hidden">
-          <WeatherBadge
-            weather={weather}
-            city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
-          />
         </div>
       </section>
 
