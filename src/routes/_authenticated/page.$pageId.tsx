@@ -99,9 +99,7 @@ function DynamicPage() {
 
   return (
     <AppShell>
-      <Breadcrumbs
-        items={[{ label: "Espace" }, { label: page?.name ?? "Page" }]}
-      />
+      <Breadcrumbs items={[{ label: "Espace" }, { label: page?.name ?? "Page" }]} />
       <PageHeader
         title={page ? `${page.emoji ? `${page.emoji} ` : ""}${page.name}` : "Page"}
         icon={isDatabase ? Table2 : FileText}

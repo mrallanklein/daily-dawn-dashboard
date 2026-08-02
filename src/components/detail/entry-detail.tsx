@@ -132,7 +132,8 @@ export function EntryDetail({
   });
 
   const shownProps = useMemo(
-    () => properties.filter((p) => !p.hidden && values[p.id] !== undefined && values[p.id] !== null),
+    () =>
+      properties.filter((p) => !p.hidden && values[p.id] !== undefined && values[p.id] !== null),
     [properties, values],
   );
 

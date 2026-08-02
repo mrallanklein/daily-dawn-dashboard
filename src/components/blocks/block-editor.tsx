@@ -89,7 +89,11 @@ export function BlockEditor({
             if (!dragId || dragId === block.id) return;
             const next = local.filter((b) => b.id !== dragId);
             const moved = local.find((b) => b.id === dragId)!;
-            next.splice(next.findIndex((b) => b.id === block.id), 0, moved);
+            next.splice(
+              next.findIndex((b) => b.id === block.id),
+              0,
+              moved,
+            );
             commit(next, true);
             setDragId(null);
           }}
@@ -232,7 +236,12 @@ function ReadBlock({ block }: { block: Block }) {
       />
     ) : null;
   return (
-    <p className={cn(TEXT_CLASS[block.type], block.type === "code" && "rounded-[10px] bg-secondary/60 p-2.5")}>
+    <p
+      className={cn(
+        TEXT_CLASS[block.type],
+        block.type === "code" && "rounded-[10px] bg-secondary/60 p-2.5",
+      )}
+    >
       {block.type === "bullet" ? "• " : block.type === "todo" ? (block.checked ? "☑ " : "☐ ") : ""}
       {block.text}
     </p>

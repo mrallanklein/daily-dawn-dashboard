@@ -56,7 +56,9 @@ export function MentionInput({
       ...(team ?? []).map((m) => ({ id: m.id, label: m.full_name, kind: "member" as const })),
       ...dateSuggestions(),
       ...(projects ?? []).map((p) => ({ id: p.id, label: p.name, kind: "project" as const })),
-      ...(tasks ?? []).slice(0, 60).map((t) => ({ id: t.id, label: t.title, kind: "task" as const })),
+      ...(tasks ?? [])
+        .slice(0, 60)
+        .map((t) => ({ id: t.id, label: t.title, kind: "task" as const })),
     ],
     [team, projects, tasks],
   );
@@ -64,9 +66,7 @@ export function MentionInput({
   const matches =
     query === null
       ? []
-      : all
-          .filter((s) => s.label.toLowerCase().includes(query.toLowerCase()))
-          .slice(0, 7);
+      : all.filter((s) => s.label.toLowerCase().includes(query.toLowerCase())).slice(0, 7);
 
   const detect = (text: string, caret: number) => {
     const before = text.slice(0, caret);

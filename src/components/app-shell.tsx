@@ -61,7 +61,13 @@ function ControlPill({
       )}
     >
       <ThemeToggle className={seg} />
-      <button type="button" onClick={onSettings} aria-label="Paramètres" title="Paramètres" className={seg}>
+      <button
+        type="button"
+        onClick={onSettings}
+        aria-label="Paramètres"
+        title="Paramètres"
+        className={seg}
+      >
         <Settings className="size-4" strokeWidth={1.5} />
       </button>
       <button
