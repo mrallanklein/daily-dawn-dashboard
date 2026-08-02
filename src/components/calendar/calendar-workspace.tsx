@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -45,6 +45,7 @@ export function CalendarWorkspace() {
   const [selected, setSelected] = useState(() => new Date());
   const [draft, setDraft] = useState<EventDraft | null>(null);
   const [hidden, setHidden] = useState<string[]>([]);
+  const defaultsApplied = useRef(false);
 
   const { workspace } = useWorkspace();
   const fetchEvents = useServerFn(getCalendarEvents);
@@ -81,6 +82,19 @@ export function CalendarWorkspace() {
   // sont simplement décochés (comme dans Google/Apple Calendar).
   // Par défaut, tous les agendas des deux comptes (mr. + pro.) sont visibles.
   const allSources = sources ?? [];
+
+  // Par défaut on n'affiche que les agendas principaux des deux comptes
+  // (mr.allanklein@gmail.com et pro.allanklein@gmail.com) ; tout le reste
+  // (anniversaires, fêtes, agendas partagés…) est décoché.
+  useEffect(() => {
+    if (defaultsApplied.current || allSources.length === 0) return;
+    defaultsApplied.current = true;
+    setHidden(
+      allSources
+        .filter((s) => !s.primary)
+        .map((s) => `${s.accountKey}::${s.calendarId}`),
+    );
+  }, [allSources]);
 
   const invitations = useMemo(
     () => events.filter((ev) => ev.myResponse === "needsAction"),
@@ -156,8 +170,8 @@ export function CalendarWorkspace() {
   };
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
-      <section className="glass min-w-0 overflow-hidden rounded-2xl">
+    <div className="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <section className="glass min-w-0 self-start overflow-hidden rounded-2xl">
         <header className="flex flex-wrap items-center justify-between gap-2 px-3 py-3">
           <div className="flex min-w-0 items-center gap-1">
             <Button
