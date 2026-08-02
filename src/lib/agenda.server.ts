@@ -128,6 +128,9 @@ export async function listEvents(input: {
             attendees?: Array<{ email?: string; self?: boolean; responseStatus?: string }>;
             start?: { dateTime?: string; date?: string };
             end?: { dateTime?: string; date?: string };
+            iCalUID?: string;
+            recurringEventId?: string;
+            status?: string;
           }>;
         }>(
           keyFor(source.accountKey),
@@ -136,6 +139,7 @@ export async function listEvents(input: {
         const mapped = (json.items ?? []).map((item) => {
           const start = item.start?.dateTime ?? item.start?.date ?? null;
           if (!start) return null;
+          if (item.status === "cancelled") return null;
           const me = (item.attendees ?? []).find((a) => a.self);
           const event: CalendarEvent = {
             id: item.id,
@@ -155,9 +159,9 @@ export async function listEvents(input: {
               item.organizer?.displayName ?? item.organizer?.email ?? source.accountEmail ?? null,
             myResponse: me?.responseStatus ?? null,
           };
-          return event;
+          return { event, dedupe: `${item.iCalUID ?? item.id}|${start}` };
         });
-        return mapped.filter((e): e is CalendarEvent => e !== null);
+        return mapped.filter((e): e is { event: CalendarEvent; dedupe: string } => e !== null);
       } catch (error) {
         console.error(`Agenda ${source.calendarId} indisponible: ${String(error)}`);
         return [];
@@ -165,7 +169,16 @@ export async function listEvents(input: {
     }),
   );
 
-  return groups.flat().sort((a, b) => (a.start < b.start ? -1 : 1));
+  // Un même évènement peut apparaître dans plusieurs agendas (invitations
+  // croisées entre les deux comptes) : on ne le garde qu'une fois.
+  const seen = new Set<string>();
+  const unique: CalendarEvent[] = [];
+  for (const entry of groups.flat()) {
+    if (seen.has(entry.dedupe)) continue;
+    seen.add(entry.dedupe);
+    unique.push(entry.event);
+  }
+  return unique.sort((a, b) => (a.start < b.start ? -1 : 1));
 }
 
 export type EventInput = {

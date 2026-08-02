@@ -69,7 +69,7 @@ export function CalendarSidebar({
         {dayEvents.length === 0 && extras.length === 0 ? (
           <p className="text-sm text-muted-foreground">Journée libre.</p>
         ) : (
-          <div className="space-y-2">
+          <div className="max-h-[22rem] space-y-2 overflow-y-auto pr-1">
             {dayEvents.map((ev) => (
               <button
                 key={ev.id + ev.calendarId}
