@@ -87,13 +87,13 @@ function ControlPill({
 }
 
 const NAV = [
-  { to: "/projets", label: "Projets", icon: ProjectsIcon },
-  { to: "/taches", label: "Tâches", icon: TasksIcon },
-  { to: "/calendrier", label: "Calendrier", icon: CalendarIcon },
-  { to: "/mail", label: "Boîte mail", icon: MailIcon },
-  { to: "/crm", label: "CRM", icon: ContactIcon },
-  { to: "/budget", label: "Budget", icon: BudgetIcon },
-  { to: "/equipe", label: "Équipe", icon: Users, aliasOnly: true },
+  { to: "/projets", label: "Projets", icon: ProjectsIcon, keys: "P" },
+  { to: "/taches", label: "Tâches", icon: TasksIcon, keys: "T" },
+  { to: "/calendrier", label: "Calendrier", icon: CalendarIcon, keys: "C" },
+  { to: "/mail", label: "Boîte mail", icon: MailIcon, keys: "M" },
+  { to: "/crm", label: "CRM", icon: ContactIcon, keys: "R" },
+  { to: "/budget", label: "Budget", icon: BudgetIcon, keys: "B" },
+  { to: "/equipe", label: "Équipe", icon: Users, keys: "E", aliasOnly: true },
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -283,7 +283,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link
               key={item.to}
               to={item.to}
-              title={item.label}
+              title={`${item.label} — ${item.keys}`}
               activeProps={{
                 className:
                   "bg-card text-foreground shadow-[var(--elev-2)] ring-1 ring-border [&_svg]:text-brand",
