@@ -9,8 +9,15 @@ import { listMailAccounts } from "@/lib/mail.functions";
 import { listCalendars } from "@/lib/agenda.functions";
 import { createSpace, deleteSpace, spaceInitials, updateSpace, type Space } from "@/lib/spaces";
 import { useWorkspace } from "@/lib/workspace";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,7 +107,13 @@ function ImageField({
   );
 }
 
-export function SettingsView() {
+export function SettingsDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   const queryClient = useQueryClient();
   const { workspace, setWorkspace, spaces, space } = useWorkspace();
   const [editing, setEditing] = useState<string | null>(null);
@@ -111,17 +124,19 @@ export function SettingsView() {
   const active = spaces.find((s) => s.id === editing) ?? space ?? spaces[0] ?? null;
 
   useEffect(() => {
-    setEditing(space?.id ?? null);
-  }, [space?.id]);
+    if (open) setEditing(space?.id ?? null);
+  }, [open, space?.id]);
 
   const { data: mailAccounts } = useQuery({
     queryKey: ["mail-accounts"],
     retry: false,
+    enabled: open,
     queryFn: () => fetchAccounts(),
   });
   const { data: calendars } = useQuery({
     queryKey: ["calendar-sources"],
     retry: false,
+    enabled: open,
     queryFn: () => fetchCalendars(),
   });
 
@@ -231,7 +246,15 @@ export function SettingsView() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-5">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-xl">
+        <DialogHeader>
+          <DialogTitle>Paramètres</DialogTitle>
+          <DialogDescription>
+            Réglages propres à chaque espace : identité, images et comptes Google.
+          </DialogDescription>
+        </DialogHeader>
+
         <div className="flex flex-wrap gap-1.5">
           {spaces.map((s) => (
             <button
@@ -272,9 +295,6 @@ export function SettingsView() {
             </TabsTrigger>
             <TabsTrigger value="comptes" className="flex-1">
               Comptes Google
-            </TabsTrigger>
-            <TabsTrigger value="apparence" className="flex-1">
-              Apparence
             </TabsTrigger>
           </TabsList>
 
@@ -509,26 +529,17 @@ export function SettingsView() {
               ) : null}
             </div>
           </TabsContent>
-
-          <TabsContent value="apparence" className="space-y-4 pt-4">
-            <div className="flex items-center justify-between rounded-xl border border-border px-3 py-2.5">
-              <div className="min-w-0">
-                <p className="text-sm font-medium">Thème</p>
-                <p className="text-xs text-muted-foreground">
-                  Bascule automatique : clair de 7h à 20h, sombre la nuit. Ton choix manuel reste
-                  actif jusqu'au créneau suivant.
-                </p>
-              </div>
-              <ThemeToggle className="size-9 shrink-0 rounded-full border border-border" />
-            </div>
-          </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end gap-2 border-t border-border pt-4">
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Fermer
+          </Button>
           <Button className="press" onClick={() => save.mutate()} disabled={save.isPending}>
             Enregistrer
           </Button>
-        </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

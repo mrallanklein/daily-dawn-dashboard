@@ -1,6 +1,8 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
+import { SettingsDialog } from "@/components/settings-dialog";
 import { WeatherBadge } from "@/components/weather-badge";
 import { AgendaPanel } from "@/components/dashboard/agenda-panel";
 import { TasksPanel } from "@/components/dashboard/tasks-panel";
@@ -45,6 +47,7 @@ function greeting() {
 
 function Dashboard() {
   const { workspace, space } = useWorkspace();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const { data: profile } = useQuery(profileQuery());
   const { data: projects } = useQuery(projectsQuery(workspace));
   const { data: tasks } = useQuery(tasksQuery(workspace));
@@ -68,11 +71,13 @@ function Dashboard() {
 
   return (
     <AppShell>
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <section className="glass mb-8">
         <div className="flex flex-wrap items-center justify-between gap-4 px-6 pb-8 pt-8">
           <div className="flex min-w-0 items-center gap-4">
-            <Link
-              to="/parametres"
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
               aria-label="Ouvrir les paramètres de l'espace de travail"
               title="Paramètres de l'espace de travail"
               className="press shrink-0 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -82,7 +87,7 @@ function Dashboard() {
                 alt={name}
                 className="size-[5.5rem] rounded-2xl border-2 border-card object-cover shadow-[var(--shadow-pop)] transition-transform hover:scale-[1.03] sm:size-24"
               />
-            </Link>
+            </button>
             <div className="min-w-0">
               <h1 className="truncate text-2xl font-display tracking-tight sm:text-3xl">
                 {greeting()} {firstName}

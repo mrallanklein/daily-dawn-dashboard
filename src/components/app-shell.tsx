@@ -40,6 +40,8 @@ import logoAsset from "@/assets/logo-ak.png.asset.json";
 import portraitAsset from "@/assets/allan-klein.png.asset.json";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
+import { SettingsDialog } from "@/components/settings-dialog";
+
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
 const NAV = [
@@ -59,6 +61,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     const stored = window.localStorage.getItem("ak-sidebar");
@@ -93,7 +96,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       const slug = await createSpace("Nouvel espace", "Espace", spaces.length);
       await queryClient.invalidateQueries({ queryKey: ["spaces"] });
       setWorkspace(slug);
-      navigate({ to: "/parametres" });
+      setSettingsOpen(true);
     } catch {
       /* l'erreur est visible dans les paramètres */
     }
@@ -108,6 +111,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="ambient relative min-h-screen bg-background">
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
       <aside
         className={cn(
@@ -183,7 +187,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               <DropdownMenuItem onClick={newSpace}>
                 <Plus className="size-3.5" /> Nouvel espace de travail
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate({ to: "/parametres" })}>
+              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
                 <Settings className="size-3.5" /> Paramètres de l'espace
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -258,10 +262,10 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="space-y-1.5 border-t border-sidebar-border p-2.5">
-          <Link
-            to="/parametres"
+          <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
             aria-label="Ouvrir les paramètres"
-            activeProps={{ className: "bg-sidebar-accent" }}
             className={cn(
               "press flex w-full items-center gap-2.5 rounded-[14px] p-1 text-left transition-colors hover:bg-sidebar-accent/80",
               !open && "justify-center",
@@ -285,7 +289,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </p>
               </div>
             ) : null}
-          </Link>
+          </button>
           <div
             className={cn(
               "flex overflow-hidden rounded-full bg-sidebar-accent/70 ring-1 ring-inset ring-[rgba(255,255,255,0.08)] dark:bg-sidebar-accent",
@@ -294,15 +298,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             )}
           >
             <ThemeToggle className="size-auto flex-1 rounded-none" />
-            <Link
-              to="/parametres"
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
               aria-label="Paramètres"
               title="Paramètres"
-              activeProps={{ className: "bg-foreground/[0.1] text-foreground" }}
               className="grid flex-1 place-items-center text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground"
             >
               <Settings className="size-4" strokeWidth={1.5} />
-            </Link>
+            </button>
             <button
               type="button"
               onClick={signOut}

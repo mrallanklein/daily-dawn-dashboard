@@ -17,7 +17,6 @@ import { Route as AuthenticatedCalendrierRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCrmRouteImport } from './routes/_authenticated/crm'
 import { Route as AuthenticatedEquipeRouteImport } from './routes/_authenticated/equipe'
 import { Route as AuthenticatedMailRouteImport } from './routes/_authenticated/mail'
-import { Route as AuthenticatedParametresRouteImport } from './routes/_authenticated/parametres'
 import { Route as AuthenticatedProjetsRouteImport } from './routes/_authenticated/projets'
 import { Route as AuthenticatedTachesRouteImport } from './routes/_authenticated/taches'
 
@@ -60,11 +59,6 @@ const AuthenticatedMailRoute = AuthenticatedMailRouteImport.update({
   path: '/mail',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedParametresRoute = AuthenticatedParametresRouteImport.update({
-  id: '/parametres',
-  path: '/parametres',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedProjetsRoute = AuthenticatedProjetsRouteImport.update({
   id: '/projets',
   path: '/projets',
@@ -84,7 +78,6 @@ export interface FileRoutesByFullPath {
   '/crm': typeof AuthenticatedCrmRoute
   '/equipe': typeof AuthenticatedEquipeRoute
   '/mail': typeof AuthenticatedMailRoute
-  '/parametres': typeof AuthenticatedParametresRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
 }
@@ -95,7 +88,6 @@ export interface FileRoutesByTo {
   '/crm': typeof AuthenticatedCrmRoute
   '/equipe': typeof AuthenticatedEquipeRoute
   '/mail': typeof AuthenticatedMailRoute
-  '/parametres': typeof AuthenticatedParametresRoute
   '/projets': typeof AuthenticatedProjetsRoute
   '/taches': typeof AuthenticatedTachesRoute
   '/': typeof AuthenticatedIndexRoute
@@ -109,7 +101,6 @@ export interface FileRoutesById {
   '/_authenticated/crm': typeof AuthenticatedCrmRoute
   '/_authenticated/equipe': typeof AuthenticatedEquipeRoute
   '/_authenticated/mail': typeof AuthenticatedMailRoute
-  '/_authenticated/parametres': typeof AuthenticatedParametresRoute
   '/_authenticated/projets': typeof AuthenticatedProjetsRoute
   '/_authenticated/taches': typeof AuthenticatedTachesRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -124,7 +115,6 @@ export interface FileRouteTypes {
     | '/crm'
     | '/equipe'
     | '/mail'
-    | '/parametres'
     | '/projets'
     | '/taches'
   fileRoutesByTo: FileRoutesByTo
@@ -135,7 +125,6 @@ export interface FileRouteTypes {
     | '/crm'
     | '/equipe'
     | '/mail'
-    | '/parametres'
     | '/projets'
     | '/taches'
     | '/'
@@ -148,7 +137,6 @@ export interface FileRouteTypes {
     | '/_authenticated/crm'
     | '/_authenticated/equipe'
     | '/_authenticated/mail'
-    | '/_authenticated/parametres'
     | '/_authenticated/projets'
     | '/_authenticated/taches'
     | '/_authenticated/'
@@ -217,13 +205,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMailRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/parametres': {
-      id: '/_authenticated/parametres'
-      path: '/parametres'
-      fullPath: '/parametres'
-      preLoaderRoute: typeof AuthenticatedParametresRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/projets': {
       id: '/_authenticated/projets'
       path: '/projets'
@@ -247,7 +228,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCrmRoute: typeof AuthenticatedCrmRoute
   AuthenticatedEquipeRoute: typeof AuthenticatedEquipeRoute
   AuthenticatedMailRoute: typeof AuthenticatedMailRoute
-  AuthenticatedParametresRoute: typeof AuthenticatedParametresRoute
   AuthenticatedProjetsRoute: typeof AuthenticatedProjetsRoute
   AuthenticatedTachesRoute: typeof AuthenticatedTachesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -259,7 +239,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCrmRoute: AuthenticatedCrmRoute,
   AuthenticatedEquipeRoute: AuthenticatedEquipeRoute,
   AuthenticatedMailRoute: AuthenticatedMailRoute,
-  AuthenticatedParametresRoute: AuthenticatedParametresRoute,
   AuthenticatedProjetsRoute: AuthenticatedProjetsRoute,
   AuthenticatedTachesRoute: AuthenticatedTachesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
