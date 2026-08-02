@@ -128,53 +128,7 @@ function TeamPage() {
         </form>
       </Panel>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {(team ?? []).map((m) => (
-          <div key={m.id} className="glass group p-4">
-            <div className="flex items-center gap-3">
-              <Avatar className="size-10 shrink-0">
-                <AvatarImage src={m.avatar_url ?? undefined} alt={m.full_name} />
-                <AvatarFallback className="bg-secondary text-xs">
-                  {m.full_name.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{m.full_name}</p>
-                <p className="truncate text-xs text-muted-foreground">{m.email ?? m.role ?? "—"}</p>
-              </div>
-              <button
-                onClick={() => remove.mutate(m.id)}
-                aria-label="Retirer le membre"
-                className="opacity-0 transition-opacity group-hover:opacity-100"
-              >
-                <Trash2 className="size-3.5 text-muted-foreground hover:text-destructive" />
-              </button>
-            </div>
-            <div className="mt-3 flex items-center gap-2">
-              <Input
-                defaultValue={m.role ?? ""}
-                onBlur={(e) => patch.mutate({ id: m.id, role: e.target.value || null })}
-                placeholder="Rôle"
-                className="h-8 text-xs"
-              />
-              <Select
-                value={m.permission}
-                onValueChange={(v) => patch.mutate({ id: m.id, permission: v })}
-              >
-                <SelectTrigger className="h-8 w-32 text-xs">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">Administrateur</SelectItem>
-                  <SelectItem value="membre">Membre</SelectItem>
-                  <SelectItem value="viewer">Lecteur</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        ))}
-        {(team ?? []).length === 0 ? <EmptyState>Aucun membre pour l'instant.</EmptyState> : null}
-      </div>
+      <DatabaseView source={source} />
     </AppShell>
   );
 }
