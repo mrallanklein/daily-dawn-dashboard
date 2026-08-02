@@ -42,6 +42,7 @@ import portraitAsset from "@/assets/allan-klein.png.asset.json";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CommandPalette } from "@/components/app/command-palette";
 import { SettingsDialog } from "@/components/settings-dialog";
+import { AuroraBackground } from "@/components/app/aurora-background";
 
 const HOME = { to: "/", label: "Accueil", icon: Home } as const;
 
@@ -110,7 +111,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="ambient relative min-h-screen bg-background">
+    <div className="relative min-h-screen bg-background">
+      <AuroraBackground />
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
 
