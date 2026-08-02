@@ -370,6 +370,8 @@ export type Database = {
           updated_at: string
           user_id: string
           weather_city: string
+          weather_lat: number
+          weather_lon: number
         }
         Insert: {
           avatar_url?: string | null
@@ -385,6 +387,8 @@ export type Database = {
           updated_at?: string
           user_id: string
           weather_city?: string
+          weather_lat?: number
+          weather_lon?: number
         }
         Update: {
           avatar_url?: string | null
@@ -400,6 +404,8 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weather_city?: string
+          weather_lat?: number
+          weather_lon?: number
         }
         Relationships: []
       }
