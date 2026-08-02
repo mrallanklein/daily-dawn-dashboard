@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { ContactIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/crm")({
   head: () => ({
@@ -114,8 +115,7 @@ function CrmPage() {
     <AppShell>
       <PageHeader
         title="CRM — Contacts"
-        icon={Users}
-        iconColor="#A855F7"
+        icon={ContactIcon}
         subtitle={`${list.length} contact(s) sur ce profil`}
         actions={
           <div className="relative">

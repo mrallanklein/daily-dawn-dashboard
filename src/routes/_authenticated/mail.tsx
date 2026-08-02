@@ -50,6 +50,7 @@ import { useWorkspace } from "@/lib/workspace";
 import { cn } from "@/lib/utils";
 import { MailBody } from "@/components/mail/mail-body";
 import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
+import { MailIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -167,8 +168,7 @@ function MailPage() {
     <AppShell>
       <PageHeader
         title="Boîte Mail"
-        icon={Mail}
-        iconColor="#EF4444"
+        icon={MailIcon}
         subtitle={activeEmail}
         actions={<ComposeDialog onSend={(v) => compose.mutate(v)} />}
       />

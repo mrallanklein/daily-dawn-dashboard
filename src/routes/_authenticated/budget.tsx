@@ -31,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { BudgetIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/budget")({
   head: () => ({
@@ -136,8 +137,7 @@ function BudgetPage() {
     <AppShell>
       <PageHeader
         title="Budget & Finances"
-        icon={Banknote}
-        iconColor="#EAB308"
+        icon={BudgetIcon}
         subtitle="Revenus, dépenses et factures par projet"
         actions={
           <Button variant="secondary" size="sm" onClick={exportCsv} className="gap-1.5">

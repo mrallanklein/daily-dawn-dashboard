@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { TasksIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/taches")({
   head: () => ({
@@ -109,8 +110,7 @@ function TasksPage() {
     <AppShell>
       <PageHeader
         title="Tâches"
-        icon={CheckCircle}
-        iconColor="#22C55E"
+        icon={TasksIcon}
         subtitle={`${openCount} tâche(s) en cours · une seule base, trois vues`}
       />
 

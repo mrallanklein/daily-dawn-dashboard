@@ -3,6 +3,7 @@ import { Calendar } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
 import { CalendarWorkspace } from "@/components/calendar/calendar-workspace";
+import { CalendarIcon } from "@/components/icons/notion-icons";
 
 export const Route = createFileRoute("/_authenticated/calendrier")({
   head: () => ({
@@ -28,8 +29,7 @@ function CalendarPage() {
     <AppShell>
       <PageHeader
         title="Calendrier"
-        icon={Calendar}
-        iconColor="#3B82F6"
+        icon={CalendarIcon}
         subtitle="Agenda Google, tâches planifiées et deadlines"
       />
       <CalendarWorkspace />
