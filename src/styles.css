@@ -280,9 +280,10 @@
   }
 
   .dark body::before {
-    background-image: url("/__l5e/assets-v1/f02283b1-31af-4b0f-b0a9-878176e90b0f/blurry-background-night.png");
-    filter: blur(140px) saturate(180%) brightness(0.55);
-    opacity: 0.42;
+    background-image: none;
+    background-color: oklch(0.115 0 0);
+    filter: none;
+    opacity: 1;
   }
 
   body {
@@ -334,14 +335,14 @@
 
 .dark .glass,
 .dark.glass {
-  border-color: color-mix(in oklab, var(--foreground) 10%, transparent);
+  border-color: color-mix(in oklab, var(--foreground) 9%, transparent);
   background:
     var(--sheen),
-    color-mix(in oklab, var(--card) 62%, transparent);
+    color-mix(in oklab, var(--card) 92%, transparent);
 }
 
 .dark .glass::after {
-  opacity: 0.18;
+  opacity: 0.1;
 }
 
 .glass::after {
