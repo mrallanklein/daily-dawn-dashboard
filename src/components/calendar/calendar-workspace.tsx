@@ -80,17 +80,8 @@ export function CalendarWorkspace() {
 
   // On liste tous les agendas de chaque compte ; ceux non sélectionnés dans l'espace
   // sont simplement décochés (comme dans Google/Apple Calendar).
+  // Par défaut, tous les agendas des deux comptes (mr. + pro.) sont visibles.
   const allSources = sources ?? [];
-  const initialized = useRef(false);
-  useEffect(() => {
-    if (initialized.current || allSources.length === 0 || calendarIds.length === 0) return;
-    initialized.current = true;
-    setHidden(
-      allSources
-        .filter((s) => !calendarIds.includes(s.calendarId))
-        .map((s) => `${s.accountKey}::${s.calendarId}`),
-    );
-  }, [allSources, calendarIds]);
 
   const invitations = useMemo(
     () => events.filter((ev) => ev.myResponse === "needsAction"),
@@ -214,10 +205,10 @@ export function CalendarWorkspace() {
                   <button
                     onClick={() => setView(v.value)}
                     className={cn(
-                      "press rounded-full px-3 py-1 text-[0.8rem] font-semibold transition-colors",
+                      "press rounded-full px-3.5 py-1 text-[0.8rem] font-semibold transition-all active:scale-[0.97]",
                       view === v.value
-                        ? "bg-background text-foreground shadow-[var(--shadow-soft)]"
-                        : "text-muted-foreground hover:text-foreground",
+                        ? "border border-border bg-background text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.10),0_2px_8px_rgba(0,0,0,0.08)]"
+                        : "border border-transparent text-muted-foreground hover:bg-background/60 hover:text-foreground hover:shadow-[0_1px_3px_rgba(0,0,0,0.08)]",
                     )}
                   >
                     {v.label}

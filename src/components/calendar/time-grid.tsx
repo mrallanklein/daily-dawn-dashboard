@@ -20,12 +20,12 @@ export function TimeGrid({
   const { hours, hourPx, startHour, labelStep } = useMemo(() => {
     const { min, max } = usefulHourRange(events, days);
     const count = max - min;
-    const px = Math.max(28, Math.min(52, Math.round(640 / count)));
+    const px = Math.max(24, Math.min(52, Math.round(600 / count)));
     return {
       hours: Array.from({ length: count }, (_, i) => min + i),
       hourPx: px,
       startHour: min,
-      labelStep: px < 34 ? 2 : 1,
+      labelStep: px < 40 ? 2 : 1,
     };
   }, [days.map((d) => d.toISOString()).join(","), events]);
 

@@ -101,19 +101,10 @@ export function isDayBand(ev: CalendarEvent, day: Date) {
   return start < dayStart || end > nextDay;
 }
 
-/** Fenêtre d'heures utiles pour les vues Jour/Semaine (pas de scroll inutile). */
-export function usefulHourRange(events: CalendarEvent[], days: Date[]) {
-  let min = 8;
-  let max = 20;
-  for (const day of days) {
-    for (const ev of eventsOnDay(events, day)) {
-      if (isDayBand(ev, day)) continue;
-      const { top, height } = eventSpan(ev, day);
-      min = Math.min(min, Math.floor(top));
-      max = Math.max(max, Math.ceil(top + height));
-    }
-  }
-  min = Math.max(0, min);
-  max = Math.min(24, Math.max(max, min + 6));
-  return { min, max };
+/**
+ * Fenêtre d'heures affichée dans les vues Jour/Semaine : la journée complète
+ * (0h → 24h) compactée, les libellés étant affichés une heure sur deux.
+ */
+export function usefulHourRange(_events: CalendarEvent[], _days: Date[]) {
+  return { min: 0, max: 24 };
 }
