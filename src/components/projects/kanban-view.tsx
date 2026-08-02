@@ -129,13 +129,9 @@ export function KanbanView({
                     ) : (
                       <div
                         aria-hidden
-                        className="grid aspect-3/2 w-full place-items-center bg-muted/60"
-                      >
-                        <span
-                          className="size-2.5 rounded-full"
-                          style={{ backgroundColor: statusColor(p.status) }}
-                        />
-                      </div>
+                        className="h-1 w-full"
+                        style={{ backgroundColor: statusColor(p.status) }}
+                      />
                     )}
 
                     <div className="p-3">
