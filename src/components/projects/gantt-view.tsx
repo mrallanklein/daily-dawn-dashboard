@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   differenceInCalendarDays,
   eachMonthOfInterval,
@@ -41,6 +41,13 @@ export function GanttView({
 }) {
   const [status, setStatus] = useState("all");
   const [hover, setHover] = useState<string | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const todayOffset = useRef(0);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = Math.max(todayOffset.current - el.clientWidth / 2, 0);
+  }, [status]);
 
   const dated = projects.filter(
     (p) => (p.start_date || p.deadline) && (status === "all" || p.status === status),
@@ -62,6 +69,7 @@ export function GanttView({
   const totalDays = Math.max(differenceInCalendarDays(max, min) + 1, 1);
   const x = (d: Date) => differenceInCalendarDays(startOfDay(d), min) * DAY;
   const months = eachMonthOfInterval({ start: min, end: max });
+  todayOffset.current = x(today);
 
   return (
     <div className="space-y-3">
@@ -82,7 +90,7 @@ export function GanttView({
         </Select>
       </div>
 
-      <div className="overflow-x-auto">
+      <div ref={scrollRef} className="overflow-x-auto">
         <div style={{ width: `${12 * 16 + totalDays * DAY}px` }} className="min-w-full">
           {/* En-tête des mois */}
           <div className="flex border-b border-border/70">
