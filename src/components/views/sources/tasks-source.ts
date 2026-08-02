@@ -66,8 +66,7 @@ export function useTasksSource(
   return useMemo<DataSource>(() => {
     const properties = taskProperties(projects);
     const statusLabel = (id: string) => TASK_STATUSES.find((s) => s.id === id)?.label ?? id;
-    const statusId = (label: string) =>
-      TASK_STATUSES.find((s) => s.label === label)?.id ?? label;
+    const statusId = (label: string) => TASK_STATUSES.find((s) => s.label === label)?.id ?? label;
     const projectLabel = (id: string | null) =>
       id ? (projects.find((p) => p.id === id)?.name ?? null) : null;
     const projectId = (label: unknown) =>

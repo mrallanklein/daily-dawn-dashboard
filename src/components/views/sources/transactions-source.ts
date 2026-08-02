@@ -63,8 +63,7 @@ export function useTransactionsSource(
 
   return useMemo<DataSource>(() => {
     const properties = transactionProperties(projects);
-    const label = (list: SelectOption[], id: string) =>
-      list.find((s) => s.id === id)?.label ?? id;
+    const label = (list: SelectOption[], id: string) => list.find((s) => s.id === id)?.label ?? id;
     const idOf = (list: SelectOption[], value: unknown) =>
       list.find((s) => s.label === value)?.id ?? value;
 
