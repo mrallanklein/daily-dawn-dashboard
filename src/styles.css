@@ -272,6 +272,19 @@
     border-color: var(--color-border);
   }
 
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -20vmax;
+    z-index: -1;
+    pointer-events: none;
+    background-image: url("/__l5e/assets-v1/03a1b3b8-fd9c-41bb-840b-267d4da440d6/ambient-bg.png");
+    background-size: cover;
+    background-position: center;
+    filter: blur(120px) saturate(40%);
+    opacity: 0.25;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
