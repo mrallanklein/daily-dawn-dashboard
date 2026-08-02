@@ -251,6 +251,7 @@
 .dark.ws-alias {
   --brand: var(--teal);
   --brand-soft: oklch(0.68 0.1 190 / 0.18);
+  --brand-foreground: oklch(0.17 0.006 265);
 }
 
 .dark.ws-allan {
