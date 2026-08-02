@@ -87,8 +87,11 @@ export async function createSpace(name: string, tag: string, position: number) {
   return res.data.slug as string;
 }
 
-export async function updateSpace(id: string, patch: Partial<Space>) {
-  const { error } = await supabase.from("spaces").update(patch).eq("id", id);
+export async function updateSpace(id: string, patch: Record<string, unknown>) {
+  const { error } = await supabase
+    .from("spaces")
+    .update(patch as never)
+    .eq("id", id);
   if (error) throw new Error(error.message);
 }
 
