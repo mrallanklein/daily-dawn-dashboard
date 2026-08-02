@@ -51,7 +51,7 @@ import { cn } from "@/lib/utils";
 import { MailBody } from "@/components/mail/mail-body";
 import { useMailColors } from "@/lib/mail-colors";
 import { MailIcon } from "@/components/icons/notion-icons";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsCompact } from "@/hooks/use-compact";
 
 export const Route = createFileRoute("/_authenticated/mail")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -105,7 +105,7 @@ function MailPage() {
   const [openId, setOpenId] = useState<string | null>(params.msg ?? null);
   const [account, setAccount] = useState<MailAccountId>(params.account ?? "primary");
   const [limit, setLimit] = useState(20);
-  const isMobile = useIsMobile();
+  const compact = useIsCompact();
 
   const { data: connection } = useQuery({
     queryKey: ["mail-status"],
@@ -155,7 +155,9 @@ function MailPage() {
   });
 
   const list = messages ?? [];
-  const current = list.find((m) => m.id === openId) ?? list[0] ?? null;
+  const selected = list.find((m) => m.id === openId) ?? null;
+  // Sur mobile/tablette, aucun message n'est ouvert par défaut (lecture en modale).
+  const current = compact ? selected : (selected ?? list[0] ?? null);
   const activeAccount = accounts.find((a) => a.id === account);
   const activeEmail = activeAccount?.email ?? "Compte Google";
 
@@ -342,7 +344,7 @@ function MailPage() {
             ) : null}
           </div>
 
-          {isMobile ? (
+          {compact ? (
             <Dialog open={Boolean(current)} onOpenChange={(o) => !o && setOpenId(null)}>
               <DialogContent className="max-h-[85vh] overflow-y-auto">
                 <DialogHeader>
