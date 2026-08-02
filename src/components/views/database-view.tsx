@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   ArrowDownUp,
+  ChevronDown,
   Copy,
   Eye,
   EyeOff,
@@ -9,7 +10,7 @@ import {
   Maximize2,
   Minimize2,
   Pencil,
-  Palette,
+  PaintRoller,
   Plus,
   Search,
   Settings2,
@@ -30,12 +31,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -63,6 +59,7 @@ import {
   TimelineLayout,
 } from "./layouts";
 import { PropertyEditor } from "./property-editor";
+import { ColorPanel, FilterPanel, SortPanel, ViewSettingsPanel } from "./view-settings";
 import {
   DEFAULT_CONFIG,
   LAYOUTS,
@@ -93,23 +90,34 @@ function ToolButton({
   label,
   count,
   active,
+  onClick,
+  ...rest
 }: {
   icon: typeof Filter;
   label: string;
   count?: number;
   active?: boolean;
-}) {
+  onClick?: () => void;
+} & React.ComponentPropsWithoutRef<"button">) {
   return (
-    <span
+    <button
+      type="button"
+      title={label}
+      aria-label={label}
+      onClick={onClick}
+      {...rest}
       className={cn(
-        "press inline-flex h-8 items-center gap-1.5 rounded-full border border-border px-2.5 text-[0.8125rem] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-        active && "border-transparent bg-secondary text-foreground",
+        "press relative inline-grid size-8 place-items-center rounded-[8px] text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
+        active && "bg-secondary text-foreground",
       )}
     >
-      <Icon size={14} strokeWidth={1.6} />
-      <span className="hidden sm:inline">{label}</span>
-      {count ? <span className="text-brand">{count}</span> : null}
-    </span>
+      <Icon size={16} strokeWidth={1.7} />
+      {count ? (
+        <span className="absolute -right-0.5 -top-0.5 grid size-[1.05rem] place-items-center rounded-full bg-brand text-[0.625rem] font-medium text-brand-foreground">
+          {count}
+        </span>
+      ) : null}
+    </button>
   );
 }
 
@@ -147,6 +155,8 @@ export function DatabaseView({
   const [renameId, setRenameId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const [dragTab, setDragTab] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const tabs = views.filter((v) => !v.hidden);
   const view = views.find((v) => v.id === activeId) ?? tabs[0] ?? views[0];
@@ -242,9 +252,7 @@ export function DatabaseView({
                   <Copy size={14} strokeWidth={1.6} /> Dupliquer
                 </ContextMenuItem>
                 <ContextMenuItem
-                  onSelect={() =>
-                    updateView.mutate({ id: v.id, patch: { hidden: true }, base: v })
-                  }
+                  onSelect={() => updateView.mutate({ id: v.id, patch: { hidden: true }, base: v })}
                 >
                   <EyeOff size={14} strokeWidth={1.6} /> Masquer
                 </ContextMenuItem>
@@ -268,7 +276,10 @@ export function DatabaseView({
           ))}
 
           <Popover>
-            <PopoverTrigger aria-label="Nouvelle vue" className="press grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary">
+            <PopoverTrigger
+              aria-label="Nouvelle vue"
+              className="press grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-secondary"
+            >
               <Plus size={15} strokeWidth={1.6} />
             </PopoverTrigger>
             <PopoverContent align="start" className="w-64 space-y-3">
@@ -341,147 +352,25 @@ export function DatabaseView({
           </Popover>
         </div>
 
-        <div className="ml-auto flex items-center gap-1.5">
-          {/* Recherche */}
-          <div className="relative">
-            <Search
-              size={14}
-              strokeWidth={1.6}
-              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher"
-              className="h-8 w-[9rem] rounded-full pl-8 text-[0.8125rem]"
-            />
-          </div>
-
-          {/* Filtres */}
+        <div className="ml-auto flex items-center gap-0.5">
+          {/* Filtre */}
           <Popover>
-            <PopoverTrigger>
+            <PopoverTrigger asChild>
               <ToolButton
                 icon={Filter}
-                label="Filtre"
+                label="Filtrer"
                 count={config.filters.length}
                 active={config.filters.length > 0}
               />
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-[22rem] space-y-2">
-              <div className="flex items-center justify-between">
-                <p className="text-[0.8125rem] font-medium">Filtres</p>
-                <Select
-                  value={config.filterJoin}
-                  onValueChange={(v) => patch({ filterJoin: v as "and" | "or" })}
-                >
-                  <SelectTrigger className="h-7 w-24 text-[0.75rem]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="and">Tout (ET)</SelectItem>
-                    <SelectItem value="or">Au moins un (OU)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {config.filters.map((rule) => {
-                const prop = properties.find((p) => p.id === rule.propertyId);
-                return (
-                  <div key={rule.id} className="flex items-center gap-1.5">
-                    <Select
-                      value={rule.propertyId}
-                      onValueChange={(v) =>
-                        patch({
-                          filters: config.filters.map((f) =>
-                            f.id === rule.id ? { ...f, propertyId: v } : f,
-                          ),
-                        })
-                      }
-                    >
-                      <SelectTrigger className="h-8 flex-1 text-[0.78rem]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {properties.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Select
-                      value={rule.op}
-                      onValueChange={(v) =>
-                        patch({
-                          filters: config.filters.map((f) =>
-                            f.id === rule.id ? { ...f, op: v as FilterRule["op"] } : f,
-                          ),
-                        })
-                      }
-                    >
-                      <SelectTrigger className="h-8 w-[7.5rem] text-[0.78rem]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {operatorsFor(prop?.type ?? "text").map((o) => (
-                          <SelectItem key={o.op} value={o.op}>
-                            {o.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      value={rule.value ?? ""}
-                      onChange={(e) =>
-                        patch({
-                          filters: config.filters.map((f) =>
-                            f.id === rule.id ? { ...f, value: e.target.value } : f,
-                          ),
-                        })
-                      }
-                      className="h-8 w-[5.5rem] text-[0.78rem]"
-                      placeholder="Valeur"
-                    />
-                    <button
-                      type="button"
-                      aria-label="Retirer le filtre"
-                      onClick={() =>
-                        patch({ filters: config.filters.filter((f) => f.id !== rule.id) })
-                      }
-                      className="press grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-secondary"
-                    >
-                      <X size={14} strokeWidth={1.6} />
-                    </button>
-                  </div>
-                );
-              })}
-
-              <Button
-                variant="secondary"
-                size="sm"
-                className="w-full"
-                onClick={() =>
-                  patch({
-                    filters: [
-                      ...config.filters,
-                      {
-                        id: crypto.randomUUID(),
-                        propertyId: properties[0]?.id ?? source.titleProp,
-                        op: "contains",
-                        value: "",
-                      },
-                    ],
-                  })
-                }
-              >
-                <Plus size={14} strokeWidth={1.6} /> Ajouter un filtre
-              </Button>
+            <PopoverContent align="end" className="w-[23rem]">
+              <FilterPanel properties={properties} config={config} patch={patch} />
             </PopoverContent>
           </Popover>
 
-          {/* Tris */}
+          {/* Trier */}
           <Popover>
-            <PopoverTrigger>
+            <PopoverTrigger asChild>
               <ToolButton
                 icon={ArrowDownUp}
                 label="Trier"
@@ -489,436 +378,155 @@ export function DatabaseView({
                 active={config.sorts.length > 0}
               />
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-[20rem] space-y-2">
-              <p className="text-[0.8125rem] font-medium">Tris</p>
-              {config.sorts.map((rule, index) => (
-                <div key={rule.id} className="flex items-center gap-1.5">
-                  <Select
-                    value={rule.propertyId}
-                    onValueChange={(v) =>
-                      patch({
-                        sorts: config.sorts.map((s) =>
-                          s.id === rule.id ? { ...s, propertyId: v } : s,
-                        ),
-                      })
-                    }
-                  >
-                    <SelectTrigger className="h-8 flex-1 text-[0.78rem]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {properties.map((p) => (
-                        <SelectItem key={p.id} value={p.id}>
-                          {p.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={rule.dir}
-                    onValueChange={(v) =>
-                      patch({
-                        sorts: config.sorts.map((s) =>
-                          s.id === rule.id ? { ...s, dir: v as SortRule["dir"] } : s,
-                        ),
-                      })
-                    }
-                  >
-                    <SelectTrigger className="h-8 w-[7rem] text-[0.78rem]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="asc">Croissant</SelectItem>
-                      <SelectItem value="desc">Décroissant</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <button
-                    type="button"
-                    aria-label="Monter le tri"
-                    disabled={index === 0}
-                    onClick={() => {
-                      const next = [...config.sorts];
-                      const prev = next[index - 1]!;
-                      next[index - 1] = next[index]!;
-                      next[index] = prev;
-                      patch({ sorts: next });
-                    }}
-                    className="press grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-secondary disabled:opacity-40"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Retirer le tri"
-                    onClick={() => patch({ sorts: config.sorts.filter((s) => s.id !== rule.id) })}
-                    className="press grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-secondary"
-                  >
-                    <X size={14} strokeWidth={1.6} />
-                  </button>
-                </div>
-              ))}
-              <Button
-                variant="secondary"
-                size="sm"
-                className="w-full"
-                onClick={() =>
-                  patch({
-                    sorts: [
-                      ...config.sorts,
-                      {
-                        id: crypto.randomUUID(),
-                        propertyId: properties[0]?.id ?? source.titleProp,
-                        dir: "asc",
-                      },
-                    ],
-                  })
-                }
-              >
-                <Plus size={14} strokeWidth={1.6} /> Ajouter un tri
-              </Button>
+            <PopoverContent align="end" className="w-[22rem]">
+              <SortPanel properties={properties} config={config} patch={patch} />
             </PopoverContent>
           </Popover>
 
           {/* Couleurs conditionnelles */}
           <Popover>
-            <PopoverTrigger>
+            <PopoverTrigger asChild>
               <ToolButton
-                icon={Palette}
-                label="Couleurs"
+                icon={PaintRoller}
+                label="Couleur conditionnelle"
                 count={config.colors.length}
                 active={config.colors.length > 0}
               />
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-[22rem] space-y-2">
-              <p className="text-[0.8125rem] font-medium">Couleurs conditionnelles</p>
-              {config.colors.map((rule) => {
-                const prop = properties.find((p) => p.id === rule.propertyId);
-                return (
-                  <div key={rule.id} className="flex items-center gap-1.5">
-                    <Select
-                      value={rule.propertyId}
-                      onValueChange={(v) =>
-                        patch({
-                          colors: config.colors.map((c) =>
-                            c.id === rule.id ? { ...c, propertyId: v } : c,
-                          ),
-                        })
-                      }
-                    >
-                      <SelectTrigger className="h-8 flex-1 text-[0.78rem]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {properties.map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Select
-                      value={rule.op}
-                      onValueChange={(v) =>
-                        patch({
-                          colors: config.colors.map((c) =>
-                            c.id === rule.id ? { ...c, op: v as ColorRule["op"] } : c,
-                          ),
-                        })
-                      }
-                    >
-                      <SelectTrigger className="h-8 w-[7rem] text-[0.78rem]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {operatorsFor(prop?.type ?? "text").map((o) => (
-                          <SelectItem key={o.op} value={o.op}>
-                            {o.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Input
-                      value={rule.value ?? ""}
-                      onChange={(e) =>
-                        patch({
-                          colors: config.colors.map((c) =>
-                            c.id === rule.id ? { ...c, value: e.target.value } : c,
-                          ),
-                        })
-                      }
-                      className="h-8 w-[4.5rem] text-[0.78rem]"
-                      placeholder="Valeur"
-                    />
-                    <Select
-                      value={rule.color}
-                      onValueChange={(v) =>
-                        patch({
-                          colors: config.colors.map((c) =>
-                            c.id === rule.id ? { ...c, color: v as OptionColor } : c,
-                          ),
-                        })
-                      }
-                    >
-                      <SelectTrigger className="h-8 w-[4.5rem]">
-                        <span
-                          className="size-3.5 rounded-full"
-                          style={{ backgroundColor: colorTokens(rule.color).bg }}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {OPTION_COLORS.map((c) => (
-                          <SelectItem key={c.id} value={c.id}>
-                            <span className="flex items-center gap-2">
-                              <span
-                                className="size-3 rounded-full"
-                                style={{ backgroundColor: colorTokens(c.id).bg }}
-                              />
-                              {c.label}
-                            </span>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <button
-                      type="button"
-                      aria-label="Retirer la règle"
-                      onClick={() =>
-                        patch({ colors: config.colors.filter((c) => c.id !== rule.id) })
-                      }
-                      className="press grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-secondary"
-                    >
-                      <X size={14} strokeWidth={1.6} />
-                    </button>
-                  </div>
-                );
-              })}
-              <Button
-                variant="secondary"
-                size="sm"
-                className="w-full"
-                onClick={() =>
-                  patch({
-                    colors: [
-                      ...config.colors,
-                      {
-                        id: crypto.randomUUID(),
-                        propertyId: source.statusProp ?? properties[0]?.id ?? source.titleProp,
-                        op: "is",
-                        value: "",
-                        color: "blue",
-                      },
-                    ],
-                  })
-                }
-              >
-                <Plus size={14} strokeWidth={1.6} /> Ajouter une règle
-              </Button>
+            <PopoverContent align="end" className="max-h-[28rem] w-[23rem] overflow-y-auto">
+              <ColorPanel
+                properties={properties}
+                config={config}
+                patch={patch}
+                defaultProperty={source.statusProp ?? properties[0]?.id ?? source.titleProp}
+              />
             </PopoverContent>
           </Popover>
 
+          {/* Recherche */}
+          {searchOpen || query ? (
+            <div className="relative">
+              <Search
+                size={14}
+                strokeWidth={1.6}
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <Input
+                autoFocus
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onBlur={() => !query && setSearchOpen(false)}
+                placeholder="Saisissez pour chercher…"
+                className="h-8 w-[11rem] rounded-full pl-8 text-[0.8125rem]"
+              />
+            </div>
+          ) : (
+            <ToolButton icon={Search} label="Rechercher" onClick={() => setSearchOpen(true)} />
+          )}
+
+          {/* Plein écran */}
+          <ToolButton
+            icon={fullscreen ? Minimize2 : Maximize2}
+            label={fullscreen ? "Quitter le plein écran" : "Ouvrir en page entière"}
+            onClick={() => setFullscreen((v) => !v)}
+          />
+
           {/* Paramètres de vue */}
-          <Popover>
-            <PopoverTrigger>
-              <ToolButton icon={Settings2} label="Paramètres" />
+          <Popover open={settingsOpen} onOpenChange={setSettingsOpen}>
+            <PopoverTrigger asChild>
+              <ToolButton icon={SlidersHorizontal} label="Afficher les paramètres" />
             </PopoverTrigger>
-            <PopoverContent align="end" className="max-h-[26rem] w-[20rem] space-y-3 overflow-y-auto">
-              <div className="space-y-1.5">
-                <Label>Disposition</Label>
-                <Select
-                  value={view?.layout ?? "table"}
-                  onValueChange={(v) =>
-                    view && updateView.mutate({ id: view.id, patch: { layout: v }, base: view })
-                  }
-                >
-                  <SelectTrigger className="h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LAYOUTS.filter((l) => layouts.includes(l.id)).map((l) => (
-                      <SelectItem key={l.id} value={l.id}>
-                        {l.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <PopoverContent align="end" className="max-h-[32rem] w-[22rem] overflow-y-auto">
+              <ViewSettingsPanel
+                viewName={view?.name ?? "Vue"}
+                viewEmoji={view?.emoji ?? ""}
+                layout={view?.layout ?? "table"}
+                layouts={layouts}
+                properties={properties}
+                config={config}
+                patch={patch}
+                defaultColorProperty={source.statusProp ?? properties[0]?.id ?? source.titleProp}
+                onLayoutChange={(l) =>
+                  view && updateView.mutate({ id: view.id, patch: { layout: l }, base: view })
+                }
+                onCopyLink={() => {
+                  if (!view) return;
+                  const token = view.share_token ?? crypto.randomUUID().slice(0, 12);
+                  updateView.mutate({ id: view.id, patch: { share_token: token }, base: view });
+                  void navigator.clipboard?.writeText(`${window.location.origin}/partage/${token}`);
+                  toast.success("Lien de la vue copié");
+                }}
+                onEditProperty={(p) => {
+                  setEditing(p);
+                  setEditorOpen(true);
+                  setSettingsOpen(false);
+                }}
+                onCreateProperty={() => {
+                  setEditing(null);
+                  setEditorOpen(true);
+                  setSettingsOpen(false);
+                }}
+                onClose={() => setSettingsOpen(false)}
+              />
+            </PopoverContent>
+          </Popover>
 
-              {view?.layout === "kanban" ? (
-                <div className="space-y-1.5">
-                  <Label>Regrouper par</Label>
-                  <Select
-                    value={config.groupBy ?? source.statusProp ?? ""}
-                    onValueChange={(v) => patch({ groupBy: v })}
-                  >
-                    <SelectTrigger className="h-8">
-                      <SelectValue placeholder="Choisir" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {properties
-                        .filter((p) => ["select", "status", "person", "text"].includes(p.type))
-                        .map((p) => (
-                          <SelectItem key={p.id} value={p.id}>
-                            {p.name}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              ) : null}
+          {actions}
 
-              <div className="space-y-1.5">
-                <Label>Densité</Label>
-                <Select
-                  value={config.density}
-                  onValueChange={(v) => patch({ density: v as Density })}
-                >
-                  <SelectTrigger className="h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="compact">Compact</SelectItem>
-                    <SelectItem value="comfortable">Standard</SelectItem>
-                    <SelectItem value="spacious">Spacieux</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Éléments affichés</Label>
-                <Select
-                  value={String(config.pageSize)}
-                  onValueChange={(v) => patch({ pageSize: Number(v) })}
-                >
-                  <SelectTrigger className="h-8">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[10, 25, 50, 100].map((n) => (
-                      <SelectItem key={n} value={String(n)}>
-                        {n} éléments
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="0">Tous</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label className="flex items-center gap-1.5">
-                  <SlidersHorizontal size={14} strokeWidth={1.6} /> Propriétés
-                </Label>
-                <ul className="space-y-1">
-                  {properties.map((p) => (
-                    <li key={p.id} className="flex items-center justify-between gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setEditing(p);
-                          setEditorOpen(true);
-                        }}
-                        className="min-w-0 flex-1 truncate text-left text-[0.8125rem] hover:underline"
-                      >
-                        {p.name}
-                      </button>
-                      <Switch
-                        checked={!config.hiddenProps.includes(p.id)}
-                        onCheckedChange={(on) =>
-                          patch({
-                            hiddenProps: on
-                              ? config.hiddenProps.filter((id) => id !== p.id)
-                              : [...config.hiddenProps, p.id],
-                          })
-                        }
-                      />
-                    </li>
-                  ))}
-                </ul>
+          {/* Nouveau */}
+          <div className="ml-1 flex items-center overflow-hidden rounded-full">
+            {source.onCreate ? (
+              <Button
+                size="sm"
+                className="h-8 rounded-none rounded-l-full"
+                onClick={source.onCreate}
+              >
+                Nouveau
+              </Button>
+            ) : null}
+            <Popover>
+              <PopoverTrigger asChild>
                 <Button
-                  variant="secondary"
                   size="sm"
-                  className="w-full"
+                  aria-label="Plus d'options de création"
+                  className={cn(
+                    "h-8 w-7 border-l border-primary-foreground/20 px-0",
+                    source.onCreate ? "rounded-none rounded-r-full" : "rounded-full",
+                  )}
+                >
+                  <ChevronDown size={14} strokeWidth={1.8} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-56 space-y-0.5 p-1.5">
+                <button
+                  type="button"
                   onClick={() => {
                     setEditing(null);
                     setEditorOpen(true);
                   }}
+                  className="press flex w-full items-center gap-2 rounded-[10px] px-2 py-1.5 text-left text-[0.875rem] hover:bg-secondary"
                 >
                   <Plus size={14} strokeWidth={1.6} /> Nouvelle propriété
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2 border-t border-border pt-3">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => {
-                    if (!view) return;
-                    const token = view.share_token ?? crypto.randomUUID().slice(0, 12);
-                    updateView.mutate({ id: view.id, patch: { share_token: token }, base: view });
-                    void navigator.clipboard?.writeText(
-                      `${window.location.origin}/partage/${token}`,
-                    );
-                    toast.success("Lien de partage copié");
-                  }}
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    createView.mutate({ name: "Vue", emoji: "", layout: view?.layout ?? "table" })
+                  }
+                  className="press flex w-full items-center gap-2 rounded-[10px] px-2 py-1.5 text-left text-[0.875rem] hover:bg-secondary"
                 >
-                  <Share2 size={14} strokeWidth={1.6} /> Partager
-                </Button>
-                {view && !view.id.startsWith("default:") ? (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-destructive"
-                    onClick={() => {
-                      deleteView.mutate(view.id);
-                      setActiveId(null);
-                    }}
-                  >
-                    <Trash2 size={14} strokeWidth={1.6} />
-                  </Button>
-                ) : null}
-              </div>
-            </PopoverContent>
-          </Popover>
-
-          <Select
-            value={String(config.pageSize)}
-            onValueChange={(v) => patch({ pageSize: Number(v) })}
-          >
-            <SelectTrigger
-              aria-label="Éléments par page"
-              className="h-8 w-[6.5rem] rounded-full text-[0.8125rem]"
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[10, 25, 50, 100].map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {n} / page
-                </SelectItem>
-              ))}
-              <SelectItem value="0">Sans limite</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <button
-            type="button"
-            aria-label={fullscreen ? "Quitter le plein écran" : "Ouvrir en page entière"}
-            onClick={() => setFullscreen((v) => !v)}
-            className="press grid size-8 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            {fullscreen ? (
-              <Minimize2 size={14} strokeWidth={1.6} />
-            ) : (
-              <Maximize2 size={14} strokeWidth={1.6} />
-            )}
-          </button>
-
-          {actions}
-          {source.onCreate ? (
-            <Button size="sm" className="h-8 rounded-full" onClick={source.onCreate}>
-              <Plus size={14} strokeWidth={1.8} /> Nouveau
-            </Button>
-          ) : null}
+                  <Plus size={14} strokeWidth={1.6} /> Nouvelle vue
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setManageOpen(true)}
+                  className="press flex w-full items-center gap-2 rounded-[10px] px-2 py-1.5 text-left text-[0.875rem] hover:bg-secondary"
+                >
+                  <SlidersHorizontal size={14} strokeWidth={1.6} /> Gérer les vues
+                </button>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
 
