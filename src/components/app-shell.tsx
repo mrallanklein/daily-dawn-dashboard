@@ -116,16 +116,16 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-sidebar-border bg-sidebar/80 backdrop-blur-2xl transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
-          open ? "w-56" : "w-[60px]",
+          "fixed inset-y-3 left-3 z-40 hidden flex-col overflow-hidden rounded-[22px] border border-sidebar-border bg-sidebar/65 shadow-[var(--elev-3)] backdrop-blur-2xl transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] md:flex",
+          open ? "w-[15rem]" : "w-[64px]",
         )}
       >
-        <div className={cn("p-2", !open && "px-2")}>
+        <div className={cn("p-2.5", !open && "px-2")}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-md p-1.5 text-left transition-colors hover:bg-sidebar-accent",
+                  "press flex w-full items-center gap-2.5 rounded-[14px] p-1.5 text-left transition-colors hover:bg-sidebar-accent/80",
                   !open && "justify-center p-1.5",
                 )}
               >
@@ -233,7 +233,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <nav className={cn("flex-1 space-y-0.5 px-2 pt-1")}>
+        <nav className={cn("flex-1 space-y-1 px-2.5 pt-1")}>
           {items.map((item) => (
             <Link
               key={item.to}
@@ -241,14 +241,14 @@ export function AppShell({ children }: { children: ReactNode }) {
               title={item.label}
               activeProps={{
                 className:
-                  "bg-sidebar-accent text-foreground shadow-[var(--shadow-xs)] [&_svg]:opacity-100",
+                  "bg-card text-foreground shadow-[var(--elev-2)] ring-1 ring-border [&_svg]:text-brand",
               }}
               inactiveProps={{
                 className:
-                  "text-foreground/80 hover:bg-sidebar-accent/60 hover:text-foreground hover:[&_svg]:opacity-100",
+                  "text-foreground/75 hover:bg-sidebar-accent/70 hover:text-foreground",
               }}
               className={cn(
-                "flex min-h-[36px] items-center gap-2.5 rounded-lg px-2 py-1 text-[0.9375rem] font-medium leading-tight transition-[background-color,color,box-shadow] duration-200",
+                "press flex min-h-[38px] items-center gap-2.5 rounded-[14px] px-2.5 py-1 text-[0.9375rem] font-medium leading-tight transition-[background-color,color,box-shadow,transform] duration-200",
                 !open && "justify-center px-0",
               )}
             >
@@ -262,13 +262,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        <div className="space-y-1.5 border-t border-sidebar-border p-2">
+        <div className="space-y-1.5 border-t border-sidebar-border p-2.5">
           <button
             type="button"
             onClick={() => setSettingsOpen(true)}
             aria-label="Ouvrir les paramètres"
             className={cn(
-              "press flex w-full items-center gap-2.5 rounded-[8px] p-1 text-left transition-colors hover:bg-sidebar-accent",
+              "press flex w-full items-center gap-2.5 rounded-[14px] p-1 text-left transition-colors hover:bg-sidebar-accent/80",
               !open && "justify-center",
             )}
           >
@@ -321,8 +321,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         aria-label={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
         title={open ? "Masquer la barre latérale" : "Afficher la barre latérale"}
         className={cn(
-          "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/90 text-muted-foreground shadow-[var(--shadow-lift)] backdrop-blur-xl transition-[left,color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:text-foreground md:grid",
-          open ? "left-[calc(14rem-1rem)]" : "left-[calc(60px-1rem)]",
+          "press fixed top-1/2 z-50 hidden size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card/90 text-muted-foreground shadow-[var(--elev-3)] backdrop-blur-xl transition-[left,color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:text-foreground md:grid",
+          open ? "left-[calc(15rem+0.75rem-1rem)]" : "left-[calc(64px+0.75rem-1rem)]",
         )}
       >
         {open ? (
@@ -350,8 +350,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main
         className={cn(
-          "min-h-screen px-4 pb-24 pt-8 transition-[margin,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 md:pb-12 md:pl-7 lg:px-10 lg:pl-10",
-          open ? "md:ml-56" : "md:ml-[60px]",
+          "min-h-screen px-4 pb-24 pt-8 transition-[margin,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 md:pb-12 md:pl-8 lg:px-10 lg:pl-12",
+          open ? "md:ml-[16rem]" : "md:ml-[80px]",
         )}
       >
         <div className="mx-auto max-w-[1400px]">{children}</div>
