@@ -130,7 +130,7 @@ export function CalendarSidebar({
             </button>
           </div>
         </header>
-        <div className="grid grid-cols-7 text-center text-[0.58rem] font-semibold uppercase text-muted-foreground">
+        <div className="grid grid-cols-7 text-center text-[0.7rem] font-semibold uppercase text-muted-foreground">
           {["l", "m", "m", "j", "v", "s", "d"].map((d, i) => (
             <span key={`${d}${i}`}>{d}</span>
           ))}
@@ -145,7 +145,7 @@ export function CalendarSidebar({
                 key={day.toISOString()}
                 onClick={() => onSelectDay(day)}
                 className={cn(
-                  "relative mx-auto my-px grid size-7 place-items-center rounded-full text-[0.72rem] font-semibold tabular-nums transition-colors hover:bg-muted",
+                  "relative mx-auto my-px grid size-8 place-items-center rounded-full text-[0.82rem] font-semibold tabular-nums transition-colors hover:bg-muted",
                   !isSameMonth(day, cursor) && "opacity-30",
                   isSelected && "bg-foreground text-background",
                   today && !isSelected && "text-destructive",
