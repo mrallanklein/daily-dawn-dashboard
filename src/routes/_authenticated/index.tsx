@@ -52,7 +52,12 @@ function Dashboard() {
   const { data: profile } = useQuery(profileQuery());
   const { data: projects } = useQuery(projectsQuery(workspace));
   const { data: tasks } = useQuery(tasksQuery(workspace));
-  const { data: weather } = useQuery({
+  const {
+    data: weather,
+    isLoading: weatherLoading,
+    isError: weatherError,
+    refetch: refetchWeather,
+  } = useQuery({
     ...weatherQuery(
       Number(space?.weather_lat ?? profile?.weather_lat ?? 43.6047),
       Number(space?.weather_lon ?? profile?.weather_lon ?? 1.4442),
@@ -102,6 +107,9 @@ function Dashboard() {
             <WeatherBadge
               weather={weather}
               city={space?.weather_city ?? profile?.weather_city ?? "Toulouse"}
+              isLoading={weatherLoading}
+              isError={weatherError}
+              onRetry={() => void refetchWeather()}
             />
           </div>
         </div>
