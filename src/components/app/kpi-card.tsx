@@ -22,15 +22,23 @@ export function KpiCard({
   }[tone];
 
   return (
-    <div className="glass p-4">
-      <div className="flex items-center justify-between gap-2">
-        <p className="truncate text-[0.7rem] uppercase tracking-[0.14em] text-muted-foreground">
-          {label}
-        </p>
-        <Icon className={cn("size-4 shrink-0", toneCls)} strokeWidth={1.8} />
+    <div className="glass topline elevate group relative p-5">
+      <div className="flex items-start justify-between gap-3">
+        <p className="eyebrow truncate pt-0.5">{label}</p>
+        <span
+          className={cn(
+            "grid size-8 shrink-0 place-items-center rounded-full border border-border/70 bg-card/60 transition-colors group-hover:border-transparent",
+            toneCls,
+          )}
+          style={{ backgroundColor: "color-mix(in oklab, currentColor 9%, transparent)" }}
+        >
+          <Icon className="size-4" strokeWidth={1.6} />
+        </span>
       </div>
-      <p className={cn("mt-2 text-2xl font-display tabular-nums", toneCls)}>{value}</p>
-      {hint ? <p className="mt-0.5 truncate text-xs text-muted-foreground">{hint}</p> : null}
+      <p className={cn("num mt-3 text-[1.9rem] font-display leading-none", toneCls)}>{value}</p>
+      {hint ? (
+        <p className="mt-1.5 truncate text-[0.82rem] text-muted-foreground">{hint}</p>
+      ) : null}
     </div>
   );
 }

@@ -21,27 +21,39 @@ export function PageHeader({
   const bannerUrl = banner ? (space?.banner_url ?? null) : null;
 
   return (
-    <header className="mb-8">
+    <header className="rise mb-8">
       {bannerUrl ? (
-        <div
-          className="mb-8 h-[140px] w-full rounded-xl border border-border bg-muted bg-cover bg-center"
-          style={{ backgroundImage: `url(${bannerUrl})` }}
-          role="presentation"
-        />
+        <div className="relative mb-8 h-[152px] w-full overflow-hidden rounded-2xl border border-border bg-muted shadow-[var(--shadow-soft)]">
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${bannerUrl})` }}
+            role="presentation"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-linear-to-t from-background/45 via-background/5 to-transparent"
+          />
+        </div>
       ) : null}
       <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4 sm:flex sm:flex-wrap sm:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 items-center gap-4">
           {Icon ? (
-            <Icon
-              className="size-9 shrink-0"
-              style={iconColor ? { color: iconColor } : undefined}
-            />
+            <span className="glass grid size-12 shrink-0 place-items-center rounded-2xl">
+              <Icon
+                className="size-6"
+                style={iconColor ? { color: iconColor } : undefined}
+              />
+            </span>
           ) : null}
           <div className="min-w-0">
-            <h1 className="truncate text-2xl font-display font-bold tracking-tight sm:text-3xl">
+            <h1 className="truncate text-[1.75rem] font-display font-bold tracking-[-0.03em] sm:text-[2.1rem] sm:leading-[1.1]">
               {title}
             </h1>
-            {subtitle ? <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p> : null}
+            {subtitle ? (
+              <p className="mt-1.5 max-w-[60ch] text-[0.9rem] leading-relaxed text-muted-foreground">
+                {subtitle}
+              </p>
+            ) : null}
           </div>
         </div>
         {actions ? (
