@@ -173,20 +173,20 @@
 }
 
 .dark {
-  /* Sombre — nuit cinéma : noir bleuté profond, halos bleu/orange/violet */
-  --background: oklch(0.1 0.008 265);
+  /* Sombre — nuit profonde, presque noire, ponctuée de halos orange/violets */
+  --background: oklch(0.055 0.007 265);
   --foreground: oklch(0.975 0.003 265);
-  --card: oklch(0.155 0.011 265);
+  --card: oklch(0.115 0.009 265);
   --card-foreground: oklch(0.975 0.003 265);
-  --popover: oklch(0.175 0.012 265);
+  --popover: oklch(0.135 0.01 265);
   --popover-foreground: oklch(0.975 0.003 265);
   --primary: oklch(0.975 0.003 265);
-  --primary-foreground: oklch(0.13 0.01 265);
-  --secondary: oklch(0.21 0.013 265);
+  --primary-foreground: oklch(0.1 0.01 265);
+  --secondary: oklch(0.165 0.011 265);
   --secondary-foreground: oklch(0.96 0.003 265);
-  --muted: oklch(0.21 0.013 265);
-  --muted-foreground: oklch(0.72 0.015 265);
-  --accent: oklch(0.245 0.016 265);
+  --muted: oklch(0.165 0.011 265);
+  --muted-foreground: oklch(0.705 0.014 265);
+  --accent: oklch(0.2 0.014 265);
   --accent-foreground: oklch(0.97 0.003 265);
   --destructive: oklch(0.63 0.19 25);
   --destructive-foreground: oklch(0.16 0.006 265);
@@ -215,11 +215,11 @@
   --chart-4: oklch(0.7 0.1 158);
   --chart-5: oklch(0.5 0.02 265);
 
-  --sidebar: oklch(0.135 0.01 265);
+  --sidebar: oklch(0.085 0.008 265);
   --sidebar-foreground: oklch(0.93 0.004 265);
   --sidebar-primary: oklch(0.97 0.003 265);
   --sidebar-primary-foreground: oklch(0.17 0.006 265);
-  --sidebar-accent: oklch(0.235 0.015 265);
+  --sidebar-accent: oklch(0.19 0.013 265);
   --sidebar-accent-foreground: oklch(0.97 0.003 265);
   --sidebar-border: oklch(1 0 0 / 0.07);
 
@@ -241,12 +241,12 @@
   );
   --ambient:
     radial-gradient(
-      100% 70% at 6% 18%,
-      oklch(0.55 0.19 258 / 0.28),
-      transparent 62%
+      38% 34% at 4% 16%,
+      oklch(0.6 0.23 262 / 0.34),
+      transparent 70%
     ),
-    radial-gradient(70% 60% at 68% 96%, oklch(0.68 0.18 55 / 0.22), transparent 60%),
-    radial-gradient(60% 60% at 104% 78%, oklch(0.5 0.2 305 / 0.24), transparent 62%);
+    radial-gradient(30% 28% at 66% 94%, oklch(0.72 0.2 52 / 0.34), transparent 70%),
+    radial-gradient(28% 30% at 101% 74%, oklch(0.56 0.25 305 / 0.36), transparent 70%);
 }
 
 .dark.ws-alias {
