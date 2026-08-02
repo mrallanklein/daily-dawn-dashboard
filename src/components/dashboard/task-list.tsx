@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { Panel, EmptyState } from "@/components/app/panel";
+import { RowsSkeleton } from "@/components/app/skeletons";
 import { projectsQuery, tasksQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { useTaskMutations } from "@/components/tasks/use-task-mutations";
@@ -13,7 +14,7 @@ import { Button } from "@/components/ui/button";
 /** Liste de tâches du tableau de bord, branchée sur la base unique des tâches. */
 export function TaskList() {
   const { workspace } = useWorkspace();
-  const { data: tasksData } = useQuery(tasksQuery(workspace));
+  const { data: tasksData, isLoading } = useQuery(tasksQuery(workspace));
   const { data: projectsData } = useQuery(projectsQuery(workspace));
   const mutations = useTaskMutations(workspace);
   const [draft, setDraft] = useState("");
@@ -59,8 +60,12 @@ export function TaskList() {
         </Button>
       </form>
 
-      {roots.length === 0 ? (
-        <EmptyState>Aucune tâche en cours.</EmptyState>
+      {isLoading ? (
+        <RowsSkeleton rows={5} />
+      ) : roots.length === 0 ? (
+        <EmptyState hint="Utilisez le champ ci-dessus pour créer votre première tâche.">
+          Aucune tâche en cours
+        </EmptyState>
       ) : (
         <ul className="space-y-0.5">
           {roots.map((t) => (
