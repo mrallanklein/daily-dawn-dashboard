@@ -8,13 +8,17 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   fmtEUR,
   projectCommentsQuery,
+  projectsQuery,
   tasksQuery,
   teamQuery,
   transactionsQuery,
   type Project,
 } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
+import { useIsCompact } from "@/hooks/use-compact";
 import { PROJECT_STATUSES, statusLabel } from "@/lib/project-status";
+import { projectRisk } from "@/lib/project-risk";
+import { MilestonesPanel } from "@/components/projects/milestones-panel";
 import { useProjectMutations } from "@/components/projects/use-project-mutations";
 import { useTaskMutations } from "@/components/tasks/use-task-mutations";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -43,10 +47,12 @@ export function ProjectDetail({
   onClose: () => void;
 }) {
   const { workspace } = useWorkspace();
+  const compact = useIsCompact();
   const queryClient = useQueryClient();
   const { patch, remove } = useProjectMutations(workspace);
   const { create: createTask, toggle, remove: removeTask } = useTaskMutations(workspace);
   const { data: tasks } = useQuery(tasksQuery(workspace));
+  const { data: projects } = useQuery(projectsQuery(workspace));
   const { data: team } = useQuery(teamQuery(workspace));
   const { data: transactions } = useQuery(transactionsQuery(workspace));
   const { data: comments } = useQuery(projectCommentsQuery(project?.id ?? null));
@@ -76,10 +82,23 @@ export function ProjectDetail({
     .filter((t) => t.project_id === project.id && t.kind === "depense")
     .reduce((sum, t) => sum + Number(t.amount), 0);
   const budget = project.budget ?? 0;
+  const risk = projectRisk(project, tasks ?? [], {
+    spent,
+    projects: projects ?? [],
+  });
 
   return (
     <Sheet open onOpenChange={(v) => !v && onClose()}>
-      <SheetContent className="w-full overflow-y-auto sm:max-w-xl">
+      <SheetContent
+        side={compact ? "bottom" : "right"}
+        className={cn(
+          "overflow-y-auto",
+          compact ? "h-[92dvh] w-full rounded-t-[22px] px-0" : "w-full sm:max-w-xl",
+        )}
+      >
+        {compact ? (
+          <div aria-hidden className="mx-auto mt-2 h-1.5 w-10 shrink-0 rounded-full bg-border" />
+        ) : null}
         <SheetHeader>
           <SheetTitle className="pr-8 text-left font-display text-lg">{project.name}</SheetTitle>
           <p className="text-left text-xs text-muted-foreground">
@@ -88,6 +107,26 @@ export function ProjectDetail({
             {project.category ? ` · ${project.category}` : ""}
           </p>
         </SheetHeader>
+
+        {risk.level !== "none" ? (
+          <div
+            className={cn(
+              "mx-4 rounded-xl border px-3 py-2 text-xs",
+              risk.level === "late"
+                ? "border-destructive/30 bg-destructive/8 text-destructive"
+                : "border-warning/30 bg-warning/8 text-warning",
+            )}
+          >
+            <p className="font-semibold">
+              {risk.level === "late" ? "Projet en retard" : "À surveiller"}
+            </p>
+            <ul className="mt-0.5 list-inside list-disc">
+              {risk.reasons.map((r) => (
+                <li key={r}>{r}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         <Tabs defaultValue="infos" className="px-4 pb-8">
           <TabsList className="w-full">
@@ -198,6 +237,32 @@ export function ProjectDetail({
                 onBlur={(e) => patch.mutate({ id: project.id, next_step: e.target.value || null })}
               />
             </div>
+
+            <div>
+              <Label>Dépend du projet</Label>
+              <Select
+                value={project.depends_on_id ?? "none"}
+                onValueChange={(v) =>
+                  patch.mutate({ id: project.id, depends_on_id: v === "none" ? null : v })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Aucune dépendance" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Aucune dépendance</SelectItem>
+                  {(projects ?? [])
+                    .filter((p) => p.id !== project.id)
+                    .map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <MilestonesPanel projectId={project.id} />
 
             <div>
               <Label htmlFor="d-desc">Description</Label>

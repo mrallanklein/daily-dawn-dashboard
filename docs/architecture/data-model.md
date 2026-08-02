@@ -27,7 +27,8 @@ Aucune information de design ou d'interface ici.
 `category`, `client`, `contact_id`, `progress` (0-100), `budget`,
 `budget_spent`, `start_date`, `work_date`, `deadline`, `color`, `cover_url`,
 `next_step`, `tags text[]`, `position` (ordre kanban), `created_at`,
-`updated_at`.
+`updated_at`, `onedrive_url`, `local_folder`, `depends_on_id` (projet devant
+être terminé avant celui-ci, `NULL` si aucune dépendance).
 
 `status` est contraint à la liste métier définie dans `src/lib/project-status.ts` :
 `pas_commence`, `ecriture`, `en_cours`, `tournage`, `montage`, `validation`,
@@ -41,6 +42,12 @@ statuts ; aucune duplication dans les composants.
 `completed_at`, `created_at`, `updated_at`.
 
 ### `notes_items` — todo libre
+
+### `project_milestones` — jalons
+`id`, `user_id`, `project_id`, `title`, `due_date`, `reached`, `position`,
+`created_at`, `updated_at`. Dates clés d'un projet, affichées sur la
+chronologie. Chaque personne ne voit et ne gère que ses propres jalons.
+
 `id`, `user_id`, `content`, `checked`, `due_date`, `parent_id` (sous-éléments),
 `position`, `created_at`, `updated_at`. Volontairement hors projet : capture
 rapide non structurée.

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
-import { projectsQuery, type Project } from "@/lib/data";
+import { milestonesQuery, projectsQuery, tasksQuery, type Project } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { ProjectDialog } from "@/components/projects/project-dialog";
 import { KanbanView } from "@/components/projects/kanban-view";
@@ -57,6 +57,8 @@ function ProjectsPage() {
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<Project | null>(null);
   const { data: projects } = useQuery(projectsQuery(workspace));
+  const { data: tasks } = useQuery(tasksQuery(workspace));
+  const { data: milestones } = useQuery(milestonesQuery());
 
   const list = (projects ?? []).filter((p) =>
     (p.name + (p.client ?? "") + (p.category ?? "")).toLowerCase().includes(q.toLowerCase()),
@@ -105,12 +107,17 @@ function ProjectsPage() {
       {view === "toplan" ? <ToPlanView projects={list} onSelect={setSelected} /> : null}
       {view === "list" ? (
         <div className="glass p-3">
-          <ListView projects={list} onSelect={setSelected} />
+          <ListView projects={list} tasks={tasks ?? []} onSelect={setSelected} />
         </div>
       ) : null}
       {view === "gantt" ? (
         <div className="glass p-4">
-          <GanttView projects={list} onSelect={setSelected} />
+          <GanttView
+            projects={list}
+            tasks={tasks ?? []}
+            milestones={milestones ?? []}
+            onSelect={setSelected}
+          />
         </div>
       ) : null}
 

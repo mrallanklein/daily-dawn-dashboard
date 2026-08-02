@@ -13,8 +13,12 @@ Route `/budget`.
 
 ## Règles fonctionnelles
 
-- Les montants proviennent des champs budget des projets ; il n'existe pas de
-  table de dépenses séparée à ce stade
+- Le budget prévu est saisi sur le projet ; le consommé est la somme des
+  transactions de type dépense rattachées à ce projet
   ([architecture/data-model](../architecture/data-model.md)).
+- Le bloc « Budget par projet » liste les projets ayant un budget, une dépense
+  ou un revenu, triés par taux de consommation décroissant.
 - Un dépassement est signalé comme information, il n'est pas bloquant.
+- Un dépassement place aussi le projet en « À surveiller » côté projets
+  ([features/projects](projects.md)).
 - Les agrégats ne portent que sur l'espace actif.

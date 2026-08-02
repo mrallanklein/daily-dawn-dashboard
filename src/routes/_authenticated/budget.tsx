@@ -18,6 +18,7 @@ import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
 import { Panel, EmptyState } from "@/components/app/panel";
 import { KpiCard } from "@/components/app/kpi-card";
+import { ProjectBudgets } from "@/components/budget/project-budgets";
 import { fmtEUR, projectsQuery, transactionsQuery } from "@/lib/data";
 import { useWorkspace } from "@/lib/workspace";
 import { todayISO } from "@/lib/dates";
@@ -167,6 +168,8 @@ function BudgetPage() {
           tone={pending > 0 ? "warning" : "default"}
         />
       </section>
+
+      <ProjectBudgets projects={projects ?? []} transactions={list} />
 
       <Panel eyebrow="Nouvelle écriture" title="Ajouter une transaction" className="mb-4">
         <form

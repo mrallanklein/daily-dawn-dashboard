@@ -14,7 +14,7 @@ qu'à un seul endroit ; les autres documents y renvoient par lien.
 
 - [01-vision.md](./01-vision.md) — intention produit, profils, périmètre
 - [02-roadmap.md](./02-roadmap.md) — état actuel et suite
-- Architecture : [data-model](./architecture/data-model.md) · [relations](./architecture/relations.md) · [api](./architecture/api.md) · [sync](./architecture/sync.md)
+- Architecture : [data-model](./architecture/data-model.md) · [relations](./architecture/relations.md) · [api](./architecture/api.md) · [sync](./architecture/sync.md) · [tests](./architecture/tests.md)
 - Features : [home](./features/home.md) · [calendar](./features/calendar.md) · [tasks](./features/tasks.md) · [projects](./features/projects.md) · [mail](./features/mail.md) · [crm](./features/crm.md) · [budget](./features/budget.md) · [settings](./features/settings.md)
 - UX : [navigation](./ux/navigation.md) · [interactions](./ux/interactions.md) · [shortcuts](./ux/shortcuts.md) · [responsive](./ux/responsive.md)
 - Design : [colors](./design/colors.md) · [typography](./design/typography.md) · [spacing](./design/spacing.md) · [components](./design/components.md) · [icons](./design/icons.md) · [dark-mode](./design/dark-mode.md)

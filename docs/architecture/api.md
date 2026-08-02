@@ -34,6 +34,8 @@
 ## Règles
 
 - Toute entrée est validée (Zod) dans `.inputValidator()`.
+- Les schémas Zod vivent dans un module dédié (`*.schemas.ts`) importé par le
+  fichier `*.functions.ts`, jamais déclarés à côté du handler.
 - `process.env` est lu **dans** `.handler()`, jamais au niveau module.
 - Un fichier `*.functions.ts` ne contient que des imports, des types et les
   déclarations de server functions ; les helpers vivent dans un module importé.

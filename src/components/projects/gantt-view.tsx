@@ -8,9 +8,11 @@ import {
   startOfDay,
 } from "date-fns";
 import { fr } from "date-fns/locale";
-import { BookOpen } from "lucide-react";
-import type { Project } from "@/lib/data";
+import { BookOpen, Diamond } from "lucide-react";
+import type { Milestone, Project, Task } from "@/lib/data";
 import { PROJECT_STATUSES, statusLabel } from "@/lib/project-status";
+import { projectRisk } from "@/lib/project-risk";
+import { RiskBadge } from "@/components/projects/risk-badge";
 import {
   Select,
   SelectContent,
@@ -34,9 +36,13 @@ function barColor(p: Project, end: Date, today: Date) {
 
 export function GanttView({
   projects,
+  tasks = [],
+  milestones = [],
   onSelect,
 }: {
   projects: Project[];
+  tasks?: Task[];
+  milestones?: Milestone[];
   onSelect: (p: Project) => void;
 }) {
   const [status, setStatus] = useState("all");
@@ -70,6 +76,10 @@ export function GanttView({
   const x = (d: Date) => differenceInCalendarDays(startOfDay(d), min) * DAY;
   const months = eachMonthOfInterval({ start: min, end: max });
   todayOffset.current = x(today);
+
+  /** Ligne de chaque projet affiché : sert à tracer les liens de dépendance. */
+  const rowIndex = new Map(dated.map((p, i) => [p.id, i]));
+  const ROW = 44;
 
   return (
     <div className="space-y-3">
@@ -121,6 +131,11 @@ export function GanttView({
             const width = Math.max(x(e) - left + DAY, DAY);
             const color = barColor(p, e, today);
             const active = hover === p.id;
+            const risk = projectRisk(p, tasks, { today, projects });
+            const rowMilestones = milestones.filter((m) => m.project_id === p.id);
+            const upstreamRow =
+              p.depends_on_id !== null ? rowIndex.get(p.depends_on_id) : undefined;
+            const upstream = dated.find((d) => d.id === p.depends_on_id);
             return (
               <div
                 key={p.id}
@@ -147,7 +162,12 @@ export function GanttView({
                   )}
                 >
                   <p className="truncate text-sm font-semibold">{p.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{statusLabel(p.status)}</p>
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <p className="truncate text-xs text-muted-foreground">
+                      {statusLabel(p.status)}
+                    </p>
+                    <RiskBadge risk={risk} />
+                  </div>
                 </div>
 
                 <div className="relative h-11" style={{ width: `${totalDays * DAY}px` }}>
@@ -156,10 +176,51 @@ export function GanttView({
                     className="absolute inset-y-0 z-10 w-px bg-destructive/60"
                     style={{ left: `${x(today) + DAY / 2}px` }}
                   />
+                  {/* Lien de dépendance : de la fin du projet amont vers le début de celui-ci. */}
+                  {upstream && upstreamRow !== undefined
+                    ? (() => {
+                        const fromX = x(parseISO(upstream.deadline ?? upstream.start_date!)) + DAY;
+                        const rows = (rowIndex.get(p.id) ?? 0) - upstreamRow;
+                        const late = !["termine", "publier", "archiver"].includes(upstream.status);
+                        return (
+                          <svg
+                            aria-hidden
+                            className="pointer-events-none absolute left-0 z-20 overflow-visible"
+                            style={{ top: `-${rows * ROW - 22}px`, height: 1, width: "100%" }}
+                          >
+                            <path
+                              d={`M ${fromX} 0 H ${Math.max(fromX + 8, left - 8)} V ${rows * ROW} H ${left}`}
+                              fill="none"
+                              strokeWidth={1.5}
+                              strokeDasharray={late ? "4 3" : undefined}
+                              stroke={late ? "var(--destructive)" : "var(--muted-foreground)"}
+                            />
+                          </svg>
+                        );
+                      })()
+                    : null}
                   <span
                     className="absolute top-1/2 h-2.5 -translate-y-1/2 rounded-full"
                     style={{ left: `${left}px`, width: `${width}px`, backgroundColor: color }}
                   />
+                  {/* Jalons : losange sur la date, plein lorsqu'il est atteint. */}
+                  {rowMilestones.map((m) => (
+                    <span
+                      key={m.id}
+                      title={`${m.title} · ${format(parseISO(m.due_date), "d MMM yyyy", { locale: fr })}${m.reached ? " · atteint" : ""}`}
+                      className="absolute top-1/2 z-20 -translate-y-1/2"
+                      style={{
+                        left: `${x(parseISO(m.due_date)) + DAY / 2 - 7}px`,
+                        color: m.reached ? "var(--success)" : "var(--brand)",
+                      }}
+                    >
+                      <Diamond
+                        className="size-3.5 rotate-0"
+                        strokeWidth={2}
+                        fill={m.reached ? "currentColor" : "var(--card)"}
+                      />
+                    </span>
+                  ))}
                   {p.deadline ? (
                     <span
                       title={`Échéance ${format(e, "d MMMM yyyy", { locale: fr })}`}
