@@ -352,7 +352,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <main
         className={cn(
-          "min-h-screen px-4 pb-24 pt-8 transition-[margin,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 md:pb-12 md:pl-7 lg:px-10 lg:pl-10",
+          "relative z-10 min-h-screen px-4 pb-24 pt-8 transition-[margin,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] sm:px-6 md:pb-12 md:pl-7 lg:px-10 lg:pl-10",
           open ? "md:ml-56" : "md:ml-[60px]",
         )}
       >
