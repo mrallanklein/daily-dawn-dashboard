@@ -9,6 +9,7 @@ import { listMailAccounts } from "@/lib/mail.functions";
 import { listCalendars } from "@/lib/agenda.functions";
 import { createSpace, deleteSpace, spaceInitials, updateSpace, type Space } from "@/lib/spaces";
 import { useWorkspace } from "@/lib/workspace";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { NOTION_DOT_COLORS, useMailColors } from "@/lib/mail-colors";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
