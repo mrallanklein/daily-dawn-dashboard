@@ -80,7 +80,7 @@ export function MailPreview() {
           </button>
           <Link
             to="/mail"
-            search={{}}
+            search={{ msg: undefined, account: undefined }}
             className="text-xs font-medium underline-offset-4 hover:underline"
           >
             Ouvrir

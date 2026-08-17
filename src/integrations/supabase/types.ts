@@ -225,7 +225,6 @@ export type Database = {
           module: string
           name: string
           position: number
-          share_token: string | null
           updated_at: string
           user_id: string
           workspace: string
@@ -240,7 +239,6 @@ export type Database = {
           module: string
           name?: string
           position?: number
-          share_token?: string | null
           updated_at?: string
           user_id: string
           workspace?: string
@@ -255,7 +253,6 @@ export type Database = {
           module?: string
           name?: string
           position?: number
-          share_token?: string | null
           updated_at?: string
           user_id?: string
           workspace?: string

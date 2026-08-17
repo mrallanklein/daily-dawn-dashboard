@@ -148,7 +148,7 @@ export function CommandPalette({
               value={`mail ${m.subject} ${m.from}`}
               onSelect={() => {
                 onOpenChange(false);
-                navigate({ to: "/mail", search: { msg: m.id } });
+                navigate({ to: "/mail", search: { msg: m.id, account: undefined } });
               }}
             >
               <MailIcon {...ICON} />
