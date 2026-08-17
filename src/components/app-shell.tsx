@@ -267,7 +267,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
           <Link
             to="/mail"
-            search={{}}
+            search={{ msg: undefined, account: undefined }}
             aria-label="Boîte de réception"
             title="Boîte de réception"
             className="press grid size-9 shrink-0 place-items-center rounded-[6px] text-foreground/70 transition-colors hover:bg-sidebar-accent/70 hover:text-foreground"
