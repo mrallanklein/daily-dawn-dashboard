@@ -72,9 +72,7 @@ export function useTaskMutations(workspace: Workspace) {
     onMutate: (task: Task) =>
       optimistic((tasks) =>
         tasks.map((t) =>
-          t.id === task.id
-            ? { ...t, status: t.status === "termine" ? "a_faire" : "termine" }
-            : t,
+          t.id === task.id ? { ...t, status: t.status === "termine" ? "a_faire" : "termine" } : t,
         ),
       ),
     onSuccess: invalidate,

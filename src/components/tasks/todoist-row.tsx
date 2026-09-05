@@ -125,9 +125,7 @@ export function TodoistRow({
               done && "text-muted-foreground line-through",
             )}
           />
-          {preview ? (
-            <p className="truncate text-xs text-muted-foreground">{preview}</p>
-          ) : null}
+          {preview ? <p className="truncate text-xs text-muted-foreground">{preview}</p> : null}
 
           <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
             {subtasks.length > 0 ? (

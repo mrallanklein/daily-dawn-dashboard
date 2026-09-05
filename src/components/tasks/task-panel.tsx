@@ -67,7 +67,6 @@ export function TaskPanel({
             </div>
           </div>
 
-
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <Label htmlFor="t-sched">Date de travail</Label>

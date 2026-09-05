@@ -53,7 +53,7 @@ export function RichText({
 
   function promptLink() {
     if (!editor) return;
-    const previous = editor.getAttributes("link")['href'] as string | undefined;
+    const previous = editor.getAttributes("link")["href"] as string | undefined;
     const url = window.prompt("Adresse du lien", previous ?? "https://");
     if (url === null) return;
     if (url.trim() === "") {

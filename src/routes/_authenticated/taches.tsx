@@ -56,9 +56,6 @@ const TABS = [
   { id: "projects", label: "Tâches projet" },
 ] as const;
 
-
-
-
 function TasksPage() {
   const { workspace } = useWorkspace();
   const { data: tasksData } = useQuery(tasksQuery(workspace));
@@ -127,7 +124,6 @@ function TasksPage() {
         : []),
     ];
   }, [filtered, projects]);
-
 
   const assignDate = (id: string, value: string | null) =>
     mutations.patch.mutate(
@@ -292,7 +288,6 @@ function TasksPage() {
           )}
         </div>
       ) : null}
-
 
       {tab === "plan" || tab === "projects" ? (
         <div className="grid items-start gap-4 xl:grid-cols-2">

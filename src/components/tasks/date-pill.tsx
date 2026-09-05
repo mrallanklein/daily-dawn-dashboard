@@ -48,11 +48,7 @@ export function DatePill({
           {date ? label(date) : "Date"}
         </button>
       </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-auto p-2"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <PopoverContent align="start" className="w-auto p-2" onClick={(e) => e.stopPropagation()}>
         <div className="mb-2 flex flex-wrap gap-1">
           <button
             type="button"
