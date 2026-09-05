@@ -99,17 +99,6 @@ function TasksPage() {
     });
   }, [all, search, projectFilter, priorityFilter, showDone]);
 
-  const day = todayISO();
-  const weekEnd = format(endOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd");
-  const monthEnd = format(endOfMonth(new Date()), "yyyy-MM-dd");
-
-  const groupOf = (when: string): GroupId => {
-    if (when <= day) return "today";
-    if (when <= weekEnd) return "week";
-    if (when <= monthEnd) return "month";
-    return "later";
-  };
-
   /** Tâches datées, triées par date croissante puis par ordre manuel. */
   const dated = useMemo(() => {
     const when = (t: Task) => t.scheduled_date ?? t.due_date ?? "";
@@ -120,13 +109,29 @@ function TasksPage() {
 
   const undated = filtered.filter((t) => !t.scheduled_date && !t.due_date);
 
-  const reorderWithin = (list: Task[]) => (draggedId: string, targetId: string) => {
-    const ids = list.map((t) => t.id);
-    if (!ids.includes(draggedId) || !ids.includes(targetId)) return;
-    const next = ids.filter((id) => id !== draggedId);
-    next.splice(ids.indexOf(targetId), 0, draggedId);
-    mutations.reorder.mutate(next);
-  };
+  /** Sections façon Todoist : une par projet, puis les tâches annexes. */
+  const sections = useMemo(() => {
+    const sorted = [...filtered].sort(
+      (a, b) =>
+        (a.scheduled_date ?? a.due_date ?? "9999").localeCompare(
+          b.scheduled_date ?? b.due_date ?? "9999",
+        ) || a.position - b.position,
+    );
+    const byProject = projects.map((p) => ({
+      id: p.id,
+      name: p.name,
+      accent: statusColor(p.status),
+      list: sorted.filter((t) => t.project_id === p.id),
+    }));
+    const loose = sorted.filter((t) => !t.project_id);
+    return [
+      ...byProject.filter((s) => s.list.length > 0),
+      ...(loose.length > 0 || byProject.every((s) => s.list.length === 0)
+        ? [{ id: "none", name: "Tâches annexes", accent: undefined, list: loose }]
+        : []),
+    ];
+  }, [filtered, projects]);
+
 
   const assignDate = (id: string, value: string | null) =>
     mutations.patch.mutate(
