@@ -253,35 +253,45 @@ function TasksPage() {
       </div>
 
       {tab === "todo" ? (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {GROUPS.map((g) => {
-            const list = dated.filter(
-              (t) => groupOf(t.scheduled_date ?? t.due_date ?? day) === g.id,
-            );
-            return (
-              <Panel key={g.id} eyebrow={`${list.length} tâche(s)`} title={g.label}>
-                {list.length === 0 ? (
-                  <EmptyState>Rien ici.</EmptyState>
-                ) : (
-                  <ul className="space-y-0.5">
-                    {list.map((t) => (
-                      <TaskItem
-                        key={t.id}
-                        task={t}
-                        subtasks={subtasksOf(t.id)}
-                        project={projectOf(t)}
-                        mutations={mutations}
-                        onOpen={(x) => setOpenTaskId(x.id)}
-                        onDropOn={reorderWithin(list)}
-                      />
-                    ))}
-                  </ul>
-                )}
-              </Panel>
-            );
-          })}
+        <div className="glass p-4 sm:p-6">
+          {sections.length === 0 ? (
+            <EmptyState hint="Ajoutez une tâche avec le champ ci-dessus.">
+              Aucune tâche à afficher
+            </EmptyState>
+          ) : (
+            sections.map(({ id, name, accent, list }) => (
+              <TodoistSection
+                key={id}
+                title={name}
+                count={list.length}
+                {...(accent ? { accent } : {})}
+                onAdd={(value) =>
+                  mutations.create.mutate({
+                    title: value,
+                    project_id: id === "none" ? null : id,
+                    scheduled_date: todayISO(),
+                  })
+                }
+              >
+                <ul>
+                  {list.map((t) => (
+                    <TodoistRow
+                      key={t.id}
+                      task={t}
+                      subtasks={subtasksOf(t.id)}
+                      project={projectOf(t)}
+                      mutations={mutations}
+                      onOpen={(x) => setOpenTaskId(x.id)}
+                      showProject={false}
+                    />
+                  ))}
+                </ul>
+              </TodoistSection>
+            ))
+          )}
         </div>
       ) : null}
+
 
       {tab === "plan" || tab === "projects" ? (
         <div className="grid items-start gap-4 xl:grid-cols-2">
