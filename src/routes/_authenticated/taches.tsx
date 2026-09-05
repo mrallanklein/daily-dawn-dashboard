@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { endOfMonth, endOfWeek, format } from "date-fns";
+
 import { Plus, Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
@@ -11,6 +11,8 @@ import { useWorkspace } from "@/lib/workspace";
 import { useTaskMutations } from "@/components/tasks/use-task-mutations";
 import { PRIORITIES } from "@/components/tasks/task-row";
 import { TaskItem } from "@/components/tasks/task-item";
+import { TodoistRow } from "@/components/tasks/todoist-row";
+import { TodoistSection } from "@/components/tasks/todoist-section";
 import { TaskPanel } from "@/components/tasks/task-panel";
 import { PlanBoard, UnplanDropZone } from "@/components/tasks/plan-board";
 import { todayISO } from "@/lib/dates";
@@ -54,15 +56,6 @@ const TABS = [
   { id: "projects", label: "Tâches projet" },
 ] as const;
 
-const GROUPS = [
-  { id: "today", label: "Aujourd'hui" },
-  { id: "week", label: "Cette semaine" },
-  { id: "month", label: "Ce mois" },
-  { id: "later", label: "Plus tard" },
-] as const;
-
-type GroupId = (typeof GROUPS)[number]["id"];
-
 function TasksPage() {
   const { workspace } = useWorkspace();
   const { data: tasksData } = useQuery(tasksQuery(workspace));
@@ -99,17 +92,6 @@ function TasksPage() {
     });
   }, [all, search, projectFilter, priorityFilter, showDone]);
 
-  const day = todayISO();
-  const weekEnd = format(endOfWeek(new Date(), { weekStartsOn: 1 }), "yyyy-MM-dd");
-  const monthEnd = format(endOfMonth(new Date()), "yyyy-MM-dd");
-
-  const groupOf = (when: string): GroupId => {
-    if (when <= day) return "today";
-    if (when <= weekEnd) return "week";
-    if (when <= monthEnd) return "month";
-    return "later";
-  };
-
   /** Tâches datées, triées par date croissante puis par ordre manuel. */
   const dated = useMemo(() => {
     const when = (t: Task) => t.scheduled_date ?? t.due_date ?? "";
@@ -120,13 +102,28 @@ function TasksPage() {
 
   const undated = filtered.filter((t) => !t.scheduled_date && !t.due_date);
 
-  const reorderWithin = (list: Task[]) => (draggedId: string, targetId: string) => {
-    const ids = list.map((t) => t.id);
-    if (!ids.includes(draggedId) || !ids.includes(targetId)) return;
-    const next = ids.filter((id) => id !== draggedId);
-    next.splice(ids.indexOf(targetId), 0, draggedId);
-    mutations.reorder.mutate(next);
-  };
+  /** Sections façon Todoist : une par projet, puis les tâches annexes. */
+  const sections = useMemo(() => {
+    const sorted = [...filtered].sort(
+      (a, b) =>
+        (a.scheduled_date ?? a.due_date ?? "9999").localeCompare(
+          b.scheduled_date ?? b.due_date ?? "9999",
+        ) || a.position - b.position,
+    );
+    const byProject = projects.map((p) => ({
+      id: p.id,
+      name: p.name,
+      accent: statusColor(p.status),
+      list: sorted.filter((t) => t.project_id === p.id),
+    }));
+    const loose = sorted.filter((t) => !t.project_id);
+    return [
+      ...byProject.filter((s) => s.list.length > 0),
+      ...(loose.length > 0 || byProject.every((s) => s.list.length === 0)
+        ? [{ id: "none", name: "Tâches annexes", accent: undefined, list: loose }]
+        : []),
+    ];
+  }, [filtered, projects]);
 
   const assignDate = (id: string, value: string | null) =>
     mutations.patch.mutate(
@@ -253,33 +250,42 @@ function TasksPage() {
       </div>
 
       {tab === "todo" ? (
-        <div className="grid gap-4 xl:grid-cols-2">
-          {GROUPS.map((g) => {
-            const list = dated.filter(
-              (t) => groupOf(t.scheduled_date ?? t.due_date ?? day) === g.id,
-            );
-            return (
-              <Panel key={g.id} eyebrow={`${list.length} tâche(s)`} title={g.label}>
-                {list.length === 0 ? (
-                  <EmptyState>Rien ici.</EmptyState>
-                ) : (
-                  <ul className="space-y-0.5">
-                    {list.map((t) => (
-                      <TaskItem
-                        key={t.id}
-                        task={t}
-                        subtasks={subtasksOf(t.id)}
-                        project={projectOf(t)}
-                        mutations={mutations}
-                        onOpen={(x) => setOpenTaskId(x.id)}
-                        onDropOn={reorderWithin(list)}
-                      />
-                    ))}
-                  </ul>
-                )}
-              </Panel>
-            );
-          })}
+        <div className="glass p-4 sm:p-6">
+          {sections.length === 0 ? (
+            <EmptyState hint="Ajoutez une tâche avec le champ ci-dessus.">
+              Aucune tâche à afficher
+            </EmptyState>
+          ) : (
+            sections.map(({ id, name, accent, list }) => (
+              <TodoistSection
+                key={id}
+                title={name}
+                count={list.length}
+                {...(accent ? { accent } : {})}
+                onAdd={(value) =>
+                  mutations.create.mutate({
+                    title: value,
+                    project_id: id === "none" ? null : id,
+                    scheduled_date: todayISO(),
+                  })
+                }
+              >
+                <ul>
+                  {list.map((t) => (
+                    <TodoistRow
+                      key={t.id}
+                      task={t}
+                      subtasks={subtasksOf(t.id)}
+                      project={projectOf(t)}
+                      mutations={mutations}
+                      onOpen={(x) => setOpenTaskId(x.id)}
+                      showProject={false}
+                    />
+                  ))}
+                </ul>
+              </TodoistSection>
+            ))
+          )}
         </div>
       ) : null}
 
