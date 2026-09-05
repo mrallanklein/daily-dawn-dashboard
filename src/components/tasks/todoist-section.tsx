@@ -65,6 +65,12 @@ export function TodoistSection({
                 autoFocus
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    setDraft("");
+                    setAdding(false);
+                  }
+                }}
                 onBlur={() => {
                   submit();
                   setAdding(false);
@@ -87,4 +93,5 @@ export function TodoistSection({
       ) : null}
     </section>
   );
+
 }

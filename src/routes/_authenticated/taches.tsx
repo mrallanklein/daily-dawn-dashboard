@@ -118,12 +118,11 @@ function TasksPage() {
     }));
     const loose = sorted.filter((t) => !t.project_id);
     return [
-      ...byProject.filter((s) => s.list.length > 0),
-      ...(loose.length > 0 || byProject.every((s) => s.list.length === 0)
-        ? [{ id: "none", name: "Tâches annexes", accent: undefined, list: loose }]
-        : []),
+      ...byProject,
+      { id: "none", name: "Tâches annexes", accent: undefined, list: loose },
     ];
   }, [filtered, projects]);
+
 
   const assignDate = (id: string, value: string | null) =>
     mutations.patch.mutate(
