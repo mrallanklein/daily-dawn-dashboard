@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { endOfMonth, endOfWeek, format } from "date-fns";
+
 import { Plus, Search } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageHeader } from "@/components/app/page-header";
@@ -11,6 +11,8 @@ import { useWorkspace } from "@/lib/workspace";
 import { useTaskMutations } from "@/components/tasks/use-task-mutations";
 import { PRIORITIES } from "@/components/tasks/task-row";
 import { TaskItem } from "@/components/tasks/task-item";
+import { TodoistRow } from "@/components/tasks/todoist-row";
+import { TodoistSection } from "@/components/tasks/todoist-section";
 import { TaskPanel } from "@/components/tasks/task-panel";
 import { PlanBoard, UnplanDropZone } from "@/components/tasks/plan-board";
 import { todayISO } from "@/lib/dates";
@@ -54,14 +56,8 @@ const TABS = [
   { id: "projects", label: "Tâches projet" },
 ] as const;
 
-const GROUPS = [
-  { id: "today", label: "Aujourd'hui" },
-  { id: "week", label: "Cette semaine" },
-  { id: "month", label: "Ce mois" },
-  { id: "later", label: "Plus tard" },
-] as const;
 
-type GroupId = (typeof GROUPS)[number]["id"];
+
 
 function TasksPage() {
   const { workspace } = useWorkspace();

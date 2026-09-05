@@ -58,14 +58,15 @@ export function TaskPanel({
           </div>
 
           <div>
-            <Label htmlFor="t-desc">Description</Label>
-            <Textarea
-              id="t-desc"
-              rows={4}
-              defaultValue={task.description ?? ""}
-              onBlur={(e) => patch.mutate({ id: task.id, description: e.target.value || null })}
-            />
+            <Label>Description</Label>
+            <div className="rounded-xl border border-border bg-background p-2.5">
+              <RichText
+                value={task.description}
+                onSave={(html) => patch.mutate({ id: task.id, description: html })}
+              />
+            </div>
           </div>
+
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
